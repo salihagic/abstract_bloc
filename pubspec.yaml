@@ -1,6 +1,6 @@
 name: abstract_bloc
-description: Abstraction for reading and persisting data to platform specific storage.
-version: 0.0.3
+description: Abstraction for fetching local or remote data via flutter_bloc
+version: 0.0.4
 repository: https://github.com/salihagic/abstract_bloc
 
 environment:
