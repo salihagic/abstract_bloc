@@ -1,6 +1,6 @@
 name: abstract_bloc
 description: Abstraction for reading and persisting data to platform specific storage.
-version: 0.0.2
+version: 0.0.3
 repository: https://github.com/salihagic/abstract_bloc
 
 environment:
