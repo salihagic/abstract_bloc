@@ -22,4 +22,9 @@ class Pagination {
   void increment() => skip += take;
 
   void decrement() => skip -= take;
+
+  Map<String, dynamic> toMap() => {
+        'page': page,
+        'pageSize': take,
+      };
 }

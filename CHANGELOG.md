@@ -1,3 +1,6 @@
+## [0.0.5] 
+* Addtional builder added for AbstractListConsumer widget
+
 ## [0.0.4] 
 * Docs
 

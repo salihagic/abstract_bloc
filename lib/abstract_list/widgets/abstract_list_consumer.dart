@@ -47,6 +47,9 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
   /// Specifies builder for the whole list
   final Widget Function(BuildContext, S)? builder;
 
+  /// Specifies builder that extends currently built child
+  final Widget Function(BuildContext, S, Widget)? additionalBuilder;
+
   /// Used to specify how to dispatch an event that initializes the first batch of data in your list.
   /// Usually this would be <bloc>LoadEvent
   final void Function(BuildContext context)? onInit;
@@ -94,6 +97,7 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
     this.heightBuilder,
     this.itemBuilder,
     this.builder,
+    this.additionalBuilder,
     this.onInit,
     this.skipInitialOnInit = false,
     this.onRefresh,
@@ -213,7 +217,7 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
               ],
             );
 
-            return Container(
+            final result = Container(
               height: heightBuilder?.call(state),
               child: () {
                 if (header != null || headerBuilder != null) {
@@ -230,6 +234,8 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
                 return content;
               }(),
             );
+
+            return additionalBuilder?.call(context, state, result) ?? result;
           },
         );
       },
