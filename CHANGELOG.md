@@ -1,3 +1,6 @@
+## [0.0.6] 
+* Automatic Load, Refresh and LoadMore event dispatching if overrides aren't provided
+
 ## [0.0.5] 
 * Addtional builder added for AbstractListConsumer widget
 

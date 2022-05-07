@@ -136,12 +136,25 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
   bool _showEmptyContainer(S state) => _isEmpty(state) && !_isError(state);
   bool _showErrorContainer(S state) => _isEmpty(state) && _isError(state);
 
+  AbstractListBloc? _blocInstance(BuildContext context) {
+    try {
+      return (context.read<B>() as AbstractListBloc);
+    } catch (e) {
+      print('There is no instance of bloc registered: $e');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return StatefullBuilder(
       initState: (context) {
         if (!skipInitialOnInit) {
-          onInit?.call(context);
+          if (onInit != null) {
+            onInit?.call(context);
+          } else {
+            _blocInstance(context)?.add(AbstractListLoadEvent());
+          }
         }
       },
       builder: (context) {
@@ -195,8 +208,14 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
                       controller: _refreshController,
                       enablePullDown: _enableRefresh(state),
                       enablePullUp: _enableLoadMore(state),
-                      onLoading: () => onLoadMore?.call(context),
-                      onRefresh: () => onRefresh?.call(context),
+                      onRefresh: () => onRefresh != null
+                          ? onRefresh?.call(context)
+                          : _blocInstance(context)
+                              ?.add(AbstractListRefreshEvent()),
+                      onLoading: () => onLoadMore != null
+                          ? onLoadMore?.call(context)
+                          : _blocInstance(context)
+                              ?.add(AbstractListLoadMoreEvent()),
                       child: child,
                     );
                   }
@@ -210,7 +229,7 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
                           _isLoading(state) &&
                           _hasData(state),
                       isCached: _isCached(state),
-                      onReload: onInit,
+                      onReload: (_) => onInit?.call(context),
                     ),
                   ],
                 ),

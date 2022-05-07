@@ -3,8 +3,8 @@ import 'package:abstract_bloc/extensions/_all.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rest_api_client/rest_api_client.dart';
 
-abstract class AbstractListBloc<E extends AbstractListEvent,
-    S extends AbstractListState> extends Bloc<E, S> {
+abstract class AbstractListBloc<S extends AbstractListState>
+    extends Bloc<AbstractListEvent, S> {
   AbstractListBloc(S initialState) : super(initialState) {
     on(
       (AbstractListEvent event, Emitter<S> emit) async {
