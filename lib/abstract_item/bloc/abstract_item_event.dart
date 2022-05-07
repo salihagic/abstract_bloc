@@ -1,9 +1,6 @@
-import 'package:abstract_bloc/abstract_bloc.dart';
+abstract class AbstractItemEvent {}
 
-abstract class AbstractItemEvent extends Object {}
-
-class AbstractItemLoadEvent<TSearchModel extends Pagination>
-    extends AbstractItemEvent {
+class AbstractItemLoadEvent<TSearchModel> extends AbstractItemEvent {
   TSearchModel? searchModel;
 
   AbstractItemLoadEvent({this.searchModel});

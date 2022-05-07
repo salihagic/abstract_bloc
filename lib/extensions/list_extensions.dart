@@ -1,10 +1,10 @@
-extension ListNullableExtensions<T> on List<T>? {
+extension AbstractBlocListNullableExtensions<T> on List<T>? {
   bool get isNullOrEmpty => this == null || this!.isEmpty;
   bool get isNotNullOrEmpty => !isNullOrEmpty;
   int get count => this == null ? 0 : this!.length;
 }
 
-extension ListExtensions<T> on List<T> {
+extension AbstractBlocListExtensions<T> on List<T> {
   void addIf(bool condition, T element, [Function(T)? callbackIfTrue]) {
     if (condition) {
       add(element);

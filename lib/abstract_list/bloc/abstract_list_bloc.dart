@@ -1,4 +1,5 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
+import 'package:abstract_bloc/extensions/_all.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rest_api_client/rest_api_client.dart';
 

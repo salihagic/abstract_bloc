@@ -1,4 +1,5 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
+import 'package:abstract_bloc/models/_all.dart';
 
 abstract class AbstractListState<TListItem> {
   ResultStatus resultStatus;

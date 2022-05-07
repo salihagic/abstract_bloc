@@ -1,4 +1,4 @@
-import 'package:abstract_bloc/abstract_bloc.dart';
+import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:flutter/material.dart';
 
 class LoadInfoIcon extends StatelessWidget {

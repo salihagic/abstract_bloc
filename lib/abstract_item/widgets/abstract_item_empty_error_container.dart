@@ -38,7 +38,10 @@ class AbstractItemEmptyErrorContainer extends StatelessWidget {
           SizedBox(height: 15),
           TextButton(
             onPressed: () => onInit?.call(context),
-            child: Text(options?.buttonText ?? 'Reload'),
+            child: Text(
+              options?.buttonText ?? 'Reload',
+              style: TextStyle(color: Colors.black),
+            ),
           ),
           SizedBox(height: 15),
         ],

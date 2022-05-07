@@ -4,6 +4,10 @@ abstract class AbstractItemState<TItem> {
   ResultStatus resultStatus;
   TItem? item;
 
+  bool get hasItem => item != null;
+  bool get isLoaded =>
+      [ResultStatus.loaded, ResultStatus.loadedCached].contains(resultStatus);
+
   AbstractItemState({
     required this.resultStatus,
     required this.item,
