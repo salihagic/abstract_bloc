@@ -100,7 +100,7 @@ class AbstractItemConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
                   LoadInfoIcon(
                     isLoading: _isLoading(state),
                     isCached: _isCached(state),
-                    onReload: onInit,
+                    onReload: (_) => onInit?.call(context),
                   ),
                 ],
               ),

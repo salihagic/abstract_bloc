@@ -1,12 +1,11 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rest_api_client/rest_api_client.dart';
 
-abstract class AbstractItemBloc<E extends AbstractItemEvent,
-    S extends AbstractItemState> extends Bloc<E, S> {
+abstract class AbstractItemBloc<S extends AbstractItemState>
+    extends Bloc<AbstractItemEvent, S> {
   AbstractItemBloc(S initialState) : super(initialState) {
     on(
-      (E event, Emitter<S> emit) async {
+      (AbstractItemEvent event, Emitter<S> emit) async {
         if (event is AbstractItemLoadEvent) {
           await load(event, emit);
         }

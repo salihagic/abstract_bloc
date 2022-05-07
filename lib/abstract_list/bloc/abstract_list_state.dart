@@ -5,6 +5,10 @@ abstract class AbstractListState<TListItem> {
   List<TListItem> items;
   List<TListItem> cachedItems;
 
+  bool get hasItems => items.isNotEmpty;
+  bool get isLoaded =>
+      [ResultStatus.loaded, ResultStatus.loadedCached].contains(resultStatus);
+
   AbstractListState({
     required this.resultStatus,
     required this.items,

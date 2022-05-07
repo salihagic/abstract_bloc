@@ -1,3 +1,6 @@
+## [0.0.7] 
+* Removed unused Event template parameter
+
 ## [0.0.6] 
 * Automatic Load, Refresh and LoadMore event dispatching if overrides aren't provided
 
