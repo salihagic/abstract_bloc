@@ -1,6 +1,5 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/extensions/_all.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class AbstractListBloc<S extends AbstractListState>
     extends Bloc<AbstractListEvent, S> {
@@ -29,13 +28,12 @@ abstract class AbstractListBloc<S extends AbstractListState>
   Future<Result> resolveData() async => throw UnimplementedError();
 
   S convertResultToStateAfterLoadAndRefresh(result) {
-    final wasCached = state.resultStatus == ResultStatus.loadedCached;
     state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
 
-    if (result.data != null) {
-      state.items = result.data;
-    } else {
-      if (!wasCached) {
+    if (result.isSuccess) {
+      if (result.hasData) {
+        state.items = result.data;
+      } else {
         state.items.clear();
       }
     }

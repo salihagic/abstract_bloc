@@ -1,5 +1,4 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class AbstractItemBloc<S extends AbstractItemState>
     extends Bloc<AbstractItemEvent, S> {

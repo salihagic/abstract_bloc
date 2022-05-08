@@ -19,7 +19,7 @@ class AbstractConfiguration extends InheritedWidget {
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
 
-  static AbstractConfiguration of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<AbstractConfiguration>()!;
+  static AbstractConfiguration? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<AbstractConfiguration>();
   }
 }

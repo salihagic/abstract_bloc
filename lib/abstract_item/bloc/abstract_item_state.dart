@@ -10,7 +10,7 @@ abstract class AbstractItemState<TItem> {
 
   AbstractItemState({
     required this.resultStatus,
-    required this.item,
+    this.item,
   });
 
   dynamic copyWith() => this;
@@ -23,7 +23,7 @@ abstract class AbstractItemFilterableState<TSearchModel, TItem>
   AbstractItemFilterableState({
     required ResultStatus resultStatus,
     required this.searchModel,
-    required TItem item,
+    TItem? item,
   }) : super(
           resultStatus: resultStatus,
           item: item,

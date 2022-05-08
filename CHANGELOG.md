@@ -1,3 +1,6 @@
+## [0.0.9] 
+* Documented an example project
+
 ## [0.0.8] 
 * Added AbstractConfiguration InheritedWidget for configuring error and no data global widgets with the ability to override those per specific Consumer
 

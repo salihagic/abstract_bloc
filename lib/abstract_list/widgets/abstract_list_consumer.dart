@@ -2,7 +2,6 @@ import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/extensions/_all.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 /// Wrapper around flutter_bloc's [BlocConsumer] that abstracts the use of general list of network items.
@@ -170,7 +169,7 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
               if (_showEmptyContainer(state)) {
                 return noDataBuilder?.call(() => _onInit(context), state) ??
                     AbstractConfiguration.of(context)
-                        .abstractListNoDataBuilder
+                        ?.abstractListNoDataBuilder
                         ?.call(() => _onInit(context)) ??
                     AbstractListNoDataContainer(onInit: () => _onInit(context));
               }
@@ -178,7 +177,7 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
               if (_showErrorContainer(state)) {
                 return errorBuilder?.call(() => _onInit(context), state) ??
                     AbstractConfiguration.of(context)
-                        .abstractListErrorBuilder
+                        ?.abstractListErrorBuilder
                         ?.call(() => _onInit(context)) ??
                     AbstractLisErrorContainer(onInit: () => _onInit(context));
               }

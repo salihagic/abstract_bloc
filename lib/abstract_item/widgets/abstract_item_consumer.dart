@@ -1,7 +1,6 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Wrapper around flutter_bloc's [BlocBuilder] that abstracts the use of general network item.
 /// Offers Load feature.
@@ -98,13 +97,13 @@ class AbstractItemConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
               if (_isError(state)) {
                 return errorBuilder?.call(() => _onInit(context), state) ??
                     AbstractConfiguration.of(context)
-                        .abstractItemErrorBuilder
+                        ?.abstractItemErrorBuilder
                         ?.call(() => _onInit(context)) ??
                     AbstractItemErrorContainer(onInit: () => _onInit(context));
               } else {
                 return noDataBuilder?.call(() => _onInit(context), state) ??
                     AbstractConfiguration.of(context)
-                        .abstractItemNoDataBuilder
+                        ?.abstractItemNoDataBuilder
                         ?.call(() => _onInit(context)) ??
                     AbstractItemNoDataContainer(onInit: () => _onInit(context));
               }
