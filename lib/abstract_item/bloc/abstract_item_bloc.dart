@@ -23,7 +23,9 @@ abstract class AbstractItemBloc<S extends AbstractItemState>
 
   S convertResultToState(Result result) {
     state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
-    state.item = result.data ?? state.item;
+    if (result.isSuccess) {
+      state.item = result.data;
+    }
 
     return state.copyWith();
   }

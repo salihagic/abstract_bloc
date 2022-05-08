@@ -26,15 +26,6 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
   /// Specify weather the list should allow "load more" feature
   final bool enableLoadMore;
 
-  /// Specify text and image placeholder when an error happens
-  final AbstractListEmptyErrorContainerOptions? errorOptions;
-
-  /// Specify text and image placeholder when there are no items in the list
-  final AbstractListEmptyContainerOptions? emptyOptions;
-
-  /// When there is no data use this builder to provide placeholder widget
-  final Widget Function(S state)? emptyContainerBuilder;
-
   /// Optional header above the list, could be filters or some custom list title
   final Widget? header;
 
@@ -49,6 +40,12 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
 
   /// Specifies builder that extends currently built child
   final Widget Function(BuildContext, S, Widget)? additionalBuilder;
+
+  /// Specify the widget to be shown when an error happens
+  final Widget Function(void Function() onInit, S state)? errorBuilder;
+
+  /// When there is no data use this builder to provide placeholder widget
+  final Widget Function(void Function() onInit, S state)? noDataBuilder;
 
   /// Used to specify how to dispatch an event that initializes the first batch of data in your list.
   /// Usually this would be <bloc>LoadEvent
@@ -85,9 +82,8 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
     this.physics,
     this.enableRefresh = true,
     this.enableLoadMore = true,
-    this.errorOptions,
-    this.emptyOptions,
-    this.emptyContainerBuilder,
+    this.errorBuilder,
+    this.noDataBuilder,
     this.header,
     this.headerBuilder,
     this.isLoading,
@@ -145,16 +141,16 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
     }
   }
 
+  void _onInit(BuildContext context) => onInit != null
+      ? onInit?.call(context)
+      : _blocInstance(context)?.add(AbstractListLoadEvent());
+
   @override
   Widget build(BuildContext context) {
     return StatefullBuilder(
       initState: (context) {
         if (!skipInitialOnInit) {
-          if (onInit != null) {
-            onInit?.call(context);
-          } else {
-            _blocInstance(context)?.add(AbstractListLoadEvent());
-          }
+          _onInit(context);
         }
       },
       builder: (context) {
@@ -172,13 +168,19 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
 
               //There is no network data and nothing is fetched from the cache and network error occured
               if (_showEmptyContainer(state)) {
-                return emptyContainerBuilder?.call(state) ??
-                    AbstractListEmptyContainer(options: emptyOptions);
+                return noDataBuilder?.call(() => _onInit(context), state) ??
+                    AbstractConfiguration.of(context)
+                        .abstractListNoDataBuilder
+                        ?.call(() => _onInit(context)) ??
+                    AbstractListNoDataContainer(onInit: () => _onInit(context));
               }
 
               if (_showErrorContainer(state)) {
-                return AbstractListEmptyErrorContainer(
-                    options: errorOptions, onInit: onInit);
+                return errorBuilder?.call(() => _onInit(context), state) ??
+                    AbstractConfiguration.of(context)
+                        .abstractListErrorBuilder
+                        ?.call(() => _onInit(context)) ??
+                    AbstractLisErrorContainer(onInit: () => _onInit(context));
               }
 
               if (builder != null) {
@@ -229,7 +231,7 @@ class AbstractListConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
                           _isLoading(state) &&
                           _hasData(state),
                       isCached: _isCached(state),
-                      onReload: (_) => onInit?.call(context),
+                      onReload: (_) => _onInit(context),
                     ),
                   ],
                 ),

@@ -1,3 +1,6 @@
+## [0.0.8] 
+* Added AbstractConfiguration InheritedWidget for configuring error and no data global widgets with the ability to override those per specific Consumer
+
 ## [0.0.7] 
 * Removed unused Event template parameter
 

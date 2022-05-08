@@ -16,11 +16,11 @@ class AbstractItemConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
   /// Set this flag to true if you want to initialize the data somewhere above in the context
   final bool skipInitialOnInit;
 
-  /// Specify text and image placeholder when an error happens
-  final AbstractItemEmptyErrorContainerOptions? errorOptions;
+  /// Specify the widget to be shown when an error happens
+  final Widget Function(void Function() onInit, S state)? errorBuilder;
 
-  /// Specify text and image placeholder when there are no items in the list
-  final AbstractItemEmptyContainerOptions? emptyOptions;
+  /// When there is no data use this builder to provide placeholder widget
+  final Widget Function(void Function() onInit, S state)? noDataBuilder;
 
   /// Provide a callback specifying weather the data is currently loading
   /// If your bloc's state extends [AbstractItemState] you can ignore this callback
@@ -34,9 +34,6 @@ class AbstractItemConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
   /// If your bloc's state extends [AbstractItemState] you can ignore this callback
   final bool Function(S state)? hasData;
 
-  /// When there is no data use this builder to provide placeholder widget
-  final Widget Function(S state)? emptyContainerBuilder;
-
   /// Provide eather the child or a builder to specify the content of this widget
   final Widget? child;
   final Widget Function(S state)? builder;
@@ -45,12 +42,11 @@ class AbstractItemConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
     Key? key,
     this.onInit,
     this.skipInitialOnInit = false,
-    this.errorOptions,
-    this.emptyOptions,
+    this.errorBuilder,
+    this.noDataBuilder,
     this.isLoading,
     this.isError,
     this.hasData,
-    this.emptyContainerBuilder,
     this.child,
     this.builder,
   }) : super(key: key);
@@ -69,12 +65,25 @@ class AbstractItemConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
   bool _isCached(S state) => _isError(state) && _hasData(state);
   bool _isEmpty(S state) => !_hasData(state);
 
+  AbstractItemBloc? _blocInstance(BuildContext context) {
+    try {
+      return (context.read<B>() as AbstractItemBloc);
+    } catch (e) {
+      print('There is no instance of bloc registered: $e');
+      return null;
+    }
+  }
+
+  void _onInit(BuildContext context) => onInit != null
+      ? onInit?.call(context)
+      : _blocInstance(context)?.add(AbstractItemLoadEvent());
+
   @override
   Widget build(BuildContext context) {
     return StatefullBuilder(
       initState: (context) {
         if (!skipInitialOnInit) {
-          onInit?.call(context);
+          _onInit(context);
         }
       },
       builder: (context) => SafeArea(
@@ -86,11 +95,19 @@ class AbstractItemConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
 
             //There is no network data and nothing is fetched from the cache and network error occured
             if (_isEmpty(state)) {
-              return _isError(state)
-                  ? AbstractItemEmptyErrorContainer(
-                      options: errorOptions, onInit: onInit)
-                  : emptyContainerBuilder?.call(state) ??
-                      AbstractItemEmptyContainer(options: emptyOptions);
+              if (_isError(state)) {
+                return errorBuilder?.call(() => _onInit(context), state) ??
+                    AbstractConfiguration.of(context)
+                        .abstractItemErrorBuilder
+                        ?.call(() => _onInit(context)) ??
+                    AbstractItemErrorContainer(onInit: () => _onInit(context));
+              } else {
+                return noDataBuilder?.call(() => _onInit(context), state) ??
+                    AbstractConfiguration.of(context)
+                        .abstractItemNoDataBuilder
+                        ?.call(() => _onInit(context)) ??
+                    AbstractItemNoDataContainer(onInit: () => _onInit(context));
+              }
             }
 
             return SingleChildScrollView(
@@ -100,7 +117,7 @@ class AbstractItemConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
                   LoadInfoIcon(
                     isLoading: _isLoading(state),
                     isCached: _isCached(state),
-                    onReload: (_) => onInit?.call(context),
+                    onReload: (_) => _onInit(context),
                   ),
                 ],
               ),
