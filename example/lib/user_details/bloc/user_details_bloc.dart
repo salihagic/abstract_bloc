@@ -21,5 +21,6 @@ class UserDetailsBloc extends AbstractItemBloc<UserDetailsState> {
 
   // Example for loading only network data
   @override
-  Future<Result> resolveData() => usersRepository.getDetailsOnlyNetwrok(state.searchModel);
+  Future<Result> resolveData() =>
+      usersRepository.getDetailsOnlyNetwrok(state.searchModel);
 }

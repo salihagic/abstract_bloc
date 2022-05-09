@@ -7,7 +7,8 @@ import 'package:example/models/users_search_model.dart';
 abstract class IUsersRepository {
   Stream<Result<List<User>>> get(UsersSearchModel model);
   Stream<Result<UserDetails>> getDetails(UserDetailsSearchModel model);
-  Future<Result<UserDetails>> getDetailsOnlyNetwrok(UserDetailsSearchModel model);
+  Future<Result<UserDetails>> getDetailsOnlyNetwrok(
+      UserDetailsSearchModel model);
 }
 
 class UsersRepository implements IUsersRepository {
@@ -35,7 +36,8 @@ class UsersRepository implements IUsersRepository {
 
   // Example for loading only network data
   @override
-  Future<Result<UserDetails>> getDetailsOnlyNetwrok(UserDetailsSearchModel model) {
+  Future<Result<UserDetails>> getDetailsOnlyNetwrok(
+      UserDetailsSearchModel model) {
     return restApiClient.get(
       '/users/${model.id}',
       parser: (data) => UserDetails.fromMap(data),
