@@ -15,7 +15,11 @@ class UserDetailsBloc extends AbstractItemBloc<UserDetailsState> {
         searchModel: UserDetailsSearchModel(),
       );
 
+  // Example for loading cached and then network data
+  // @override
+  // Stream<Result> resolveStreamData() => usersRepository.getDetails(state.searchModel);
+
+  // Example for loading only network data
   @override
-  Stream<Result> resolveStreamData() =>
-      usersRepository.getDetails(state.searchModel);
+  Future<Result> resolveData() => usersRepository.getDetailsOnlyNetwrok(state.searchModel);
 }
