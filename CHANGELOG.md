@@ -1,3 +1,6 @@
+## [0.0.10] 
+* Updated docs
+
 ## [0.0.9] 
 * Documented an example project
 
