@@ -1,3 +1,6 @@
+## [0.0.12] 
+* Fixed docs typo
+
 ## [0.0.11] 
 * Updated example
 
