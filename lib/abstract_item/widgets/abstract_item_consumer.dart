@@ -109,17 +109,19 @@ class AbstractItemConsumer<B extends BlocBase<S>, S> extends StatelessWidget {
               }
             }
 
-            return SingleChildScrollView(
-              child: Stack(
-                children: [
-                  child ?? builder?.call(state) ?? Container(),
-                  LoadInfoIcon(
+            return Stack(
+              children: [
+                child ?? builder?.call(state) ?? Container(),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: LoadInfoIcon(
                     isLoading: _isLoading(state),
                     isCached: _isCached(state),
                     onReload: (_) => _onInit(context),
                   ),
-                ],
-              ),
+                ),
+              ],
             );
           },
         ),
