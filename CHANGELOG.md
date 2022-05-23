@@ -1,3 +1,6 @@
+## [0.1.2] 
+* Upgraded dependencies
+
 ## [0.1.1] 
 * AbstractConsumer's cached data loader fixed to top-right position
 
