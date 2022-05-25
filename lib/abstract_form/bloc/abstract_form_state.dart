@@ -1,30 +1,39 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 
-abstract class AbstractFormState<TItem> {
+abstract class AbstractFormState<TModel, TModelValidator extends ModelValidator> {
   FormResultStatus formResultStatus;
-  TItem? item;
+  TModel? model;
+  TModelValidator? modelValidator;
+  bool autovalidate;
 
-  bool get hasItem => item != null;
-  bool get isLoaded => [ResultStatus.loaded, ResultStatus.loadedCached].contains(formResultStatus);
+  bool get hasModel => model != null;
+  bool get isInitialized => formResultStatus == FormResultStatus.initialized;
+  bool get isSubmitting => formResultStatus == FormResultStatus.submitting;
 
   AbstractFormState({
     required this.formResultStatus,
-    this.item,
+    this.model,
+    required this.modelValidator,
+    this.autovalidate = false,
   });
 
   dynamic copyWith() => this;
 }
 
-abstract class AbstractFormFilterableState<TSearchModel, TItem> extends AbstractFormState<TItem> {
-  TSearchModel searchModel;
+abstract class AbstractFormFilterableState<TSearchModel, TModel, TModelValidator extends ModelValidator> extends AbstractFormState<TModel, TModelValidator> {
+  TSearchModel? searchModel;
 
   AbstractFormFilterableState({
+    this.searchModel,
     required FormResultStatus formResultStatus,
-    required this.searchModel,
-    TItem? item,
+    TModel? model,
+    TModelValidator? modelValidator,
+    bool autovalidate = false,
   }) : super(
           formResultStatus: formResultStatus,
-          item: item,
+          model: model,
+          modelValidator: modelValidator,
+          autovalidate: autovalidate,
         );
 
   @override
