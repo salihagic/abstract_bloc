@@ -1,3 +1,6 @@
+## [0.2.0] 
+* Abstract Form added 
+
 ## [0.1.2] 
 * Upgraded dependencies
 
