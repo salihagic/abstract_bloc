@@ -1,18 +1,17 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 
-abstract class AbstractFormBloc<S extends AbstractFormState, TModelValidator extends ModelValidator> extends Bloc<AbstractFormEvent, S> {
-  final TModelValidator modelValidator;
-
+abstract class AbstractFormBloc<S extends AbstractFormState>
+    extends Bloc<AbstractFormEvent, S> {
   AbstractFormBloc(
     S initialState,
-    this.modelValidator,
+    ModelValidator modelValidator,
   ) : super(initialState) {
     state.modelValidator = modelValidator;
 
     on(
       (AbstractFormEvent event, Emitter<S> emit) async {
         if (event is AbstractFormInitEvent) {
-          await init(event, emit);
+          await _init(event, emit);
         } else if (event is AbstractFormUpdateEvent) {
           await update(event, emit);
         } else if (event is AbstractFormSubmitEvent) {
@@ -23,14 +22,29 @@ abstract class AbstractFormBloc<S extends AbstractFormState, TModelValidator ext
   }
 
   // Override this method to initialize referent data or a model from your API
-  Future<void> init(AbstractFormInitEvent event, Emitter<S> emit) async {
+  Future<Result> prepareModel(
+          AbstractFormInitEvent event, Emitter<S> emit) async =>
+      NetworkResult();
+
+  Future<void> _init(AbstractFormInitEvent event, Emitter<S> emit) async {
     _changeStatus(emit, FormResultStatus.initializing);
 
     if (state is AbstractFormFilterableState) {
-      (state as AbstractFormFilterableState).searchModel = event.searchModel ?? (state as AbstractFormFilterableState).searchModel;
+      (state as AbstractFormFilterableState).searchModel = event.searchModel ??
+          (state as AbstractFormFilterableState).searchModel;
     }
 
-    _changeStatus(emit, FormResultStatus.initialized);
+    final result = await prepareModel(event, emit);
+
+    if (result.isSuccess) {
+      if (result.hasData) {
+        state.model = result.data;
+      }
+
+      _changeStatus(emit, FormResultStatus.initialized);
+    } else {
+      _changeStatus(emit, FormResultStatus.error);
+    }
   }
 
   Future<void> update(AbstractFormUpdateEvent event, Emitter<S> emit) async {
@@ -38,14 +52,14 @@ abstract class AbstractFormBloc<S extends AbstractFormState, TModelValidator ext
     emit(state.copyWith() as S);
   }
 
-  Future<Result> onSubmit() => throw Exception('onSubmit Not implemented');
+  Future<Result> onSubmit(model) => throw Exception('onSubmit Not implemented');
 
   Future<void> submit(AbstractFormSubmitEvent event, Emitter<S> emit) async {
-    if (modelValidator.validate(state.model)) {
+    if (state.modelValidator?.validate(state.model) ?? false) {
       state.formResultStatus = FormResultStatus.submitting;
       emit(state.copyWith());
 
-      final result = await onSubmit();
+      final result = await onSubmit(state.model);
 
       if (result.isSuccess) {
         _changeStatus(emit, FormResultStatus.submittingSuccess);

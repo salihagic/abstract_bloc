@@ -1,6 +1,8 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
+import 'package:flutter/widgets.dart';
 
-abstract class AbstractFormState<TModel, TModelValidator extends ModelValidator> {
+abstract class AbstractFormState<TModel,
+    TModelValidator extends ModelValidator> {
   FormResultStatus formResultStatus;
   TModel? model;
   TModelValidator? modelValidator;
@@ -9,6 +11,8 @@ abstract class AbstractFormState<TModel, TModelValidator extends ModelValidator>
   bool get hasModel => model != null;
   bool get isInitialized => formResultStatus == FormResultStatus.initialized;
   bool get isSubmitting => formResultStatus == FormResultStatus.submitting;
+  AutovalidateMode get autovalidateMode =>
+      autovalidate ? AutovalidateMode.always : AutovalidateMode.disabled;
 
   AbstractFormState({
     required this.formResultStatus,
@@ -20,7 +24,9 @@ abstract class AbstractFormState<TModel, TModelValidator extends ModelValidator>
   dynamic copyWith() => this;
 }
 
-abstract class AbstractFormFilterableState<TSearchModel, TModel, TModelValidator extends ModelValidator> extends AbstractFormState<TModel, TModelValidator> {
+abstract class AbstractFormFilterableState<TSearchModel, TModel,
+        TModelValidator extends ModelValidator>
+    extends AbstractFormState<TModel, TModelValidator> {
   TSearchModel? searchModel;
 
   AbstractFormFilterableState({
