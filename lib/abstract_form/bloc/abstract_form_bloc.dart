@@ -36,14 +36,14 @@ abstract class AbstractFormBloc<S extends AbstractFormState>
 
     final result = await prepareModel(event, emit);
 
-    if (result.isSuccess) {
+    if (result.isError) {
+      _changeStatus(emit, FormResultStatus.error);
+    } else {
       if (result.hasData) {
         state.model = result.data;
       }
 
       _changeStatus(emit, FormResultStatus.initialized);
-    } else {
-      _changeStatus(emit, FormResultStatus.error);
     }
   }
 
