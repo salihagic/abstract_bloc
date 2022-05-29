@@ -2,8 +2,12 @@ import 'package:abstract_bloc/abstract_bloc.dart';
 
 abstract class AbstractFormBloc<S extends AbstractFormBasicState>
     extends Bloc<AbstractFormEvent, S> {
+  late S _initialState;
+
   AbstractFormBloc(S initialState, [ModelValidator? modelValidator])
       : super(initialState) {
+    _initialState = initialState;
+
     if (state is AbstractFormState) {
       (state as AbstractFormState).modelValidator = modelValidator;
     }
@@ -16,6 +20,8 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
           await update(event, emit);
         } else if (event is AbstractFormSubmitEvent) {
           await submit(event, emit);
+        } else if (event is AbstractFormResetEvent) {
+          await _reset(event, emit);
         }
       },
     );
@@ -72,7 +78,7 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
 
       if (result.isSuccess) {
         _changeStatus(emit, FormResultStatus.submittingSuccess);
-        add(AbstractFormInitEvent());
+        add(AbstractFormResetEvent());
       } else {
         if (state is AbstractFormState) {
           (state as AbstractFormState).autovalidate = true;
@@ -81,6 +87,10 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
         _changeStatus(emit, FormResultStatus.initialized);
       }
     }
+  }
+
+  Future<void> _reset(AbstractFormResetEvent event, Emitter<S> emit) async {
+    emit(_initialState);
   }
 
   void _changeStatus(Emitter<S> emit, FormResultStatus formResultStatus) {

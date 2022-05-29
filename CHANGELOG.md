@@ -1,3 +1,6 @@
+## [0.3.2] 
+* Reset state on success
+
 ## [0.3.1] 
 * Separated basic state from advanced
 
