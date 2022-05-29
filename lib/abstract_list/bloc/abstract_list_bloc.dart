@@ -61,7 +61,7 @@ abstract class AbstractListBloc<S extends AbstractListState>
     _recalculateItems(result);
 
     //Network without data
-    if (result is NetworkResult && !result.hasData) {
+    if (result is! CacheResult && !result.hasData) {
       if (state is AbstractListFilterablePaginatedState) {
         (state as AbstractListFilterablePaginatedState).searchModel.decrement();
 
@@ -77,7 +77,7 @@ abstract class AbstractListBloc<S extends AbstractListState>
     }
 
     //Network with data
-    if (result is NetworkResult && result.hasData) {
+    if (result is! CacheResult && result.hasData) {
       if (state.resultStatus == ResultStatus.loadedCached) {
         state.items.removeLastItems(state.cachedItems.count);
         state.cachedItems.clear();
@@ -93,7 +93,7 @@ abstract class AbstractListBloc<S extends AbstractListState>
   }
 
   void _recalculateItems(Result result) {
-    if (result is NetworkResult &&
+    if (result is! CacheResult &&
         state is AbstractListFilterablePaginatedState) {
       (state as AbstractListFilterablePaginatedState).hasMoreData =
           ((result.data ?? []) as List).count >=

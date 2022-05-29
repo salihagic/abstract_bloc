@@ -1,3 +1,6 @@
+## [0.3.3] 
+* onSuccess fix
+
 ## [0.3.2] 
 * Reset state on success
 
