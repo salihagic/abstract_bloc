@@ -1,3 +1,6 @@
+## [0.3.0] 
+* Builders and Consumers added
+
 ## [0.2.1] 
 * Abstract Form model initialization fix 
 

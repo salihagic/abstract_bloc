@@ -1,9 +1,9 @@
 abstract class AbstractFormEvent {}
 
 class AbstractFormInitEvent<TSearchModel> extends AbstractFormEvent {
-  TSearchModel? searchModel;
+  TSearchModel? model;
 
-  AbstractFormInitEvent({this.searchModel});
+  AbstractFormInitEvent({this.model});
 }
 
 class AbstractFormUpdateEvent<TModel> extends AbstractFormEvent {

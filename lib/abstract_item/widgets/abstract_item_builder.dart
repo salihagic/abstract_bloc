@@ -2,8 +2,8 @@ import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:flutter/material.dart';
 
-class AbstractItemConsumer<B extends AbstractItemBloc<S>,
-    S extends AbstractItemState, TItem> extends StatelessWidget {
+class AbstractItemBuilder<B extends AbstractItemBloc<S>,
+    S extends AbstractItemState> extends StatelessWidget {
   final void Function(BuildContext context)? onInit;
   final bool skipInitialOnInit;
   final Widget Function(BuildContext context, void Function() onInit, S state)?
@@ -15,9 +15,9 @@ class AbstractItemConsumer<B extends AbstractItemBloc<S>,
   final bool Function(BuildContext context, S state)? hasData;
   final Widget? child;
   final Widget Function(BuildContext context, S state)? listener;
-  final Widget Function(BuildContext context, S state, TItem item)? builder;
+  final Widget Function(BuildContext context, S state)? builder;
 
-  AbstractItemConsumer({
+  AbstractItemBuilder({
     Key? key,
     this.onInit,
     this.skipInitialOnInit = false,
@@ -95,9 +95,7 @@ class AbstractItemConsumer<B extends AbstractItemBloc<S>,
 
             return Stack(
               children: [
-                child ??
-                    builder?.call(context, state, state.item!) ??
-                    Container(),
+                child ?? builder?.call(context, state) ?? Container(),
                 Positioned(
                   top: 0,
                   right: 0,

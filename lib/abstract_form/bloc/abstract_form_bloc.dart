@@ -11,7 +11,7 @@ abstract class AbstractFormBloc<S extends AbstractFormState>
     on(
       (AbstractFormEvent event, Emitter<S> emit) async {
         if (event is AbstractFormInitEvent) {
-          await _init(event, emit);
+          await init(event, emit);
         } else if (event is AbstractFormUpdateEvent) {
           await update(event, emit);
         } else if (event is AbstractFormSubmitEvent) {
@@ -22,19 +22,14 @@ abstract class AbstractFormBloc<S extends AbstractFormState>
   }
 
   // Override this method to initialize referent data or a model from your API
-  Future<Result> prepareModel(
+  Future<Result> initModel(
           AbstractFormInitEvent event, Emitter<S> emit) async =>
       NetworkResult();
 
-  Future<void> _init(AbstractFormInitEvent event, Emitter<S> emit) async {
+  Future<void> init(AbstractFormInitEvent event, Emitter<S> emit) async {
     _changeStatus(emit, FormResultStatus.initializing);
 
-    if (state is AbstractFormFilterableState) {
-      (state as AbstractFormFilterableState).searchModel = event.searchModel ??
-          (state as AbstractFormFilterableState).searchModel;
-    }
-
-    final result = await prepareModel(event, emit);
+    final result = await initModel(event, emit);
 
     if (result.isError) {
       _changeStatus(emit, FormResultStatus.error);

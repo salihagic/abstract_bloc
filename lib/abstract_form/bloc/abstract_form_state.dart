@@ -23,25 +23,3 @@ abstract class AbstractFormState<TModel,
 
   dynamic copyWith() => this;
 }
-
-abstract class AbstractFormFilterableState<TSearchModel, TModel,
-        TModelValidator extends ModelValidator>
-    extends AbstractFormState<TModel, TModelValidator> {
-  TSearchModel? searchModel;
-
-  AbstractFormFilterableState({
-    this.searchModel,
-    required FormResultStatus formResultStatus,
-    TModel? model,
-    TModelValidator? modelValidator,
-    bool autovalidate = false,
-  }) : super(
-          formResultStatus: formResultStatus,
-          model: model,
-          modelValidator: modelValidator,
-          autovalidate: autovalidate,
-        );
-
-  @override
-  dynamic copyWith() => this;
-}

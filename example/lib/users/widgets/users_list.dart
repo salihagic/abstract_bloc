@@ -15,9 +15,9 @@ class UsersList extends StatelessWidget {
       create: (context) => UsersBloc(
         usersRepository: context.read<IUsersRepository>(),
       ),
-      child: AbstractListConsumer<UsersBloc, UsersState>(
+      child: AbstractListBuilder<UsersBloc, UsersState>(
         onInit: (context) => context.read<UsersBloc>().add(UsersLoadEvent()),
-        itemBuilder: (usersState, index) =>
+        itemBuilder: (context, usersState, index) =>
             UserCard(user: usersState.items[index]),
       ),
     );

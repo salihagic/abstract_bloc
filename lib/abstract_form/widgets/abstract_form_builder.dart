@@ -2,14 +2,9 @@ import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:flutter/material.dart';
 
-class AbstractFormConsumer<
-    B extends AbstractFormBloc<S>,
-    S extends AbstractFormState<TModel, TModelValidator>,
-    TModel,
-    TModelValidator extends ModelValidator> extends StatelessWidget {
-  final void Function(
-          BuildContext context, B bloc, void Function([TModel? model]) init)?
-      onInit;
+class AbstractFormBuilder<B extends AbstractFormBloc<S>,
+    S extends AbstractFormState> extends StatelessWidget {
+  final void Function(BuildContext context)? onInit;
   final bool skipInitialOnInit;
   final Widget Function(BuildContext context, void Function() onInit, S state)?
       errorBuilder;
@@ -20,20 +15,12 @@ class AbstractFormConsumer<
   final bool Function(BuildContext context, S state)? isError;
   final bool Function(BuildContext context, S state)? hasData;
   final Widget? child;
-  final Widget Function(
-      BuildContext context,
-      S state,
-      TModel model,
-      TModelValidator modelValidator,
-      B bloc,
-      void Function(TModel model) update,
-      void Function() submit)? extendedBuilder;
   final Widget Function(BuildContext context, S state)? builder;
   final void Function(BuildContext context, S state)? listener;
   final void Function(BuildContext context, S state)? onSuccess;
   final void Function(BuildContext context, S state)? onValidationError;
 
-  AbstractFormConsumer({
+  AbstractFormBuilder({
     Key? key,
     this.onInit,
     this.skipInitialOnInit = false,
@@ -44,7 +31,6 @@ class AbstractFormConsumer<
     this.isError,
     this.hasData,
     this.child,
-    this.extendedBuilder,
     this.builder,
     this.listener,
     this.onSuccess,
@@ -73,11 +59,7 @@ class AbstractFormConsumer<
   }
 
   void _onInit(BuildContext context) => onInit != null
-      ? onInit?.call(
-          context,
-          _blocInstance(context),
-          ([TModel? model]) =>
-              _blocInstance(context).add(AbstractFormInitEvent(model: model)))
+      ? onInit?.call(context)
       : _blocInstance(context).add(AbstractFormInitEvent());
 
   @override
@@ -128,16 +110,6 @@ class AbstractFormConsumer<
                   ? AutovalidateMode.always
                   : AutovalidateMode.disabled,
               child: child ??
-                  extendedBuilder?.call(
-                    context,
-                    state,
-                    state.model!,
-                    state.modelValidator!,
-                    _blocInstance(context),
-                    (model) => _blocInstance(context)
-                        .add(AbstractFormUpdateEvent(model: model)),
-                    () => _blocInstance(context).add(AbstractFormSubmitEvent()),
-                  ) ??
                   builder?.call(
                     context,
                     state,

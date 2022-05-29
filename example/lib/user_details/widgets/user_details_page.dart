@@ -24,13 +24,13 @@ class UserDetailsPage extends StatelessWidget {
         create: (context) => UserDetailsBloc(
           usersRepository: context.read<IUsersRepository>(),
         ),
-        child: AbstractItemConsumer<UserDetailsBloc, UserDetailsState>(
+        child: AbstractItemBuilder<UserDetailsBloc, UserDetailsState>(
           onInit: (context) => context.read<UserDetailsBloc>().add(
                 UserDetailsLoadEvent(
                   searchModel: UserDetailsSearchModel(id: id),
                 ),
               ),
-          builder: (userDetailsState) {
+          builder: (context, userDetailsState) {
             return Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
