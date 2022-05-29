@@ -13,8 +13,6 @@ class AbstractFormConsumer<
   final bool skipInitialOnInit;
   final Widget Function(BuildContext context, void Function() onInit, S state)?
       errorBuilder;
-  final Widget Function(BuildContext context, void Function() onInit, S state)?
-      noDataBuilder;
   final bool Function(BuildContext context, S state)? isLoading;
   final bool Function(BuildContext context, S state)? shouldAutovalidate;
   final bool Function(BuildContext context, S state)? isError;
@@ -38,7 +36,6 @@ class AbstractFormConsumer<
     this.onInit,
     this.skipInitialOnInit = false,
     this.errorBuilder,
-    this.noDataBuilder,
     this.isLoading,
     this.shouldAutovalidate,
     this.isError,
@@ -57,9 +54,6 @@ class AbstractFormConsumer<
   bool _isError(BuildContext context, S state) =>
       isError?.call(context, state) ??
       state.formResultStatus == FormResultStatus.error;
-  bool _hasData(BuildContext context, S state) =>
-      hasData?.call(context, state) ?? state.model != null;
-  bool _isEmpty(BuildContext context, S state) => !_hasData(context, state);
   bool _shouldAutovalidate(BuildContext context, S state) =>
       shouldAutovalidate?.call(context, state) ?? state.autovalidate;
 
@@ -112,15 +106,6 @@ class AbstractFormConsumer<
                       ?.abstractFormErrorBuilder
                       ?.call(() => _onInit(context)) ??
                   AbstractFormErrorContainer(onInit: () => _onInit(context));
-            }
-
-            if (_isEmpty(context, state)) {
-              return noDataBuilder?.call(
-                      context, () => _onInit(context), state) ??
-                  AbstractConfiguration.of(context)
-                      ?.abstractFormNoDataBuilder
-                      ?.call(() => _onInit(context)) ??
-                  AbstractFormNoDataContainer(onInit: () => _onInit(context));
             }
 
             return Form(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class AbstractConfiguration extends InheritedWidget {
   final Widget Function(void Function() onInit)? abstractFormErrorBuilder;
-  final Widget Function(void Function() onInit)? abstractFormNoDataBuilder;
 
   final Widget Function(void Function() onInit)? abstractItemErrorBuilder;
   final Widget Function(void Function() onInit)? abstractItemNoDataBuilder;
@@ -14,7 +13,6 @@ class AbstractConfiguration extends InheritedWidget {
     Key? key,
     required Widget child,
     this.abstractFormErrorBuilder,
-    this.abstractFormNoDataBuilder,
     this.abstractItemErrorBuilder,
     this.abstractItemNoDataBuilder,
     this.abstractListErrorBuilder,

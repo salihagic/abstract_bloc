@@ -1,12 +1,12 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 
-abstract class AbstractFormBloc<S extends AbstractFormState>
+abstract class AbstractFormBloc<S extends AbstractFormBasicState>
     extends Bloc<AbstractFormEvent, S> {
-  AbstractFormBloc(
-    S initialState,
-    ModelValidator modelValidator,
-  ) : super(initialState) {
-    state.modelValidator = modelValidator;
+  AbstractFormBloc(S initialState, [ModelValidator? modelValidator])
+      : super(initialState) {
+    if (state is AbstractFormState) {
+      (state as AbstractFormState).modelValidator = modelValidator;
+    }
 
     on(
       (AbstractFormEvent event, Emitter<S> emit) async {
@@ -34,8 +34,8 @@ abstract class AbstractFormBloc<S extends AbstractFormState>
     if (result.isError) {
       _changeStatus(emit, FormResultStatus.error);
     } else {
-      if (result.hasData) {
-        state.model = result.data;
+      if (result.hasData && state is AbstractFormState) {
+        (state as AbstractFormState).model = result.data;
       }
 
       _changeStatus(emit, FormResultStatus.initialized);
@@ -43,31 +43,43 @@ abstract class AbstractFormBloc<S extends AbstractFormState>
   }
 
   Future<void> update(AbstractFormUpdateEvent event, Emitter<S> emit) async {
-    state.model = event.model;
+    if (state is AbstractFormState) {
+      (state as AbstractFormState).model = event.model;
+    }
     emit(state.copyWith() as S);
   }
 
   Future<Result> onSubmit(model) => throw Exception('onSubmit Not implemented');
 
   Future<void> submit(AbstractFormSubmitEvent event, Emitter<S> emit) async {
-    if (state.modelValidator?.validate(state.model) ?? false) {
+    if (state is AbstractFormState &&
+        !((state as AbstractFormState)
+                .modelValidator
+                ?.validate((state as AbstractFormState).model) ??
+            false)) {
+      (state as AbstractFormState).autovalidate = true;
+      _changeStatus(emit, FormResultStatus.validationError);
+      _changeStatus(emit, FormResultStatus.initialized);
+    } else {
       state.formResultStatus = FormResultStatus.submitting;
       emit(state.copyWith());
 
-      final result = await onSubmit(state.model);
+      final model = state is AbstractFormState
+          ? (state as AbstractFormState).model
+          : null;
+
+      final result = await onSubmit(model);
 
       if (result.isSuccess) {
         _changeStatus(emit, FormResultStatus.submittingSuccess);
         add(AbstractFormInitEvent());
       } else {
-        state.autovalidate = true;
+        if (state is AbstractFormState) {
+          (state as AbstractFormState).autovalidate = true;
+        }
         _changeStatus(emit, FormResultStatus.submittingError);
         _changeStatus(emit, FormResultStatus.initialized);
       }
-    } else {
-      state.autovalidate = true;
-      _changeStatus(emit, FormResultStatus.validationError);
-      _changeStatus(emit, FormResultStatus.initialized);
     }
   }
 

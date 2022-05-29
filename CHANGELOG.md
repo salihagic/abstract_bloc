@@ -1,3 +1,6 @@
+## [0.3.1] 
+* Separated basic state from advanced
+
 ## [0.3.0] 
 * Builders and Consumers added
 

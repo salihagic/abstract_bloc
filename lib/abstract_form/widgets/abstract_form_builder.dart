@@ -3,18 +3,19 @@ import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:flutter/material.dart';
 
 class AbstractFormBuilder<B extends AbstractFormBloc<S>,
-    S extends AbstractFormState> extends StatelessWidget {
+    S extends AbstractFormBasicState> extends StatelessWidget {
   final void Function(BuildContext context)? onInit;
   final bool skipInitialOnInit;
   final Widget Function(BuildContext context, void Function() onInit, S state)?
       errorBuilder;
-  final Widget Function(BuildContext context, void Function() onInit, S state)?
-      noDataBuilder;
   final bool Function(BuildContext context, S state)? isLoading;
   final bool Function(BuildContext context, S state)? shouldAutovalidate;
   final bool Function(BuildContext context, S state)? isError;
   final bool Function(BuildContext context, S state)? hasData;
   final Widget? child;
+  final Widget Function(
+          BuildContext context, S state, B bloc, void Function() submit)?
+      extendedBuilder;
   final Widget Function(BuildContext context, S state)? builder;
   final void Function(BuildContext context, S state)? listener;
   final void Function(BuildContext context, S state)? onSuccess;
@@ -25,12 +26,12 @@ class AbstractFormBuilder<B extends AbstractFormBloc<S>,
     this.onInit,
     this.skipInitialOnInit = false,
     this.errorBuilder,
-    this.noDataBuilder,
     this.isLoading,
     this.shouldAutovalidate,
     this.isError,
     this.hasData,
     this.child,
+    this.extendedBuilder,
     this.builder,
     this.listener,
     this.onSuccess,
@@ -43,11 +44,6 @@ class AbstractFormBuilder<B extends AbstractFormBloc<S>,
   bool _isError(BuildContext context, S state) =>
       isError?.call(context, state) ??
       state.formResultStatus == FormResultStatus.error;
-  bool _hasData(BuildContext context, S state) =>
-      hasData?.call(context, state) ?? state.model != null;
-  bool _isEmpty(BuildContext context, S state) => !_hasData(context, state);
-  bool _shouldAutovalidate(BuildContext context, S state) =>
-      shouldAutovalidate?.call(context, state) ?? state.autovalidate;
 
   B _blocInstance(BuildContext context) {
     try {
@@ -96,26 +92,18 @@ class AbstractFormBuilder<B extends AbstractFormBloc<S>,
                   AbstractFormErrorContainer(onInit: () => _onInit(context));
             }
 
-            if (_isEmpty(context, state)) {
-              return noDataBuilder?.call(
-                      context, () => _onInit(context), state) ??
-                  AbstractConfiguration.of(context)
-                      ?.abstractFormNoDataBuilder
-                      ?.call(() => _onInit(context)) ??
-                  AbstractFormNoDataContainer(onInit: () => _onInit(context));
-            }
-
-            return Form(
-              autovalidateMode: _shouldAutovalidate(context, state)
-                  ? AutovalidateMode.always
-                  : AutovalidateMode.disabled,
-              child: child ??
-                  builder?.call(
-                    context,
-                    state,
-                  ) ??
-                  Container(),
-            );
+            return child ??
+                extendedBuilder?.call(
+                  context,
+                  state,
+                  _blocInstance(context),
+                  () => _blocInstance(context).add(AbstractFormSubmitEvent()),
+                ) ??
+                builder?.call(
+                  context,
+                  state,
+                ) ??
+                Container();
           },
         ),
       ),
