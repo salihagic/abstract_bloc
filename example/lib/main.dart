@@ -1,7 +1,9 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
+import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:example/repositories/users_repository.dart';
 import 'package:example/users/widgets/users_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,8 +35,68 @@ Future main() async {
           //so we don't have to specify it every time or have to
           //use the default one
           return AbstractConfiguration(
+            loaderBuilder: (context) => const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+              ),
+            ),
+            smallLoaderBuilder: (context) => ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: Container(
+                color: Colors.white.withOpacity(0.5),
+                padding: const EdgeInsets.all(14.0),
+                child: const SizedBox(
+                  height: 12,
+                  width: 12,
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                  ),
+                ),
+              ),
+            ),
+            cachedDataWarningIconBuilder: (context, onTap) => InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(50),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: Container(
+                  color: Colors.white.withOpacity(0.5),
+                  padding: const EdgeInsets.all(8.0),
+                  child: const Icon(
+                    Icons.info_outline,
+                    color: Color(0xFFC42A03),
+                  ),
+                ),
+              ),
+            ),
+            cachedDataWarningDialogBuilder: (context, onReload) => InfoDialog(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Text(
+                    'Showing cached data',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                  SizedBox(height: 15),
+                  Text(
+                    'There was an error, please try again',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+              showCancelButton: true,
+              onApplyText: 'Reload',
+              onCancel: () {
+                Navigator.of(context).pop();
+              },
+              onApply: () {
+                onReload?.call(context);
+                Navigator.of(context).pop();
+              },
+            ),
             //This is the default implementation, you can provide your own or just ignore this parameter
-            abstractItemErrorBuilder: (onInit) => Center(
+            abstractItemErrorBuilder: (context, onInit) => Center(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
@@ -55,7 +117,7 @@ Future main() async {
               ),
             ),
             //This is the default implementation, you can provide your own or just ignore this parameter
-            abstractItemNoDataBuilder: (onInit) => Center(
+            abstractItemNoDataBuilder: (context, onInit) => Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -74,7 +136,7 @@ Future main() async {
               ),
             ),
             //This is the default implementation, you can provide your own or just ignore this parameter
-            abstractListErrorBuilder: (onInit) => Center(
+            abstractListErrorBuilder: (context, onInit) => Center(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
@@ -95,7 +157,7 @@ Future main() async {
               ),
             ),
             //This is the default implementation, you can provide your own or just ignore this parameter
-            abstractListNoDataBuilder: (onInit) => Center(
+            abstractListNoDataBuilder: (context, onInit) => Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -113,7 +175,32 @@ Future main() async {
                 ],
               ),
             ),
-            child: child!,
+            child: RefreshConfiguration(
+              headerBuilder: () => const ClassicHeader(
+                refreshingIcon: Loader.sm(),
+                completeText: 'Successfully refreshed',
+                refreshingText: 'Refreshing',
+                releaseText: 'Release to refresh',
+                idleText: 'Pull down to refresh',
+              ),
+              footerBuilder: () => ClassicFooter(
+                loadingIcon: const Loader.sm(),
+                canLoadingText: 'Release to load more',
+                loadingText: 'Loading',
+                idleText: 'Pull to load more',
+                idleIcon: Container(),
+              ),
+              headerTriggerDistance: 80.0,
+              springDescription: const SpringDescription(
+                  stiffness: 170, damping: 16, mass: 1.9),
+              maxOverScrollExtent: 100,
+              maxUnderScrollExtent: 0,
+              enableScrollWhenRefreshCompleted: true,
+              enableLoadingWhenFailed: true,
+              hideFooterWhenNotFull: false,
+              enableBallisticLoad: true,
+              child: child!,
+            ),
           );
         },
         home: const HomePage(),

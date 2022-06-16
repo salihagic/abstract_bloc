@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:flutter/material.dart';
 
 class InfoDialog extends StatelessWidget {
@@ -13,6 +14,9 @@ class InfoDialog extends StatelessWidget {
   final Color? onApplyTextColor;
   final bool showCancelButton;
   final bool showApplyButton;
+  final double borderRadius;
+  final Color backgroundColor;
+  final EdgeInsetsGeometry contentPadding;
 
   InfoDialog({
     this.child,
@@ -25,21 +29,26 @@ class InfoDialog extends StatelessWidget {
     this.onApplyTextColor,
     this.showCancelButton = true,
     this.showApplyButton = true,
+    this.borderRadius = 10.0,
+    this.backgroundColor = Colors.white,
+    this.contentPadding = const EdgeInsets.symmetric(vertical: 25),
   });
 
   @override
   Widget build(BuildContext context) {
+    final abstractConfiguration = AbstractConfiguration.of(context);
+
     return Dialog(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(borderRadius),
       ),
       elevation: 0,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 25),
+            padding: contentPadding,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
@@ -72,17 +81,19 @@ class InfoDialog extends StatelessWidget {
                         onTap: () {
                           if (onCancel != null) {
                             onCancel!();
+                          } else {
+                            Navigator.of(context).pop();
                           }
-
-                          Navigator.of(context).pop();
                         },
-                        borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(10)),
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(borderRadius)),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 15),
                           child: Text(
-                            onCancelText ?? 'Cancel',
+                            onCancelText ??
+                                abstractConfiguration?.translations.okay ??
+                                'Cancel',
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: onCancelTextColor,
@@ -98,12 +109,12 @@ class InfoDialog extends StatelessWidget {
                         onTap: () async {
                           if (onApply != null) {
                             await onApply!();
+                          } else {
+                            Navigator.of(context).pop();
                           }
-
-                          Navigator.of(context).pop();
                         },
-                        borderRadius: const BorderRadius.only(
-                            bottomRight: Radius.circular(10)),
+                        borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(borderRadius)),
                         child: Container(
                           decoration: const BoxDecoration(
                             border: Border(
@@ -113,7 +124,9 @@ class InfoDialog extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 15),
                           child: Text(
-                            onApplyText ?? 'Okay',
+                            onApplyText ??
+                                abstractConfiguration?.translations.okay ??
+                                'Okay',
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: onApplyTextColor,

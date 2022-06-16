@@ -58,6 +58,8 @@ class AbstractItemConsumer<B extends AbstractItemBloc<S>,
 
   @override
   Widget build(BuildContext context) {
+    final abstractConfiguration = AbstractConfiguration.of(context);
+
     return StatefullBuilder(
       initState: (context) {
         if (!skipInitialOnInit) {
@@ -71,7 +73,8 @@ class AbstractItemConsumer<B extends AbstractItemBloc<S>,
           },
           builder: (context, state) {
             if (_isLoading(context, state) && _isEmpty(context, state)) {
-              return const Loader();
+              return abstractConfiguration?.loaderBuilder?.call(context) ??
+                  const Loader();
             }
 
             //There is no network data and nothing is fetched from the cache and network error occured
@@ -81,14 +84,14 @@ class AbstractItemConsumer<B extends AbstractItemBloc<S>,
                         context, () => _onInit(context), state) ??
                     AbstractConfiguration.of(context)
                         ?.abstractItemErrorBuilder
-                        ?.call(() => _onInit(context)) ??
+                        ?.call(context, () => _onInit(context)) ??
                     AbstractItemErrorContainer(onInit: () => _onInit(context));
               } else {
                 return noDataBuilder?.call(
                         context, () => _onInit(context), state) ??
                     AbstractConfiguration.of(context)
                         ?.abstractItemNoDataBuilder
-                        ?.call(() => _onInit(context)) ??
+                        ?.call(context, () => _onInit(context)) ??
                     AbstractItemNoDataContainer(onInit: () => _onInit(context));
               }
             }

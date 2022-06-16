@@ -76,6 +76,8 @@ class AbstractFormConsumer<
 
   @override
   Widget build(BuildContext context) {
+    final abstractConfiguration = AbstractConfiguration.of(context);
+
     return StatefullBuilder(
       initState: (context) {
         if (!skipInitialOnInit) {
@@ -96,7 +98,8 @@ class AbstractFormConsumer<
           },
           builder: (context, state) {
             if (_isLoading(context, state)) {
-              return const Loader();
+              return abstractConfiguration?.loaderBuilder?.call(context) ??
+                  const Loader();
             }
 
             if (_isError(context, state)) {
@@ -104,7 +107,7 @@ class AbstractFormConsumer<
                       context, () => _onInit(context), state) ??
                   AbstractConfiguration.of(context)
                       ?.abstractFormErrorBuilder
-                      ?.call(() => _onInit(context)) ??
+                      ?.call(context, () => _onInit(context)) ??
                   AbstractFormErrorContainer(onInit: () => _onInit(context));
             }
 

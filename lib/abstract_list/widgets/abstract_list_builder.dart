@@ -2,7 +2,6 @@ import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/extensions/_all.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:flutter/material.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
     extends StatelessWidget {
@@ -67,8 +66,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
       isError?.call(context, state) ?? state.resultStatus == ResultStatus.error;
   int _itemCount(BuildContext context, S state) =>
       itemCount?.call(context, state) ?? state.items.count;
-  bool _enableRefresh(BuildContext context, S state) =>
-      enableRefresh && !_isError(context, state);
+  bool _enableRefresh(BuildContext context, S state) => enableRefresh;
   bool _enableLoadMore(BuildContext context, S state) =>
       enableLoadMore &&
       _itemCount(context, state) > 0 &&
@@ -102,6 +100,8 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
 
   @override
   Widget build(BuildContext context) {
+    final abstractConfiguration = AbstractConfiguration.of(context);
+
     return StatefullBuilder(
       initState: (context) {
         if (!skipInitialOnInit) {
@@ -118,25 +118,24 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
           builder: (context, state) {
             final child = () {
               if (_showBigLoader(context, state)) {
-                return const Loader();
+                return abstractConfiguration?.loaderBuilder?.call(context) ??
+                    const Loader();
               }
 
               //There is no network data and nothing is fetched from the cache and network error occured
               if (_showEmptyContainer(context, state)) {
                 return noDataBuilder?.call(
                         context, () => _onInit(context), state) ??
-                    AbstractConfiguration.of(context)
-                        ?.abstractListNoDataBuilder
-                        ?.call(() => _onInit(context)) ??
+                    abstractConfiguration?.abstractListNoDataBuilder
+                        ?.call(context, () => _onInit(context)) ??
                     AbstractListNoDataContainer(onInit: () => _onInit(context));
               }
 
               if (_showErrorContainer(context, state)) {
                 return errorBuilder?.call(
                         context, () => _onInit(context), state) ??
-                    AbstractConfiguration.of(context)
-                        ?.abstractListErrorBuilder
-                        ?.call(() => _onInit(context)) ??
+                    abstractConfiguration?.abstractListErrorBuilder
+                        ?.call(context, () => _onInit(context)) ??
                     AbstractLisErrorContainer(onInit: () => _onInit(context));
               }
 
@@ -182,16 +181,16 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
 
                   return child;
                 }(),
-                Column(
-                  children: [
-                    LoadInfoIcon(
-                      isLoading: !_showBigLoader(context, state) &&
-                          _isLoading(context, state) &&
-                          _hasData(context, state),
-                      isCached: _isCached(context, state),
-                      onReload: (_) => _onInit(context),
-                    ),
-                  ],
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: LoadInfoIcon(
+                    isLoading: !_showBigLoader(context, state) &&
+                        _isLoading(context, state) &&
+                        _hasData(context, state),
+                    isCached: _isCached(context, state),
+                    onReload: (_) => _onInit(context),
+                  ),
                 ),
               ],
             );

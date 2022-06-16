@@ -60,6 +60,8 @@ class AbstractFormBuilder<B extends AbstractFormBloc<S>,
 
   @override
   Widget build(BuildContext context) {
+    final abstractConfiguration = AbstractConfiguration.of(context);
+
     return StatefullBuilder(
       initState: (context) {
         if (!skipInitialOnInit) {
@@ -80,7 +82,8 @@ class AbstractFormBuilder<B extends AbstractFormBloc<S>,
           },
           builder: (context, state) {
             if (_isLoading(context, state)) {
-              return const Loader();
+              return abstractConfiguration?.loaderBuilder?.call(context) ??
+                  const Loader();
             }
 
             if (_isError(context, state)) {
@@ -88,7 +91,7 @@ class AbstractFormBuilder<B extends AbstractFormBloc<S>,
                       context, () => _onInit(context), state) ??
                   AbstractConfiguration.of(context)
                       ?.abstractFormErrorBuilder
-                      ?.call(() => _onInit(context)) ??
+                      ?.call(context, () => _onInit(context)) ??
                   AbstractFormErrorContainer(onInit: () => _onInit(context));
             }
 

@@ -1,3 +1,6 @@
+## [0.3.4] 
+* Override loaders and add translations
+
 ## [0.3.3] 
 * onSuccess fix
 

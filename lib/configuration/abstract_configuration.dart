@@ -1,23 +1,47 @@
+import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:flutter/material.dart';
 
 class AbstractConfiguration extends InheritedWidget {
-  final Widget Function(void Function() onInit)? abstractFormErrorBuilder;
+  final Widget Function(BuildContext context)? loaderBuilder;
+  final Widget Function(BuildContext context)? smallLoaderBuilder;
+  final Widget Function(BuildContext context, void Function() onTap)?
+      cachedDataWarningIconBuilder;
+  final Widget Function(
+          BuildContext context, void Function(BuildContext context)? onReload)?
+      cachedDataWarningDialogBuilder;
 
-  final Widget Function(void Function() onInit)? abstractItemErrorBuilder;
-  final Widget Function(void Function() onInit)? abstractItemNoDataBuilder;
+  final Widget Function(BuildContext context, void Function() onInit)?
+      abstractFormErrorBuilder;
 
-  final Widget Function(void Function() onInit)? abstractListErrorBuilder;
-  final Widget Function(void Function() onInit)? abstractListNoDataBuilder;
+  final Widget Function(BuildContext context, void Function() onInit)?
+      abstractItemErrorBuilder;
+  final Widget Function(BuildContext context, void Function() onInit)?
+      abstractItemNoDataBuilder;
+
+  final Widget Function(BuildContext context, void Function() onInit)?
+      abstractListErrorBuilder;
+  final Widget Function(BuildContext context, void Function() onInit)?
+      abstractListNoDataBuilder;
+
+  final AbstractTranslations translations;
 
   AbstractConfiguration({
     Key? key,
     required Widget child,
+    this.loaderBuilder,
+    this.smallLoaderBuilder,
+    this.cachedDataWarningIconBuilder,
+    this.cachedDataWarningDialogBuilder,
     this.abstractFormErrorBuilder,
     this.abstractItemErrorBuilder,
     this.abstractItemNoDataBuilder,
     this.abstractListErrorBuilder,
     this.abstractListNoDataBuilder,
-  }) : super(key: key, child: child);
+    this.translations = const AbstractTranslations(),
+  }) : super(
+          key: key,
+          child: child,
+        );
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
