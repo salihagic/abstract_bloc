@@ -1,3 +1,6 @@
+## [0.3.5] 
+* Licence update
+
 ## [0.3.4] 
 * Override loaders and add translations
 

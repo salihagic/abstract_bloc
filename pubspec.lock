@@ -379,7 +379,7 @@ packages:
       name: rest_api_client
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.2"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -405,7 +405,7 @@ packages:
       name: storage_repository
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.8"
+    version: "1.1.9"
   stream_channel:
     dependency: transitive
     description:
