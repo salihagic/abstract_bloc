@@ -4,24 +4,18 @@ import 'package:flutter/material.dart';
 class AbstractConfiguration extends InheritedWidget {
   final Widget Function(BuildContext context)? loaderBuilder;
   final Widget Function(BuildContext context)? smallLoaderBuilder;
-  final Widget Function(BuildContext context, void Function() onTap)?
-      cachedDataWarningIconBuilder;
-  final Widget Function(
-          BuildContext context, void Function(BuildContext context)? onReload)?
-      cachedDataWarningDialogBuilder;
+  final Widget Function(BuildContext context, void Function() onTap)? cachedDataWarningIconBuilder;
+  final Widget Function(BuildContext context, void Function(BuildContext context)? onReload)? cachedDataWarningDialogBuilder;
 
-  final Widget Function(BuildContext context, void Function() onInit)?
-      abstractFormErrorBuilder;
+  final Widget Function(BuildContext context, void Function() onInit)? abstractFormErrorBuilder;
 
-  final Widget Function(BuildContext context, void Function() onInit)?
-      abstractItemErrorBuilder;
-  final Widget Function(BuildContext context, void Function() onInit)?
-      abstractItemNoDataBuilder;
+  final Widget Function(BuildContext context, void Function() onInit)? abstractItemErrorBuilder;
+  final Widget Function(BuildContext context, void Function() onInit)? abstractItemNoDataBuilder;
 
-  final Widget Function(BuildContext context, void Function() onInit)?
-      abstractListErrorBuilder;
-  final Widget Function(BuildContext context, void Function() onInit)?
-      abstractListNoDataBuilder;
+  final Widget Function(BuildContext context, void Function() onInit)? abstractListErrorBuilder;
+  final Widget Function(BuildContext context, void Function() onInit)? abstractListNoDataBuilder;
+  final Widget Function(BuildContext context, void Function() onInit)? abstractGridErrorBuilder;
+  final Widget Function(BuildContext context, void Function() onInit)? abstractGridNoDataBuilder;
 
   final AbstractTranslations translations;
 
@@ -37,6 +31,8 @@ class AbstractConfiguration extends InheritedWidget {
     this.abstractItemNoDataBuilder,
     this.abstractListErrorBuilder,
     this.abstractListNoDataBuilder,
+    this.abstractGridErrorBuilder,
+    this.abstractGridNoDataBuilder,
     this.translations = const AbstractTranslations(),
   }) : super(
           key: key,
