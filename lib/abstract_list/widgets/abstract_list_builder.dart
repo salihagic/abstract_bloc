@@ -10,6 +10,11 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
   final ScrollPhysics? physics;
   final bool enableRefresh;
   final bool enableLoadMore;
+  final int columns;
+  final double mainAxisSpacing;
+  final double crossAxisSpacing;
+  final double childAspectRatio;
+  final double? mainAxisExtent;
   final Widget? header;
   final Widget Function(BuildContext context, S state)? headerBuilder;
   final Widget Function(BuildContext context, S state, int index)? itemBuilder;
@@ -33,6 +38,11 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
 
   AbstractListBuilder({
     Key? key,
+    this.columns = 1,
+    this.mainAxisSpacing = 0.0,
+    this.crossAxisSpacing = 0.0,
+    this.childAspectRatio = 1.0,
+    this.mainAxisExtent,
     this.scrollDirection = Axis.vertical,
     this.physics,
     this.enableRefresh = true,
@@ -144,17 +154,34 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
               }
 
               //Here is memory, cached or network data
-              return ListView.separated(
+              if (columns <= 1) {
+                return ListView.separated(
+                  shrinkWrap: true,
+                  scrollDirection: scrollDirection,
+                  physics: physics,
+                  itemCount: _itemCount(context, state),
+                  itemBuilder: (context, index) =>
+                      itemBuilder?.call(context, state, index) ?? Container(),
+                  separatorBuilder: (context, index) =>
+                      separatorBuilder?.call(context, state, index) ??
+                      Container(),
+                );
+              }
+
+              return GridView.builder(
                 shrinkWrap: true,
                 scrollDirection: scrollDirection,
                 physics: physics,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: columns,
+                  mainAxisSpacing: mainAxisSpacing,
+                  crossAxisSpacing: crossAxisSpacing,
+                  childAspectRatio: childAspectRatio,
+                  mainAxisExtent: mainAxisExtent,
+                ),
                 itemCount: _itemCount(context, state),
-                itemBuilder: (context, index) => itemBuilder != null
-                    ? itemBuilder!(context, state, index)
-                    : Container(),
-                separatorBuilder: (context, index) =>
-                    separatorBuilder?.call(context, state, index) ??
-                    Container(),
+                itemBuilder: (context, index) =>
+                    itemBuilder?.call(context, state, index) ?? Container(),
               );
             }();
 

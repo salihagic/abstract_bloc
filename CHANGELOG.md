@@ -1,3 +1,6 @@
+## [0.3.6] 
+* AbstractListBuilder multiple columns prop added
+
 ## [0.3.5] 
 * Licence update
 

@@ -19,6 +19,7 @@ class UsersList extends StatelessWidget {
         onInit: (context) => context.read<UsersBloc>().add(UsersLoadEvent()),
         itemBuilder: (context, usersState, index) =>
             UserCard(user: usersState.items[index]),
+        columns: 1,
       ),
     );
   }
