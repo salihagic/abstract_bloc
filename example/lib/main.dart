@@ -175,6 +175,13 @@ Future main() async {
                 ],
               ),
             ),
+            paginationConfiguration: PaginationConfiguration(
+              page: 1,
+              pageSize: 10,
+              toJson: (page, pageSize) => {
+                'page': page,
+              },
+            ),
             child: RefreshConfiguration(
               headerBuilder: () => const ClassicHeader(
                 refreshingIcon: Loader.sm(),
