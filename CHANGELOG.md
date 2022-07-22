@@ -1,3 +1,6 @@
+## [0.3.9] 
+* Action line color
+
 ## [0.3.8] 
 * InfoDialog background color
 

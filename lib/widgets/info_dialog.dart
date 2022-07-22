@@ -16,6 +16,7 @@ class InfoDialog extends StatelessWidget {
   final bool showApplyButton;
   final double borderRadius;
   final Color backgroundColor;
+  final Color actionLineColor;
   final EdgeInsetsGeometry contentPadding;
 
   InfoDialog({
@@ -31,6 +32,7 @@ class InfoDialog extends StatelessWidget {
     this.showApplyButton = true,
     this.borderRadius = 10.0,
     this.backgroundColor = Colors.white,
+    this.actionLineColor = const Color(0xFFF0F2F4),
     this.contentPadding = const EdgeInsets.symmetric(vertical: 25),
   });
 
@@ -116,9 +118,9 @@ class InfoDialog extends StatelessWidget {
                         borderRadius: BorderRadius.only(
                             bottomRight: Radius.circular(borderRadius)),
                         child: Container(
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             border: Border(
-                              left: BorderSide(color: Color(0xFFF0F2F4)),
+                              left: BorderSide(color: actionLineColor),
                             ),
                           ),
                           padding: const EdgeInsets.symmetric(
