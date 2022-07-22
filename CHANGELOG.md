@@ -1,5 +1,8 @@
-## [0.3.7] 
+## [0.3.8] 
 * InfoDialog background color
+
+## [0.3.7] 
+* Pagination configuration added
 
 ## [0.3.6] 
 * AbstractListBuilder multiple columns prop added

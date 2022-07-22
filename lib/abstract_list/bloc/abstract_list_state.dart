@@ -37,9 +37,8 @@ abstract class AbstractListFilterableState<TSearchModel, TListItem>
   dynamic copyWith() => this;
 }
 
-abstract class AbstractListFilterablePaginatedState<
-    TSearchModel extends Pagination,
-    TListItem> extends AbstractListFilterableState<TSearchModel, TListItem> {
+abstract class AbstractListFilterablePaginatedState<TSearchModel, TListItem>
+    extends AbstractListFilterableState<TSearchModel, TListItem> {
   bool hasMoreData;
 
   AbstractListFilterablePaginatedState({

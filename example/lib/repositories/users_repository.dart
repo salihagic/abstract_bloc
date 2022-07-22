@@ -20,7 +20,7 @@ class UsersRepository implements IUsersRepository {
   Stream<Result<List<User>>> get(UsersSearchModel model) {
     return restApiClient.getStreamed(
       '/users',
-      queryParameters: model.toMap(),
+      queryParameters: model.toJson(),
       parser: (data) => data.map<User>((map) => User.fromMap(map)).toList(),
     );
   }

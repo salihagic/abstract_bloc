@@ -38,10 +38,15 @@ class AbstractConfiguration extends InheritedWidget {
     this.abstractListErrorBuilder,
     this.abstractListNoDataBuilder,
     this.translations = const AbstractTranslations(),
+    PaginationConfiguration? paginationConfiguration,
   }) : super(
           key: key,
           child: child,
-        );
+        ) {
+    if (paginationConfiguration != null) {
+      Pagination.configuration = paginationConfiguration;
+    }
+  }
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
