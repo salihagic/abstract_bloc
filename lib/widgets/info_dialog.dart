@@ -50,7 +50,7 @@ class InfoDialog extends StatelessWidget {
           Container(
             padding: contentPadding,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: backgroundColor,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Row(

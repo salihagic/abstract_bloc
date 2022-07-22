@@ -1,3 +1,6 @@
+## [0.3.7] 
+* InfoDialog background color
+
 ## [0.3.6] 
 * AbstractListBuilder multiple columns prop added
 
