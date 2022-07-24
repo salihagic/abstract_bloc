@@ -5,7 +5,7 @@ import 'package:example/models/user_details_search_model.dart';
 import 'package:example/models/users_search_model.dart';
 
 abstract class IUsersRepository {
-  Stream<Result<List<User>>> get(UsersSearchModel model);
+  Stream<Result<GridResult<User>>> get(UsersSearchModel model);
   Stream<Result<UserDetails>> getDetails(UserDetailsSearchModel model);
   Future<Result<UserDetails>> getDetailsOnlyNetwork(
       UserDetailsSearchModel model);
@@ -17,11 +17,13 @@ class UsersRepository implements IUsersRepository {
   UsersRepository({required this.restApiClient});
 
   @override
-  Stream<Result<List<User>>> get(UsersSearchModel model) {
+  Stream<Result<GridResult<User>>> get(UsersSearchModel model) {
     return restApiClient.getStreamed(
       '/users',
       queryParameters: model.toJson(),
-      parser: (data) => data.map<User>((map) => User.fromMap(map)).toList(),
+      parser: (data) => GridResult(
+        items: data.map<User>((map) => User.fromMap(map)).toList(),
+      ),
     );
   }
 

@@ -75,13 +75,14 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
   bool _isError(BuildContext context, S state) =>
       isError?.call(context, state) ?? state.resultStatus == ResultStatus.error;
   int _itemCount(BuildContext context, S state) =>
-      itemCount?.call(context, state) ?? state.items.count;
+      itemCount?.call(context, state) ?? state.result.items.count;
   bool _enableRefresh(BuildContext context, S state) => enableRefresh;
   bool _enableLoadMore(BuildContext context, S state) =>
       enableLoadMore &&
       _itemCount(context, state) > 0 &&
       !_isError(context, state) &&
-      (state is! AbstractListFilterablePaginatedState || state.hasMoreData);
+      (state is! AbstractListFilterablePaginatedState ||
+          state.result.hasMoreItems);
   bool _useSmartRefresher() => enableRefresh || enableLoadMore;
   bool _hasData(BuildContext context, S state) =>
       _itemCount(context, state) > 0;

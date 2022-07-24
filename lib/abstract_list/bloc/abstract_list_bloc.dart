@@ -7,107 +7,40 @@ abstract class AbstractListBloc<S extends AbstractListState>
     on(
       (AbstractListEvent event, Emitter<S> emit) async {
         if (event is AbstractListLoadEvent) {
-          await _load(event, emit);
+          await load(event, emit);
         } else if (event is AbstractListRefreshEvent) {
-          await _refresh(event, emit);
+          await refresh(event, emit);
         } else if (event is AbstractListLoadMoreEvent) {
-          await _loadMore(event, emit);
+          await loadMore(event, emit);
         }
       },
     );
   }
 
-  Future<void> onBeforeLoad(event, Emitter<S> emit) async {}
+  AbstractListState initialState();
 
   Stream<Result> resolveStreamData() async* {
     throw UnimplementedError();
   }
 
-  AbstractListState initialState();
-
   Future<Result> resolveData() async => throw UnimplementedError();
 
-  S convertResultToStateAfterLoadAndRefresh(result) {
-    state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
+  Future<void> onBeforeLoad(event, Emitter<S> emit) async {}
 
-    if (result.isSuccess) {
-      if (result.hasData) {
-        state.items = result.data;
-      } else {
-        state.items.clear();
-      }
-    }
+  Future<void> onBeforeRefresh(event, Emitter<S> emit) async {}
 
-    state.cachedItems.clear();
-    if (result is CacheResult && result.hasData) {
-      state.cachedItems.addAll(result.data);
-    }
+  Future<void> onBeforeLoadMore(event, Emitter<S> emit) async {}
 
-    _recalculateItems(result);
+  Future<void> onAfterLoad(event, Emitter<S> emit, Result result) async {}
 
-    return state.copyWith();
-  }
+  Future<void> onAfterRefresh(event, Emitter<S> emit, Result result) async {}
 
-  S convertResultToStateAfterLoadMore(result) {
-    // Cached with data
-    if (result is CacheResult && result.hasData) {
-      state.items.addAll(result.data!);
-      state.cachedItems.addAll(result.data);
-      state.resultStatus = ResultStatus.loadedCached;
+  Future<void> onAfterLoadMore(event, Emitter<S> emit, Result result) async {}
 
-      return state.copyWith();
-    }
-
-    _recalculateItems(result);
-
-    //Network without data
-    if (result is! CacheResult && !result.hasData) {
-      if (state is AbstractListFilterablePaginatedState) {
-        (state as AbstractListFilterablePaginatedState).searchModel.decrement();
-
-        if (state.resultStatus == ResultStatus.loadedCached) {
-          state.items.removeLastItems(state.cachedItems.count);
-          state.cachedItems.clear();
-        }
-
-        if (state.resultStatus != ResultStatus.loadedCached) {
-          state.resultStatus = ResultStatus.loaded;
-        }
-      }
-    }
-
-    //Network with data
-    if (result is! CacheResult && result.hasData) {
-      if (state.resultStatus == ResultStatus.loadedCached) {
-        state.items.removeLastItems(state.cachedItems.count);
-        state.cachedItems.clear();
-      }
-
-      state.items.addAll(result.data!);
-      state.resultStatus = ResultStatus.loaded;
-
-      return state.copyWith();
-    }
-
-    return state.copyWith();
-  }
-
-  void _recalculateItems(Result result) {
-    if (result is! CacheResult &&
-        state is AbstractListFilterablePaginatedState) {
-      (state as AbstractListFilterablePaginatedState).hasMoreData =
-          ((result.data ?? []) as List).count >=
-              (state as AbstractListFilterablePaginatedState).searchModel.take;
-    }
-  }
-
-  Future<void> _load(AbstractListLoadEvent event, Emitter<S> emit) async {
+  Future<void> load(AbstractListLoadEvent event, Emitter<S> emit) async {
     if (state is AbstractListFilterableState) {
       (state as AbstractListFilterableState).searchModel = event.searchModel ??
           (initialState() as AbstractListFilterableState).searchModel;
-    }
-    if (state is AbstractListFilterablePaginatedState) {
-      (state as AbstractListFilterablePaginatedState).searchModel.reset();
     }
 
     await onBeforeLoad(event, emit);
@@ -116,46 +49,119 @@ abstract class AbstractListBloc<S extends AbstractListState>
     emit(state.copyWith() as S);
 
     try {
-      emit(convertResultToStateAfterLoadAndRefresh(await resolveData()));
+      emit(await convertResultToStateAfterLoad(await resolveData()));
     } catch (e) {
-      await emit.forEach<Result>(
-        resolveStreamData(),
-        onData: (result) => convertResultToStateAfterLoadAndRefresh(result),
-      );
-    }
-  }
-
-  Future<void> _refresh(AbstractListRefreshEvent event, Emitter<S> emit) async {
-    if (state is AbstractListFilterableState) {
-      if (state is AbstractListFilterablePaginatedState) {
-        (state as AbstractListFilterablePaginatedState).searchModel.reset();
-      }
-
-      try {
-        emit(convertResultToStateAfterLoadAndRefresh(await resolveData()));
-      } catch (e) {
-        await emit.forEach<Result>(
-          resolveStreamData(),
-          onData: (result) => convertResultToStateAfterLoadAndRefresh(result),
-        );
+      await for (final result in resolveStreamData()) {
+        emit(await convertResultToStateAfterLoad(result));
+        await onAfterLoad(event, emit, result);
       }
     }
   }
 
-  Future<void> _loadMore(
+  Future<void> refresh(AbstractListRefreshEvent event, Emitter<S> emit) async {
+    if (state is AbstractListFilterablePaginatedState) {
+      (state as AbstractListFilterablePaginatedState).searchModel.reset();
+    }
+
+    await onBeforeRefresh(event, emit);
+
+    try {
+      emit(await convertResultToStateAfterRefresh(await resolveData()));
+    } catch (e) {
+      await for (final result in resolveStreamData()) {
+        emit(await convertResultToStateAfterRefresh(result));
+        await onAfterRefresh(event, emit, result);
+      }
+    }
+  }
+
+  Future<void> loadMore(
       AbstractListLoadMoreEvent event, Emitter<S> emit) async {
-    if (state is AbstractListFilterableState) {
-      if (state is AbstractListFilterablePaginatedState) {
-        (state as AbstractListFilterablePaginatedState).searchModel.increment();
-      }
+    if (state is AbstractListFilterablePaginatedState) {
+      (state as AbstractListFilterablePaginatedState).searchModel.increment();
+
+      await onBeforeLoadMore(event, emit);
 
       try {
-        emit(convertResultToStateAfterLoadMore(await resolveData()));
+        emit(await convertResultToStateAfterLoadMore(await resolveData()));
       } catch (e) {
-        await emit.forEach<Result>(
-          resolveStreamData(),
-          onData: (result) => convertResultToStateAfterLoadMore(result),
-        );
+        await for (final result in resolveStreamData()) {
+          emit(await convertResultToStateAfterLoadMore(result));
+          await onAfterLoadMore(event, emit, result);
+        }
+      }
+    }
+  }
+
+  Future<S> convertResultToStateAfterLoad(result) async {
+    state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
+
+    if (result.isSuccess) {
+      state.result.numberOfCachedItems = 0;
+      final resultItems = (result.data as GridResult).items;
+
+      state.result.items = resultItems;
+
+      _recalculateGridResult(result);
+    }
+
+    return state.copyWith();
+  }
+
+  Future<S> convertResultToStateAfterRefresh(result) async {
+    return await convertResultToStateAfterLoad(result);
+  }
+
+  Future<S> convertResultToStateAfterLoadMore(result) async {
+    // Cached with data
+    if (result is CacheResult &&
+        result.data != null &&
+        result.data is GridResult) {
+      final resultItems = (result.data as GridResult).items;
+
+      state.result.items.addAll(resultItems);
+
+      _recalculateGridResult(result);
+
+      state.resultStatus = ResultStatus.loadedCached;
+
+      return state.copyWith();
+    }
+
+    // Network
+    if (result is! CacheResult &&
+        result.data != null &&
+        result.data is GridResult) {
+      final resultItems = (result.data as GridResult).items;
+
+      if (state.resultStatus == ResultStatus.loadedCached) {
+        state.result.removeCachedItemsFromEnd();
+      }
+
+      state.result.items.addAll(resultItems);
+
+      _recalculateGridResult(result);
+
+      state.resultStatus = ResultStatus.loaded;
+
+      return state.copyWith();
+    }
+
+    return state.copyWith();
+  }
+
+  void _recalculateGridResult(Result result) {
+    if (result.data != null && result.data is GridResult) {
+      final resultItems = (result.data as GridResult).items;
+      final numberOfResultItems = resultItems.count;
+
+      if (result is CacheResult) {
+        state.result.numberOfCachedItems += resultItems.count;
+      }
+
+      if (state is AbstractListFilterablePaginatedState) {
+        state.result.hasMoreItems = numberOfResultItems ==
+            (state as AbstractListFilterablePaginatedState).searchModel.take;
       }
     }
   }

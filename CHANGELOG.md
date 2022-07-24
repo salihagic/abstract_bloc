@@ -1,3 +1,6 @@
+## [0.4.0] 
+* Added GridResult as a wrapper for AbstractListState items allowing pagination data to be passed to the state.
+
 ## [0.3.9] 
 * Action line color
 

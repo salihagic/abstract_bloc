@@ -7,30 +7,22 @@ class UsersState
   UsersState({
     required ResultStatus resultStatus,
     required UsersSearchModel searchModel,
-    required List<User> items,
-    required List<User> cachedItems,
-    bool hasMoreData = true,
+    required GridResult<User> result,
   }) : super(
           resultStatus: resultStatus,
           searchModel: searchModel,
-          items: items,
-          cachedItems: cachedItems,
-          hasMoreData: hasMoreData,
+          result: result,
         );
 
   @override
   UsersState copyWith({
     ResultStatus? resultStatus,
     UsersSearchModel? searchModel,
-    List<User>? items,
-    List<User>? cachedItems,
-    bool? hasMoreData,
+    GridResult<User>? result,
   }) =>
       UsersState(
         resultStatus: resultStatus ?? this.resultStatus,
         searchModel: searchModel ?? this.searchModel,
-        items: items ?? this.items,
-        cachedItems: cachedItems ?? this.cachedItems,
-        hasMoreData: hasMoreData ?? this.hasMoreData,
+        result: result ?? this.result,
       );
 }
