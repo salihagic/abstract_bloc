@@ -80,7 +80,6 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
   bool _enableLoadMore(BuildContext context, S state) =>
       enableLoadMore &&
       _itemCount(context, state) > 0 &&
-      !_isError(context, state) &&
       (state is! AbstractListFilterablePaginatedState ||
           state.result.hasMoreItems);
   bool _useSmartRefresher() => enableRefresh || enableLoadMore;
@@ -228,6 +227,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
               child: () {
                 if (header != null || headerBuilder != null) {
                   return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       header ??
                           headerBuilder?.call(context, state) ??

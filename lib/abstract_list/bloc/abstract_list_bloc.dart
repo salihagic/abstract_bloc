@@ -123,7 +123,7 @@ abstract class AbstractListBloc<S extends AbstractListState>
 
       _recalculateGridResult(result);
 
-      state.resultStatus = ResultStatus.loadedCached;
+      state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
 
       return state.copyWith();
     }
@@ -142,10 +142,12 @@ abstract class AbstractListBloc<S extends AbstractListState>
 
       _recalculateGridResult(result);
 
-      state.resultStatus = ResultStatus.loaded;
+      state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
 
       return state.copyWith();
     }
+
+    state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
 
     return state.copyWith();
   }
