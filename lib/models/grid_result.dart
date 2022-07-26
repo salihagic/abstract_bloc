@@ -1,9 +1,7 @@
-import 'package:abstract_bloc/extensions/_all.dart';
-
 class GridResult<TListItem> {
   List<TListItem> items;
   bool hasMoreItems;
-  int numberOfCachedItems;
+  int numberOfCachedItems = 0;
   int currentPage;
   int startPage;
   int endPage;
@@ -21,7 +19,6 @@ class GridResult<TListItem> {
   GridResult({
     this.items = const [],
     this.hasMoreItems = true,
-    this.numberOfCachedItems = 0,
     this.currentPage = 0,
     this.startPage = 0,
     this.endPage = 0,
@@ -37,8 +34,21 @@ class GridResult<TListItem> {
     this.additionalData,
   });
 
-  void removeCachedItemsFromEnd() {
-    items.removeLastItems(numberOfCachedItems);
-    numberOfCachedItems = 0;
+  void map(GridResult other) {
+    this.items = other.items as List<TListItem>;
+    this.hasMoreItems = other.hasMoreItems;
+    this.currentPage = other.currentPage;
+    this.startPage = other.startPage;
+    this.endPage = other.endPage;
+    this.pageCount = other.pageCount;
+    this.pageSize = other.pageSize;
+    this.rowCount = other.rowCount;
+    this.hasPreviousPage = other.hasPreviousPage;
+    this.hasNextPage = other.hasNextPage;
+    this.hasMultiplePages = other.hasMultiplePages;
+    this.firstRowOnPage = other.firstRowOnPage;
+    this.lastRowOnPage = other.lastRowOnPage;
+    this.hasItems = other.hasItems;
+    this.additionalData = other.additionalData;
   }
 }

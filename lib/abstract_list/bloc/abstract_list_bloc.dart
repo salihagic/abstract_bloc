@@ -97,12 +97,18 @@ abstract class AbstractListBloc<S extends AbstractListState>
     state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
 
     if (result.isSuccess) {
-      state.result.numberOfCachedItems = 0;
-      final resultItems = (result.data as GridResult).items;
+      state.result = result.data;
 
-      state.result.items = resultItems;
+      if (result is CacheResult) {
+        state.result.numberOfCachedItems += state.result.items.count;
+      } else {
+        state.result.numberOfCachedItems = 0;
+      }
 
-      _recalculateGridResult(result);
+      if (state is AbstractListFilterablePaginatedState) {
+        state.result.hasMoreItems = state.result.items.count ==
+            (state as AbstractListFilterablePaginatedState).searchModel.take;
+      }
     }
 
     return state.copyWith();
@@ -117,11 +123,13 @@ abstract class AbstractListBloc<S extends AbstractListState>
     if (result is CacheResult &&
         result.data != null &&
         result.data is GridResult) {
-      final resultItems = (result.data as GridResult).items;
+      final stateItems = state.result.items;
 
-      state.result.items.addAll(resultItems);
+      state.result.map(result.data as GridResult);
 
-      _recalculateGridResult(result);
+      state.result.numberOfCachedItems += state.result.items.count;
+
+      state.result.items.insertAll(0, stateItems);
 
       state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
 
@@ -132,15 +140,16 @@ abstract class AbstractListBloc<S extends AbstractListState>
     if (result is! CacheResult &&
         result.data != null &&
         result.data is GridResult) {
-      final resultItems = (result.data as GridResult).items;
+      final stateItems = state.result.items;
+
+      state.result.map(result.data as GridResult);
 
       if (state.resultStatus == ResultStatus.loadedCached) {
-        state.result.removeCachedItemsFromEnd();
+        stateItems.removeLastItems(state.result.numberOfCachedItems);
+        state.result.numberOfCachedItems = 0;
       }
 
-      state.result.items.addAll(resultItems);
-
-      _recalculateGridResult(result);
+      state.result.items.insertAll(0, stateItems);
 
       state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
 
@@ -150,22 +159,6 @@ abstract class AbstractListBloc<S extends AbstractListState>
     state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
 
     return state.copyWith();
-  }
-
-  void _recalculateGridResult(Result result) {
-    if (result.data != null && result.data is GridResult) {
-      final resultItems = (result.data as GridResult).items;
-      final numberOfResultItems = resultItems.count;
-
-      if (result is CacheResult) {
-        state.result.numberOfCachedItems += resultItems.count;
-      }
-
-      if (state is AbstractListFilterablePaginatedState) {
-        state.result.hasMoreItems = numberOfResultItems ==
-            (state as AbstractListFilterablePaginatedState).searchModel.take;
-      }
-    }
   }
 
   ResultStatus? _getStatusFromResult(Result result) => result.isError

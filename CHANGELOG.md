@@ -1,3 +1,6 @@
+## [0.4.2] 
+* Pagination response data fix
+
 ## [0.4.1] 
 * Allow load more of cached data
 
