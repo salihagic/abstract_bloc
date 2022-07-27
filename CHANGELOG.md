@@ -1,3 +1,6 @@
+## [0.4.3] 
+* Info dialog translation fix 
+
 ## [0.4.2] 
 * Pagination response data fix
 

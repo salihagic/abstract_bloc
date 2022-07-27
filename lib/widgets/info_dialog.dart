@@ -94,7 +94,7 @@ class InfoDialog extends StatelessWidget {
                               vertical: 10, horizontal: 15),
                           child: Text(
                             onCancelText ??
-                                abstractConfiguration?.translations.okay ??
+                                abstractConfiguration?.translations.cancel ??
                                 'Cancel',
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
