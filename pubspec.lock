@@ -376,10 +376,10 @@ packages:
   rest_api_client:
     dependency: "direct main"
     description:
-      name: rest_api_client
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.2"
+      path: "S:/Development/Projects/rest_api_client"
+      relative: false
+    source: path
+    version: "2.1.1"
   sky_engine:
     dependency: transitive
     description: flutter

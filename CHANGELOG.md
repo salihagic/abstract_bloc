@@ -1,3 +1,6 @@
+## [0.4.4] 
+* Updated dependencies
+
 ## [0.4.3] 
 * Info dialog translation fix 
 
