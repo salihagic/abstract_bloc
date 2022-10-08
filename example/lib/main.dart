@@ -1,9 +1,10 @@
+import 'dart:developer';
+
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:example/repositories/users_repository.dart';
 import 'package:example/users/widgets/users_list.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +15,25 @@ Future main() async {
       baseUrl: 'https://gorest.co.in/public/v2/',
       cacheEnabled: true,
     ),
+    interceptors: [
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          log('Logging before request');
+
+          return handler.next(options);
+        },
+        onResponse: (response, handler) {
+          log('Logging on response');
+
+          return handler.next(response);
+        },
+        onError: (DioError e, handler) {
+          log('Logging on error');
+
+          return handler.next(e);
+        },
+      ),
+    ],
   );
   await restApiClient.init();
   restApiClient.setContentType(Headers.jsonContentType);
