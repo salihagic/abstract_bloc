@@ -27,7 +27,7 @@ Future main() async {
 
           return handler.next(response);
         },
-        onError: (DioError e, handler) {
+        onError: (DioException e, handler) {
           log('Logging on error');
 
           return handler.next(e);
@@ -90,9 +90,18 @@ Future main() async {
               ),
             ),
             cachedDataWarningDialogBuilder: (context, onReload) => InfoDialog(
-              child: Column(
+              showCancelButton: true,
+              onApplyText: 'Reload',
+              onCancel: () {
+                Navigator.of(context).pop();
+              },
+              onApply: () {
+                onReload?.call(context);
+                Navigator.of(context).pop();
+              },
+              child: const Column(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Text(
                     'Showing cached data',
                     textAlign: TextAlign.center,
@@ -105,15 +114,6 @@ Future main() async {
                   ),
                 ],
               ),
-              showCancelButton: true,
-              onApplyText: 'Reload',
-              onCancel: () {
-                Navigator.of(context).pop();
-              },
-              onApply: () {
-                onReload?.call(context);
-                Navigator.of(context).pop();
-              },
             ),
             //This is the default implementation, you can provide your own or just ignore this parameter
             abstractItemErrorBuilder: (context, onInit) => Center(
