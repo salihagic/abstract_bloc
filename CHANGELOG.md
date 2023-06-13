@@ -1,3 +1,6 @@
+## [1.0.5] 
+* State updates
+
 ## [1.0.4] 
 * Autovalidate false
 

@@ -1,7 +1,7 @@
 abstract class AbstractFormEvent {}
 
-class AbstractFormInitEvent<TSearchModel> extends AbstractFormEvent {
-  TSearchModel? model;
+class AbstractFormInitEvent extends AbstractFormEvent {
+  dynamic model;
 
   AbstractFormInitEvent({this.model});
 }
@@ -12,4 +12,8 @@ class AbstractFormUpdateEvent<TModel> extends AbstractFormEvent {
   AbstractFormUpdateEvent({this.model});
 }
 
-class AbstractFormSubmitEvent extends AbstractFormEvent {}
+class AbstractFormSubmitEvent extends AbstractFormEvent {
+  final bool preserve;
+
+  AbstractFormSubmitEvent({this.preserve = true});
+}

@@ -37,8 +37,8 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
     if (result.isError) {
       _changeStatus(emit, FormResultStatus.error);
     } else {
-      if (result.hasData && state is AbstractFormState) {
-        (state as AbstractFormState).model = result.data;
+      if (result.hasData) {
+        state.model = result.data;
       }
 
       _changeStatus(emit, FormResultStatus.initialized);
@@ -46,9 +46,8 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
   }
 
   Future<void> update(AbstractFormUpdateEvent event, Emitter<S> emit) async {
-    if (state is AbstractFormState) {
-      (state as AbstractFormState).model = event.model;
-    }
+    (state as AbstractFormState).model = event.model;
+
     emit(state.copyWith() as S);
   }
 
@@ -56,9 +55,7 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
 
   Future<void> submit(AbstractFormSubmitEvent event, Emitter<S> emit) async {
     if (state is AbstractFormState &&
-        !((state as AbstractFormState)
-                .modelValidator
-                ?.validate((state as AbstractFormState).model) ??
+        !((state as AbstractFormState).modelValidator?.validate(state.model) ??
             false)) {
       (state as AbstractFormState).autovalidate = true;
       _changeStatus(emit, FormResultStatus.validationError);
@@ -68,16 +65,14 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
       state.formResultStatus = FormResultStatus.submitting;
       emit(state.copyWith());
 
-      final model = state is AbstractFormState
-          ? (state as AbstractFormState).model
-          : null;
-
-      final result = await onSubmit(model);
+      final result = await onSubmit(state.model);
 
       if (result.isSuccess) {
         _changeStatus(emit, FormResultStatus.submittingSuccess);
-        await Future.delayed(const Duration(milliseconds: 100));
-        add(AbstractFormInitEvent(model: model));
+        if (event.preserve) {
+          await Future.delayed(const Duration(milliseconds: 100));
+          add(AbstractFormInitEvent(model: state.model));
+        }
       } else {
         if (state is AbstractFormState) {
           (state as AbstractFormState).autovalidate = true;
