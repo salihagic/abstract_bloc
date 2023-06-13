@@ -1,3 +1,6 @@
+## [1.0.3] 
+* Autovalidate false
+
 ## [1.0.2] 
 * State updates delayed
 

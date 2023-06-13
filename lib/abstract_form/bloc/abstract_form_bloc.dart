@@ -27,6 +27,7 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
       Result.success();
 
   Future<void> init(AbstractFormInitEvent event, Emitter<S> emit) async {
+    (state as AbstractFormState).autovalidate = false;
     _changeStatus(emit, FormResultStatus.initializing);
 
     final result = await initModel(event, emit);
