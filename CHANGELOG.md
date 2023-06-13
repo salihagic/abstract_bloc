@@ -1,3 +1,6 @@
+## [1.0.2] 
+* State updates delayed
+
 ## [1.0.1] 
 * State updates delayed
 
