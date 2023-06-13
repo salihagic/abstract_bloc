@@ -59,6 +59,7 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
             false)) {
       (state as AbstractFormState).autovalidate = true;
       _changeStatus(emit, FormResultStatus.validationError);
+      await Future.delayed(const Duration(milliseconds: 100));
       _changeStatus(emit, FormResultStatus.initialized);
     } else {
       state.formResultStatus = FormResultStatus.submitting;
@@ -79,6 +80,7 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
           (state as AbstractFormState).autovalidate = true;
         }
         _changeStatus(emit, FormResultStatus.submittingError);
+        await Future.delayed(const Duration(milliseconds: 100));
         _changeStatus(emit, FormResultStatus.initialized);
       }
     }
