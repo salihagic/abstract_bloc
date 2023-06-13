@@ -54,8 +54,10 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
   Future<Result> onSubmit(model) => throw Exception('onSubmit Not implemented');
 
   Future<void> submit(AbstractFormSubmitEvent event, Emitter<S> emit) async {
+    final model = event.model ?? state.model;
+
     if (state is AbstractFormState &&
-        !((state as AbstractFormState).modelValidator?.validate(state.model) ??
+        !((state as AbstractFormState).modelValidator?.validate(model) ??
             false)) {
       (state as AbstractFormState).autovalidate = true;
       _changeStatus(emit, FormResultStatus.validationError);
@@ -65,13 +67,13 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
       state.formResultStatus = FormResultStatus.submitting;
       emit(state.copyWith());
 
-      final result = await onSubmit(state.model);
+      final result = await onSubmit(model);
 
       if (result.isSuccess) {
         _changeStatus(emit, FormResultStatus.submittingSuccess);
         if (event.preserve) {
           await Future.delayed(const Duration(milliseconds: 100));
-          add(AbstractFormInitEvent(model: state.model));
+          add(AbstractFormInitEvent(model: model));
         }
       } else {
         if (state is AbstractFormState) {

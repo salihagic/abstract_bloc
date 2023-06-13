@@ -1,3 +1,6 @@
+## [1.0.6] 
+* State updates
+
 ## [1.0.5] 
 * State updates
 

@@ -12,8 +12,12 @@ class AbstractFormUpdateEvent<TModel> extends AbstractFormEvent {
   AbstractFormUpdateEvent({this.model});
 }
 
-class AbstractFormSubmitEvent extends AbstractFormEvent {
+class AbstractFormSubmitEvent<TModel> extends AbstractFormEvent {
   final bool preserve;
+  TModel? model;
 
-  AbstractFormSubmitEvent({this.preserve = true});
+  AbstractFormSubmitEvent({
+    this.preserve = true,
+    this.model,
+  });
 }
