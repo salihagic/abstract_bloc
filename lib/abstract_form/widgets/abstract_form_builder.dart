@@ -6,6 +6,7 @@ class AbstractFormBuilder<B extends AbstractFormBloc<S>,
     S extends AbstractFormBasicState> extends StatelessWidget {
   final void Function(BuildContext context)? onInit;
   final bool skipInitialOnInit;
+  final bool reinitOnSuccess;
   final Widget Function(BuildContext context, void Function() onInit, S state)?
       errorBuilder;
   final bool Function(BuildContext context, S state)? isLoading;
@@ -25,6 +26,7 @@ class AbstractFormBuilder<B extends AbstractFormBloc<S>,
     Key? key,
     this.onInit,
     this.skipInitialOnInit = false,
+    this.reinitOnSuccess = true,
     this.errorBuilder,
     this.isLoading,
     this.shouldAutovalidate,
@@ -73,6 +75,9 @@ class AbstractFormBuilder<B extends AbstractFormBloc<S>,
           listener: (context, state) {
             if (state.formResultStatus == FormResultStatus.submittingSuccess) {
               onSuccess?.call(context, state);
+              if (reinitOnSuccess) {
+                _onInit(context);
+              }
             } else if (state.formResultStatus ==
                 FormResultStatus.validationError) {
               onValidationError?.call(context, state);

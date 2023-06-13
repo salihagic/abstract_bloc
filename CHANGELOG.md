@@ -1,3 +1,6 @@
+## [1.0.7] 
+* Removed preserve state
+
 ## [1.0.6] 
 * State updates
 

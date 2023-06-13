@@ -71,10 +71,6 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
 
       if (result.isSuccess) {
         _changeStatus(emit, FormResultStatus.submittingSuccess);
-        if (event.preserve) {
-          await Future.delayed(const Duration(milliseconds: 100));
-          add(AbstractFormInitEvent(model: model));
-        }
       } else {
         if (state is AbstractFormState) {
           (state as AbstractFormState).autovalidate = true;
