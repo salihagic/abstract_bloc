@@ -70,50 +70,47 @@ class AbstractFormBuilder<B extends AbstractFormBloc<S>,
           _onInit(context);
         }
       },
-      builder: (context) => SafeArea(
-        child: BlocConsumer<B, S>(
-          listener: (context, state) {
-            if (state.formResultStatus == FormResultStatus.submittingSuccess) {
-              onSuccess?.call(context, state);
-              if (reinitOnSuccess) {
-                _onInit(context);
-              }
-            } else if (state.formResultStatus ==
-                FormResultStatus.validationError) {
-              onValidationError?.call(context, state);
+      builder: (context) => BlocConsumer<B, S>(
+        listener: (context, state) {
+          if (state.formResultStatus == FormResultStatus.submittingSuccess) {
+            onSuccess?.call(context, state);
+            if (reinitOnSuccess) {
+              _onInit(context);
             }
+          } else if (state.formResultStatus ==
+              FormResultStatus.validationError) {
+            onValidationError?.call(context, state);
+          }
 
-            listener?.call(context, state);
-          },
-          builder: (context, state) {
-            if (_isLoading(context, state)) {
-              return abstractConfiguration?.loaderBuilder?.call(context) ??
-                  const Loader();
-            }
+          listener?.call(context, state);
+        },
+        builder: (context, state) {
+          if (_isLoading(context, state)) {
+            return abstractConfiguration?.loaderBuilder?.call(context) ??
+                const Loader();
+          }
 
-            if (_isError(context, state)) {
-              return errorBuilder?.call(
-                      context, () => _onInit(context), state) ??
-                  AbstractConfiguration.of(context)
-                      ?.abstractFormErrorBuilder
-                      ?.call(context, () => _onInit(context)) ??
-                  AbstractFormErrorContainer(onInit: () => _onInit(context));
-            }
+          if (_isError(context, state)) {
+            return errorBuilder?.call(context, () => _onInit(context), state) ??
+                AbstractConfiguration.of(context)
+                    ?.abstractFormErrorBuilder
+                    ?.call(context, () => _onInit(context)) ??
+                AbstractFormErrorContainer(onInit: () => _onInit(context));
+          }
 
-            return child ??
-                extendedBuilder?.call(
-                  context,
-                  state,
-                  _blocInstance(context),
-                  () => _blocInstance(context).add(AbstractFormSubmitEvent()),
-                ) ??
-                builder?.call(
-                  context,
-                  state,
-                ) ??
-                Container();
-          },
-        ),
+          return child ??
+              extendedBuilder?.call(
+                context,
+                state,
+                _blocInstance(context),
+                () => _blocInstance(context).add(AbstractFormSubmitEvent()),
+              ) ??
+              builder?.call(
+                context,
+                state,
+              ) ??
+              Container();
+        },
       ),
     );
   }
