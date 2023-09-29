@@ -7,7 +7,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.0.8"
+    version: "1.1.0"
   args:
     dependency: transitive
     description:
@@ -403,10 +403,10 @@ packages:
     dependency: transitive
     description:
       name: rest_api_client
-      sha256: c095fe1f12b891e36b40f80fd274fd32e5850ab755fdaa2e7b379c785289b2d2
+      sha256: cd4dfd262277f6044e191e95826127a4efb4444bb3fb8a74f8af0b5b8db39f06
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.8"
+    version: "2.2.0"
   sky_engine:
     dependency: transitive
     description: flutter
