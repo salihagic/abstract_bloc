@@ -1,3 +1,6 @@
+## [1.1.2] 
+* AbstractListBuilder HeaderBehaviour added
+
 ## [1.1.1] 
 * Overrides added for submit success and error
 

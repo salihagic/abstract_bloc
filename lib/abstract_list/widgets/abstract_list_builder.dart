@@ -3,6 +3,11 @@ import 'package:abstract_bloc/extensions/_all.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:flutter/material.dart';
 
+enum HeaderBehaviour {
+  fixed,
+  scrollable,
+}
+
 class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
     extends StatelessWidget {
   final _refreshController = RefreshController();
@@ -17,6 +22,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
   final double? mainAxisExtent;
   final Widget? header;
   final Widget Function(BuildContext context, S state)? headerBuilder;
+  final HeaderBehaviour headerBehaviour;
   final Widget Function(BuildContext context, S state, int index)? itemBuilder;
   final Widget Function(BuildContext context, S state)? builder;
   final Widget Function(BuildContext context, S state, Widget child)?
@@ -51,6 +57,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
     this.noDataBuilder,
     this.header,
     this.headerBuilder,
+    this.headerBehaviour = HeaderBehaviour.fixed,
     this.isLoading,
     this.isError,
     this.itemCount,
@@ -108,6 +115,9 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
       ? onInit?.call(context)
       : _blocInstance(context)?.add(AbstractListLoadEvent());
 
+  Widget _buildHeader(BuildContext context, S state) =>
+      header ?? headerBuilder?.call(context, state) ?? Container();
+
   @override
   Widget build(BuildContext context) {
     final abstractConfiguration = AbstractConfiguration.of(context);
@@ -127,30 +137,48 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
           },
           builder: (context, state) {
             final child = () {
+              final isHeaderScrollable =
+                  headerBehaviour == HeaderBehaviour.scrollable;
+
+              final buildMaybeWithHeader = (Widget child) {
+                if (isHeaderScrollable) {
+                  return ListView(
+                    children: [
+                      _buildHeader(context, state),
+                      child,
+                    ],
+                  );
+                }
+
+                return child;
+              };
+
               if (_showBigLoader(context, state)) {
-                return abstractConfiguration?.loaderBuilder?.call(context) ??
-                    const Loader();
+                return buildMaybeWithHeader(
+                    abstractConfiguration?.loaderBuilder?.call(context) ??
+                        const Loader());
               }
 
               //There is no network data and nothing is fetched from the cache and network error occured
               if (_showEmptyContainer(context, state)) {
-                return noDataBuilder?.call(
+                return buildMaybeWithHeader(noDataBuilder?.call(
                         context, () => _onInit(context), state) ??
                     abstractConfiguration?.abstractListNoDataBuilder
                         ?.call(context, () => _onInit(context)) ??
-                    AbstractListNoDataContainer(onInit: () => _onInit(context));
+                    AbstractListNoDataContainer(
+                        onInit: () => _onInit(context)));
               }
 
               if (_showErrorContainer(context, state)) {
-                return errorBuilder?.call(
+                return buildMaybeWithHeader(errorBuilder?.call(
                         context, () => _onInit(context), state) ??
                     abstractConfiguration?.abstractListErrorBuilder
                         ?.call(context, () => _onInit(context)) ??
-                    AbstractLisErrorContainer(onInit: () => _onInit(context));
+                    AbstractLisErrorContainer(onInit: () => _onInit(context)));
               }
 
               if (builder != null) {
-                return builder!(context, state);
+                return buildMaybeWithHeader(builder!(context, state));
               }
 
               //Here is memory, cached or network data
@@ -159,12 +187,21 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
                   shrinkWrap: true,
                   scrollDirection: scrollDirection,
                   physics: physics,
-                  itemCount: _itemCount(context, state),
-                  itemBuilder: (context, index) =>
-                      itemBuilder?.call(context, state, index) ?? Container(),
                   separatorBuilder: (context, index) =>
                       separatorBuilder?.call(context, state, index) ??
                       Container(),
+                  itemCount:
+                      _itemCount(context, state) + (isHeaderScrollable ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (isHeaderScrollable && index == 0) {
+                      return header ??
+                          headerBuilder?.call(context, state) ??
+                          Container();
+                    }
+
+                    return itemBuilder?.call(context, state, index) ??
+                        Container();
+                  },
                 );
               }
 
@@ -179,9 +216,19 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
                   childAspectRatio: childAspectRatio,
                   mainAxisExtent: mainAxisExtent,
                 ),
-                itemCount: _itemCount(context, state),
-                itemBuilder: (context, index) =>
-                    itemBuilder?.call(context, state, index) ?? Container(),
+                itemCount:
+                    _itemCount(context, state) + (isHeaderScrollable ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (isHeaderScrollable && index == 0) {
+                    return header ??
+                        headerBuilder?.call(context, state) ??
+                        Container();
+                  }
+
+                  return itemBuilder?.call(context, state,
+                          index - (isHeaderScrollable ? 1 : 0)) ??
+                      Container();
+                },
               );
             }();
 
@@ -225,7 +272,9 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
             final result = Container(
               height: heightBuilder?.call(context, state),
               child: () {
-                if (header != null || headerBuilder != null) {
+                if (headerBehaviour == HeaderBehaviour.fixed &&
+                        header != null ||
+                    headerBuilder != null) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
