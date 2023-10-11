@@ -199,7 +199,8 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
                           Container();
                     }
 
-                    return itemBuilder?.call(context, state, index) ??
+                    return itemBuilder?.call(context, state,
+                            index - (isHeaderScrollable ? 1 : 0)) ??
                         Container();
                   },
                 );
