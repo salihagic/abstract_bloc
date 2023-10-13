@@ -1,3 +1,6 @@
+## [1.1.4] 
+* onError
+
 ## [1.1.3] 
 * Index bug fix
 

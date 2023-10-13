@@ -29,6 +29,7 @@ class AbstractFormConsumer<
   final Widget Function(BuildContext context, S state)? builder;
   final void Function(BuildContext context, S state)? listener;
   final void Function(BuildContext context, S state)? onSuccess;
+  final void Function(BuildContext context, S state)? onError;
   final void Function(BuildContext context, S state)? onValidationError;
 
   AbstractFormConsumer({
@@ -45,6 +46,7 @@ class AbstractFormConsumer<
     this.builder,
     this.listener,
     this.onSuccess,
+    this.onError,
     this.onValidationError,
   }) : super(key: key);
 
@@ -89,6 +91,9 @@ class AbstractFormConsumer<
           listener: (context, state) {
             if (state.formResultStatus == FormResultStatus.submittingSuccess) {
               onSuccess?.call(context, state);
+            } else if (state.formResultStatus ==
+                FormResultStatus.submittingError) {
+              onError?.call(context, state);
             } else if (state.formResultStatus ==
                 FormResultStatus.validationError) {
               onValidationError?.call(context, state);
