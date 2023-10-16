@@ -51,4 +51,100 @@ class GridResult<TListItem> {
     this.hasItems = other.hasItems;
     this.additionalData = other.additionalData;
   }
+
+  factory GridResult.fromMap(Map<dynamic, dynamic> map,
+      [TListItem Function(Map<String, dynamic> data)? itemParser]) {
+    return GridResult<TListItem>(
+      items: map[GridResultJsonConfiguration.itemsJsonKey]
+          ?.map<TListItem>((x) => itemParser?.call(x) ?? x as TListItem)
+          .toList(),
+      hasMoreItems:
+          map[GridResultJsonConfiguration.hasMoreItemsJsonKey] ?? true,
+      currentPage: map[GridResultJsonConfiguration.currentPageJsonKey] ?? 0,
+      startPage: map[GridResultJsonConfiguration.startPageJsonKey] ?? 0,
+      endPage: map[GridResultJsonConfiguration.endPageJsonKey] ?? 0,
+      pageCount: map[GridResultJsonConfiguration.pageCountJsonKey] ?? 0,
+      pageSize: map[GridResultJsonConfiguration.pageSizeJsonKey] ?? 0,
+      rowCount: map[GridResultJsonConfiguration.rowCountJsonKey] ?? 0,
+      hasPreviousPage:
+          map[GridResultJsonConfiguration.hasPreviousPageJsonKey] ?? 0,
+      hasNextPage: map[GridResultJsonConfiguration.hasNextPageJsonKey] ?? 0,
+      hasMultiplePages:
+          map[GridResultJsonConfiguration.hasMultiplePagesJsonKey] ?? 0,
+      firstRowOnPage:
+          map[GridResultJsonConfiguration.firstRowOnPageJsonKey] ?? 0,
+      lastRowOnPage: map[GridResultJsonConfiguration.lastRowOnPageJsonKey] ?? 0,
+      hasItems: map[GridResultJsonConfiguration.hasItemsJsonKey] ?? 0,
+      additionalData: map[GridResultJsonConfiguration.additionalDataJsonKey],
+    );
+  }
+}
+
+class GridResultJsonConfiguration {
+  static String itemsJsonKey = 'items';
+  static String hasMoreItemsJsonKey = 'hasMoreItems';
+  static String currentPageJsonKey = 'currentPage';
+  static String startPageJsonKey = 'startPage';
+  static String endPageJsonKey = 'endPage';
+  static String pageCountJsonKey = 'pageCount';
+  static String pageSizeJsonKey = 'pageSize';
+  static String rowCountJsonKey = 'rowCount';
+  static String hasPreviousPageJsonKey = 'hasPreviousPage';
+  static String hasNextPageJsonKey = 'hasNextPage';
+  static String hasMultiplePagesJsonKey = 'hasMultiplePages';
+  static String firstRowOnPageJsonKey = 'firstRowOnPage';
+  static String lastRowOnPageJsonKey = 'lastRowOnPage';
+  static String hasItemsJsonKey = 'hasItems';
+  static String additionalDataJsonKey = 'additionalData';
+
+  GridResultJsonConfiguration.configure({
+    String? itemsJsonKey,
+    String? hasMoreItemsJsonKey,
+    String? currentPageJsonKey,
+    String? startPageJsonKey,
+    String? endPageJsonKey,
+    String? pageCountJsonKey,
+    String? pageSizeJsonKey,
+    String? rowCountJsonKey,
+    String? hasPreviousPageJsonKey,
+    String? hasNextPageJsonKey,
+    String? hasMultiplePagesJsonKey,
+    String? firstRowOnPageJsonKey,
+    String? lastRowOnPageJsonKey,
+    String? hasItemsJsonKey,
+    String? additionalDataJsonKey,
+  }) {
+    GridResultJsonConfiguration.itemsJsonKey =
+        itemsJsonKey ?? GridResultJsonConfiguration.itemsJsonKey;
+    GridResultJsonConfiguration.hasMoreItemsJsonKey =
+        hasMoreItemsJsonKey ?? GridResultJsonConfiguration.hasMoreItemsJsonKey;
+    GridResultJsonConfiguration.currentPageJsonKey =
+        currentPageJsonKey ?? GridResultJsonConfiguration.currentPageJsonKey;
+    GridResultJsonConfiguration.startPageJsonKey =
+        startPageJsonKey ?? GridResultJsonConfiguration.startPageJsonKey;
+    GridResultJsonConfiguration.endPageJsonKey =
+        endPageJsonKey ?? GridResultJsonConfiguration.endPageJsonKey;
+    GridResultJsonConfiguration.pageCountJsonKey =
+        pageCountJsonKey ?? GridResultJsonConfiguration.pageCountJsonKey;
+    GridResultJsonConfiguration.pageSizeJsonKey =
+        pageSizeJsonKey ?? GridResultJsonConfiguration.pageSizeJsonKey;
+    GridResultJsonConfiguration.rowCountJsonKey =
+        rowCountJsonKey ?? GridResultJsonConfiguration.rowCountJsonKey;
+    GridResultJsonConfiguration.hasPreviousPageJsonKey =
+        hasPreviousPageJsonKey ??
+            GridResultJsonConfiguration.hasPreviousPageJsonKey;
+    GridResultJsonConfiguration.hasNextPageJsonKey =
+        hasNextPageJsonKey ?? GridResultJsonConfiguration.hasNextPageJsonKey;
+    GridResultJsonConfiguration.hasMultiplePagesJsonKey =
+        hasMultiplePagesJsonKey ??
+            GridResultJsonConfiguration.hasMultiplePagesJsonKey;
+    GridResultJsonConfiguration.firstRowOnPageJsonKey = firstRowOnPageJsonKey ??
+        GridResultJsonConfiguration.firstRowOnPageJsonKey;
+    GridResultJsonConfiguration.lastRowOnPageJsonKey = lastRowOnPageJsonKey ??
+        GridResultJsonConfiguration.lastRowOnPageJsonKey;
+    GridResultJsonConfiguration.hasItemsJsonKey =
+        hasItemsJsonKey ?? GridResultJsonConfiguration.hasItemsJsonKey;
+    GridResultJsonConfiguration.additionalDataJsonKey = additionalDataJsonKey ??
+        GridResultJsonConfiguration.additionalDataJsonKey;
+  }
 }
