@@ -1,3 +1,6 @@
+## [1.1.6] 
+* Separator builder update
+
 ## [1.1.5] 
 * Updated dependencies
 

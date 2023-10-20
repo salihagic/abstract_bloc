@@ -115,8 +115,34 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
       ? onInit?.call(context)
       : _blocInstance(context)?.add(AbstractListLoadEvent());
 
-  Widget _buildHeader(BuildContext context, S state) =>
-      header ?? headerBuilder?.call(context, state) ?? Container();
+  Widget _buildHeader(BuildContext context, S state) {
+    return header ?? headerBuilder?.call(context, state) ?? Container();
+  }
+
+  Widget _buildItem(
+      BuildContext context, S state, int index, bool isHeaderScrollable) {
+    return itemBuilder?.call(
+            context, state, index - (isHeaderScrollable ? 1 : 0)) ??
+        Container();
+  }
+
+  bool _isLastItem(
+      BuildContext context, S state, int index, bool isHeaderScrollable) {
+    return index ==
+        (_itemCount(context, state) + (isHeaderScrollable ? 1 : 0) - 1);
+  }
+
+  Widget _buildListItem(
+      BuildContext context, S state, int index, bool isHeaderScrollable) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildItem(context, state, index, isHeaderScrollable),
+        if (!_isLastItem(context, state, index, isHeaderScrollable))
+          separatorBuilder?.call(context, state, index) ?? Container(),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -181,27 +207,20 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
                 return buildMaybeWithHeader(builder!(context, state));
               }
 
-              //Here is memory, cached or network data
               if (columns <= 1) {
-                return ListView.separated(
+                return ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: scrollDirection,
                   physics: physics,
-                  separatorBuilder: (context, index) =>
-                      separatorBuilder?.call(context, state, index) ??
-                      Container(),
                   itemCount:
                       _itemCount(context, state) + (isHeaderScrollable ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (isHeaderScrollable && index == 0) {
-                      return header ??
-                          headerBuilder?.call(context, state) ??
-                          Container();
+                      return _buildHeader(context, state);
                     }
 
-                    return itemBuilder?.call(context, state,
-                            index - (isHeaderScrollable ? 1 : 0)) ??
-                        Container();
+                    return _buildListItem(
+                        context, state, index, isHeaderScrollable);
                   },
                 );
               }
@@ -221,14 +240,11 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
                     _itemCount(context, state) + (isHeaderScrollable ? 1 : 0),
                 itemBuilder: (context, index) {
                   if (isHeaderScrollable && index == 0) {
-                    return header ??
-                        headerBuilder?.call(context, state) ??
-                        Container();
+                    return _buildHeader(context, state);
                   }
 
-                  return itemBuilder?.call(context, state,
-                          index - (isHeaderScrollable ? 1 : 0)) ??
-                      Container();
+                  return _buildListItem(
+                      context, state, index, isHeaderScrollable);
                 },
               );
             }();
