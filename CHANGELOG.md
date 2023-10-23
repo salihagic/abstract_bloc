@@ -1,3 +1,6 @@
+## [1.1.7] 
+* Separator builder fix
+
 ## [1.1.6] 
 * Separator builder update
 
