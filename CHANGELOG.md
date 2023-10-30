@@ -1,3 +1,6 @@
+## [1.1.9] 
+* AbstractForm updated
+
 ## [1.1.8] 
 * Updated dependencies
 

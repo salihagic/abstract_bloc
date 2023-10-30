@@ -1,6 +1,6 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 
-abstract class AbstractFormBloc<S extends AbstractFormBasicState>
+abstract class AbstractFormBloc<S extends AbstractFormBaseState>
     extends Bloc<AbstractFormEvent, S> {
   AbstractFormBloc(S initialState, [ModelValidator? modelValidator])
       : super(initialState) {
@@ -38,7 +38,9 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
       updateStatus(emit, FormResultStatus.error);
     } else {
       if (result.hasData) {
-        state.model = result.data;
+        if (state is AbstractFormBasicState) {
+          (state as AbstractFormBasicState).model = result.data;
+        }
       }
 
       updateStatus(emit, FormResultStatus.initialized);
@@ -46,12 +48,16 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
   }
 
   Future<void> update(AbstractFormUpdateEvent event, Emitter<S> emit) async {
-    (state as AbstractFormState).model = event.model;
+    if (state is AbstractFormBasicState) {
+      (state as AbstractFormBasicState).model = event.model;
+    }
 
     emit(state.copyWith() as S);
   }
 
   Future<Result> onSubmit(model) => throw Exception('onSubmit Not implemented');
+  Future<Result> onSubmitEmpty() =>
+      throw Exception('onSubmitEmpty Not implemented');
 
   Future<void> onSubmitSuccess(Result result, Emitter<S> emit) async {
     updateStatus(emit, FormResultStatus.submittingSuccess);
@@ -67,7 +73,10 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
   }
 
   Future<void> submit(AbstractFormSubmitEvent event, Emitter<S> emit) async {
-    final model = event.model ?? state.model;
+    final model = event.model ??
+        (state is AbstractFormBasicState
+            ? (state as AbstractFormBasicState).model
+            : null);
 
     if (state is AbstractFormState &&
         !((state as AbstractFormState).modelValidator?.validate(model) ??
@@ -80,7 +89,9 @@ abstract class AbstractFormBloc<S extends AbstractFormBasicState>
       state.formResultStatus = FormResultStatus.submitting;
       emit(state.copyWith());
 
-      final result = await onSubmit(model);
+      final result = state is AbstractFormBasicState
+          ? await onSubmit(model)
+          : await onSubmitEmpty();
 
       if (result.isSuccess) {
         await onSubmitSuccess(result, emit);

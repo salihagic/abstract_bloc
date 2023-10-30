@@ -1,15 +1,27 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:flutter/widgets.dart';
 
-abstract class AbstractFormBasicState<TModel> {
+abstract class AbstractFormBaseState {
   FormResultStatus formResultStatus;
+
+  bool get isInitialized => formResultStatus == FormResultStatus.initialized;
+  bool get isSubmitting => formResultStatus == FormResultStatus.submitting;
+
+  AbstractFormBaseState({
+    required this.formResultStatus,
+  });
+
+  dynamic copyWith() => this;
+}
+
+abstract class AbstractFormBasicState<TModel> extends AbstractFormBaseState {
   TModel? model;
 
   bool get isInitialized => formResultStatus == FormResultStatus.initialized;
   bool get isSubmitting => formResultStatus == FormResultStatus.submitting;
 
   AbstractFormBasicState({
-    required this.formResultStatus,
+    required super.formResultStatus,
     required this.model,
   });
 
