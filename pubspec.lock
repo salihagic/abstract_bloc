@@ -380,10 +380,10 @@ packages:
     dependency: "direct main"
     description:
       name: rest_api_client
-      sha256: "80792fe2d85da692e552d344cd8ed2be7246d0308a75634e71ecb524409c7e37"
+      sha256: "21341a8240871b00028347a327d5f3fcf6af5b60a84439c688e98e286894affc"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.3"
+    version: "2.2.4"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -409,10 +409,10 @@ packages:
     dependency: transitive
     description:
       name: storage_repository
-      sha256: c48b1cf02fbaa06f9b7422b2520b600bad9bd9128b1fa566cfcd882df213c0a4
+      sha256: cebe3ff9f0d162dd2abeb2919b666f358e8b96ff891ffdbaf8ec60ed89210443
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.10"
+    version: "1.1.11"
   stream_channel:
     dependency: transitive
     description:
