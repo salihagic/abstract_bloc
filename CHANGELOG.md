@@ -1,3 +1,6 @@
+## [1.2.2] 
+* ListView padding set to zero
+
 ## [1.2.1] 
 * Updated dependencies
 

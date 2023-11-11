@@ -214,6 +214,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
 
               if (columns <= 1) {
                 return ListView.builder(
+                  padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   scrollDirection: scrollDirection,
                   physics: physics,
@@ -231,6 +232,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
               }
 
               return GridView.builder(
+                padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 scrollDirection: scrollDirection,
                 physics: physics,
@@ -295,8 +297,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
               height: heightBuilder?.call(context, state),
               child: () {
                 if (headerBehaviour == HeaderBehaviour.fixed &&
-                        header != null ||
-                    headerBuilder != null) {
+                    (header != null || headerBuilder != null)) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
