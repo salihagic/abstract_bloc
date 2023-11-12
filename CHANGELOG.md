@@ -1,3 +1,6 @@
+## [1.2.3] 
+* onAfterLoaded added to AbstractItemBloc
+
 ## [1.2.2] 
 * ListView padding set to zero
 
