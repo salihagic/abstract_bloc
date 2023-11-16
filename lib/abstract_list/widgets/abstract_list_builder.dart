@@ -229,6 +229,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
               }
 
               return GridView.builder(
+                padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 scrollDirection: scrollDirection,
                 physics: physics,

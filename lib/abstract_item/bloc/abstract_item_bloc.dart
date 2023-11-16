@@ -12,7 +12,11 @@ abstract class AbstractItemBloc<S extends AbstractItemState>
     );
   }
 
-  Future onBeforeLoad() async {}
+  Future<void> onBeforeLoad(
+      AbstractItemLoadEvent event, Emitter<S> emit) async {}
+
+  Future<void> onAfterLoad(
+      AbstractItemLoadEvent event, Emitter<S> emit, S previousState) async {}
 
   Stream<Result> resolveStreamData() async* {
     throw UnimplementedError();
@@ -22,6 +26,7 @@ abstract class AbstractItemBloc<S extends AbstractItemState>
 
   S convertResultToState(Result result) {
     state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
+
     if (result.isSuccess) {
       state.item = result.data;
     }
@@ -30,12 +35,14 @@ abstract class AbstractItemBloc<S extends AbstractItemState>
   }
 
   Future<void> load(AbstractItemLoadEvent event, Emitter<S> emit) async {
+    final previousState = state.copyWith();
+
     if (state is AbstractItemFilterableState) {
       (state as AbstractItemFilterableState).searchModel = event.searchModel ??
           (state as AbstractItemFilterableState).searchModel;
     }
 
-    await onBeforeLoad();
+    await onBeforeLoad(event, emit);
 
     state.resultStatus = ResultStatus.loading;
     emit(state.copyWith() as S);
@@ -48,6 +55,8 @@ abstract class AbstractItemBloc<S extends AbstractItemState>
         onData: (result) => convertResultToState(result),
       );
     }
+
+    await onAfterLoad(event, emit, previousState);
   }
 
   ResultStatus? _getStatusFromResult(Result result) => result.isError
