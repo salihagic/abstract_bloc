@@ -3,10 +3,7 @@ import 'package:abstract_bloc/extensions/_all.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:flutter/material.dart';
 
-enum HeaderBehaviour {
-  fixed,
-  scrollable,
-}
+enum AbstractScrollBehaviour { fixed, scrollable }
 
 class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
     extends StatelessWidget {
@@ -22,9 +19,12 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
   final double? mainAxisExtent;
   final Widget? header;
   final Widget Function(BuildContext context, S state)? headerBuilder;
-  final HeaderBehaviour headerBehaviour;
+  final AbstractScrollBehaviour headerScrollBehaviour;
   final Widget Function(BuildContext context, S state, int index)? itemBuilder;
   final Widget Function(BuildContext context, S state)? builder;
+  final Widget? footer;
+  final Widget Function(BuildContext context, S state)? footerBuilder;
+  final AbstractScrollBehaviour footerScrollBehaviour;
   final Widget Function(BuildContext context, S state, Widget child)?
       additionalBuilder;
   final Widget Function(BuildContext context, void Function() onInit, S state)?
@@ -57,7 +57,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
     this.noDataBuilder,
     this.header,
     this.headerBuilder,
-    this.headerBehaviour = HeaderBehaviour.fixed,
+    this.headerScrollBehaviour = AbstractScrollBehaviour.scrollable,
     this.isLoading,
     this.isError,
     this.itemCount,
@@ -65,6 +65,9 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
     this.heightBuilder,
     this.itemBuilder,
     this.builder,
+    this.footer,
+    this.footerBuilder,
+    this.footerScrollBehaviour = AbstractScrollBehaviour.scrollable,
     this.additionalBuilder,
     this.onInit,
     this.skipInitialOnInit = false,
@@ -101,7 +104,6 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
       _isEmpty(context, state) && !_isError(context, state);
   bool _showErrorContainer(BuildContext context, S state) =>
       _isEmpty(context, state) && _isError(context, state);
-  bool get _isHeaderScrollable => headerBehaviour == HeaderBehaviour.scrollable;
 
   AbstractListBloc? _blocInstance(BuildContext context) {
     try {
@@ -116,29 +118,28 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
       ? onInit?.call(context)
       : _blocInstance(context)?.add(AbstractListLoadEvent());
 
-  Widget _buildHeader(BuildContext context, S state) {
-    return header ?? headerBuilder?.call(context, state) ?? Container();
-  }
+  Widget _buildHeader(BuildContext context, S state) =>
+      header ?? headerBuilder?.call(context, state) ?? const SizedBox();
+  Widget _buildItem(BuildContext context, S state, int index) =>
+      itemBuilder?.call(context, state, index) ?? const SizedBox();
+  Widget _buildFooter(BuildContext context, S state) =>
+      footer ?? footerBuilder?.call(context, state) ?? const SizedBox();
+  bool _shouldAddHeaderToThisItem(int index) =>
+      index == 0 && headerScrollBehaviour == AbstractScrollBehaviour.scrollable;
+  bool _shouldAddFooterToThisItem(BuildContext context, S state, int index) =>
+      _isLastItem(context, state, index) &&
+      footerScrollBehaviour == AbstractScrollBehaviour.scrollable;
+  bool _isLastItem(BuildContext context, S state, int index) =>
+      index == _itemCount(context, state) - 1;
 
-  Widget _buildItem(
-      BuildContext context, S state, int index, bool isHeaderScrollable) {
-    return itemBuilder?.call(
-            context, state, index - (isHeaderScrollable ? 1 : 0)) ??
-        Container();
-  }
-
-  bool _isLastItem(
-      BuildContext context, S state, int index, bool isHeaderScrollable) {
-    return index ==
-        (_itemCount(context, state) + (isHeaderScrollable ? 1 : 0) - 1);
-  }
-
-  Widget _buildListItem(
-      BuildContext context, S state, int index, bool isHeaderScrollable) {
+  Widget _buildListItem(BuildContext context, S state, int index) {
     final children = [
-      _buildItem(context, state, index, isHeaderScrollable),
-      if (!_isLastItem(context, state, index, isHeaderScrollable))
-        separatorBuilder?.call(context, state, index) ?? Container(),
+      if (_shouldAddHeaderToThisItem(index)) _buildHeader(context, state),
+      _buildItem(context, state, index),
+      if (!_isLastItem(context, state, index))
+        separatorBuilder?.call(context, state, index) ?? const SizedBox(),
+      if (_shouldAddFooterToThisItem(context, state, index))
+        _buildFooter(context, state),
     ];
 
     if (scrollDirection == Axis.vertical) {
@@ -149,7 +150,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
       return Row(mainAxisSize: MainAxisSize.min, children: children);
     }
 
-    return Container();
+    return const SizedBox();
   }
 
   @override
@@ -171,28 +172,30 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
           },
           builder: (context, state) {
             final child = () {
-              final buildMaybeWithHeader = (Widget child) {
-                if (_isHeaderScrollable) {
-                  return ListView(
-                    children: [
+              final buildMaybeWithHeaderAndFooter = (Widget child) {
+                return ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    if (headerScrollBehaviour ==
+                        AbstractScrollBehaviour.scrollable)
                       _buildHeader(context, state),
-                      child,
-                    ],
-                  );
-                }
-
-                return child;
+                    child,
+                    if (footerScrollBehaviour ==
+                        AbstractScrollBehaviour.scrollable)
+                      _buildFooter(context, state),
+                  ],
+                );
               };
 
               if (_showBigLoader(context, state)) {
-                return buildMaybeWithHeader(
+                return buildMaybeWithHeaderAndFooter(
                     abstractConfiguration?.loaderBuilder?.call(context) ??
                         const Loader());
               }
 
               //There is no network data and nothing is fetched from the cache and network error occured
               if (_showEmptyContainer(context, state)) {
-                return buildMaybeWithHeader(noDataBuilder?.call(
+                return buildMaybeWithHeaderAndFooter(noDataBuilder?.call(
                         context, () => _onInit(context), state) ??
                     abstractConfiguration?.abstractListNoDataBuilder
                         ?.call(context, () => _onInit(context)) ??
@@ -201,7 +204,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
               }
 
               if (_showErrorContainer(context, state)) {
-                return buildMaybeWithHeader(errorBuilder?.call(
+                return buildMaybeWithHeaderAndFooter(errorBuilder?.call(
                         context, () => _onInit(context), state) ??
                     abstractConfiguration?.abstractListErrorBuilder
                         ?.call(context, () => _onInit(context)) ??
@@ -209,23 +212,18 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
               }
 
               if (builder != null) {
-                return buildMaybeWithHeader(builder!(context, state));
+                return buildMaybeWithHeaderAndFooter(builder!(context, state));
               }
 
               if (columns <= 1) {
                 return ListView.builder(
+                  padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   scrollDirection: scrollDirection,
                   physics: physics,
-                  itemCount: _itemCount(context, state) +
-                      (_isHeaderScrollable ? 1 : 0),
+                  itemCount: _itemCount(context, state),
                   itemBuilder: (context, index) {
-                    if (_isHeaderScrollable && index == 0) {
-                      return _buildHeader(context, state);
-                    }
-
-                    return _buildListItem(
-                        context, state, index, _isHeaderScrollable);
+                    return _buildListItem(context, state, index);
                   },
                 );
               }
@@ -241,15 +239,9 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
                   childAspectRatio: childAspectRatio,
                   mainAxisExtent: mainAxisExtent,
                 ),
-                itemCount:
-                    _itemCount(context, state) + (_isHeaderScrollable ? 1 : 0),
+                itemCount: _itemCount(context, state),
                 itemBuilder: (context, index) {
-                  if (_isHeaderScrollable && index == 0) {
-                    return _buildHeader(context, state);
-                  }
-
-                  return _buildListItem(
-                      context, state, index, _isHeaderScrollable);
+                  return _buildListItem(context, state, index);
                 },
               );
             }();
@@ -294,23 +286,18 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
             final result = Container(
               height: heightBuilder?.call(context, state),
               child: () {
-                if (headerBehaviour == HeaderBehaviour.fixed &&
-                        header != null ||
-                    headerBuilder != null) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      header ??
-                          headerBuilder?.call(context, state) ??
-                          Container(),
-                      Expanded(
-                        child: content,
-                      )
-                    ],
-                  );
-                }
-
-                return content;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (headerScrollBehaviour == AbstractScrollBehaviour.fixed)
+                      _buildHeader(context, state),
+                    Expanded(
+                      child: content,
+                    ),
+                    if (footerScrollBehaviour == AbstractScrollBehaviour.fixed)
+                      _buildFooter(context, state),
+                  ],
+                );
               }(),
             );
 

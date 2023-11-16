@@ -1,3 +1,6 @@
+## [1.2.2] 
+* footer, footerBuilder added - AbstractScrollBehaviour updated - Updated dependencies
+
 ## [1.2.1] 
 * Updated dependencies
 

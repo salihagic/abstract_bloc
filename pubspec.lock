@@ -138,10 +138,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_secure_storage
-      sha256: "98352186ee7ad3639ccc77ad7924b773ff6883076ab952437d20f18a61f0a7c5"
+      sha256: ffdbb60130e4665d2af814a0267c481bcf522c41ae2e43caf69fa0146876d685
       url: "https://pub.dev"
     source: hosted
-    version: "8.0.0"
+    version: "9.0.0"
   flutter_secure_storage_linux:
     dependency: transitive
     description:
@@ -178,10 +178,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_secure_storage_windows
-      sha256: fc2910ec9b28d60598216c29ea763b3a96c401f0ce1d13cdf69ccb0e5c93c3ee
+      sha256: "5809c66f9dd3b4b93b0a6e2e8561539405322ee767ac2f64d084e2ab5429d108"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "3.0.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -380,10 +380,10 @@ packages:
     dependency: "direct main"
     description:
       name: rest_api_client
-      sha256: "21341a8240871b00028347a327d5f3fcf6af5b60a84439c688e98e286894affc"
+      sha256: "4854bee08b45b21ea43a3558866446957ca5afa06ae5613be56cd88c6b33fadf"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.4"
+    version: "2.2.5"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -409,10 +409,10 @@ packages:
     dependency: transitive
     description:
       name: storage_repository
-      sha256: cebe3ff9f0d162dd2abeb2919b666f358e8b96ff891ffdbaf8ec60ed89210443
+      sha256: "78933656967f46dea03f811546d71679856f351a53b421dfccc7e82cb5ad1ce9"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.11"
+    version: "1.1.12"
   stream_channel:
     dependency: transitive
     description:
