@@ -10,7 +10,7 @@ Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await RestApiClient.initFlutter();
 
-  final restApiClient = RestApiClient(
+  final restApiClient = RestApiClientImpl(
     options: RestApiClientOptions(
       baseUrl: 'https://gorest.co.in/public/v2/',
       cacheEnabled: true,
@@ -41,7 +41,7 @@ Future main() async {
   runApp(
     MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<IRestApiClient>(
+        RepositoryProvider<RestApiClient>(
           create: (_) => restApiClient,
         ),
         RepositoryProvider<IUsersRepository>(
@@ -218,8 +218,7 @@ Future main() async {
                 idleIcon: Container(),
               ),
               headerTriggerDistance: 80.0,
-              springDescription: const SpringDescription(
-                  stiffness: 170, damping: 16, mass: 1.9),
+              springDescription: const SpringDescription(stiffness: 170, damping: 16, mass: 1.9),
               maxOverScrollExtent: 100,
               maxUnderScrollExtent: 0,
               enableScrollWhenRefreshCompleted: true,
