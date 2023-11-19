@@ -1,3 +1,6 @@
+## [1.2.6] 
+* ScrollController for lists
+
 ## [1.2.5] 
 * Updated dependencies
 

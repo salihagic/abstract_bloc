@@ -10,6 +10,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
   final _refreshController = RefreshController();
   final Axis scrollDirection;
   final ScrollPhysics? physics;
+  final ScrollController? controller;
   final bool enableRefresh;
   final bool enableLoadMore;
   final int columns;
@@ -51,6 +52,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
     this.mainAxisExtent,
     this.scrollDirection = Axis.vertical,
     this.physics,
+    this.controller,
     this.enableRefresh = true,
     this.enableLoadMore = true,
     this.errorBuilder,
@@ -174,6 +176,8 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
             final child = () {
               final buildMaybeWithHeaderAndFooter = (Widget child) {
                 return ListView(
+                  physics: physics,
+                  controller: controller,
                   padding: EdgeInsets.zero,
                   children: [
                     if (headerScrollBehaviour ==
@@ -221,6 +225,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
                   shrinkWrap: true,
                   scrollDirection: scrollDirection,
                   physics: physics,
+                  controller: controller,
                   itemCount: _itemCount(context, state),
                   itemBuilder: (context, index) {
                     return _buildListItem(context, state, index);
@@ -233,6 +238,7 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
                 shrinkWrap: true,
                 scrollDirection: scrollDirection,
                 physics: physics,
+                controller: controller,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: columns,
                   mainAxisSpacing: mainAxisSpacing,

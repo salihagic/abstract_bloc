@@ -218,7 +218,8 @@ Future main() async {
                 idleIcon: Container(),
               ),
               headerTriggerDistance: 80.0,
-              springDescription: const SpringDescription(stiffness: 170, damping: 16, mass: 1.9),
+              springDescription: const SpringDescription(
+                  stiffness: 170, damping: 16, mass: 1.9),
               maxOverScrollExtent: 100,
               maxUnderScrollExtent: 0,
               enableScrollWhenRefreshCompleted: true,
