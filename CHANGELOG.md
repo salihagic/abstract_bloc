@@ -1,3 +1,6 @@
+## [1.2.11] 
+* Updated dependencies
+
 ## [1.2.10] 
 * Updated dependencies
 
