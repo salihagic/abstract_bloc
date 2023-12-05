@@ -1,3 +1,6 @@
+## [1.2.12] 
+* AbstractListBuilder onLoaded added
+
 ## [1.2.11] 
 * Updated dependencies
 

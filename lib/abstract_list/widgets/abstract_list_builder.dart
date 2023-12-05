@@ -23,6 +23,10 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
   final AbstractScrollBehaviour headerScrollBehaviour;
   final Widget Function(BuildContext context, S state, int index)? itemBuilder;
   final Widget Function(BuildContext context, S state)? builder;
+  final void Function(BuildContext context, S state)? listener;
+  final void Function(BuildContext context, S state)? onLoaded;
+  final void Function(BuildContext context, S state)? onLoadedCached;
+  final void Function(BuildContext context, S state)? onError;
   final Widget? footer;
   final Widget Function(BuildContext context, S state)? footerBuilder;
   final AbstractScrollBehaviour footerScrollBehaviour;
@@ -67,6 +71,10 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
     this.heightBuilder,
     this.itemBuilder,
     this.builder,
+    this.listener,
+    this.onLoaded,
+    this.onLoadedCached,
+    this.onError,
     this.footer,
     this.footerBuilder,
     this.footerScrollBehaviour = AbstractScrollBehaviour.scrollable,
@@ -170,6 +178,18 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
           listener: (context, state) {
             if (!_showBigLoader(context, state)) {
               _refreshController.complete();
+            }
+
+            listener?.call(context, state);
+
+            if (state.resultStatus == ResultStatus.loaded) {
+              onLoaded?.call(context, state);
+            }
+            if (state.resultStatus == ResultStatus.loadedCached) {
+              onLoadedCached?.call(context, state);
+            }
+            if (state.resultStatus == ResultStatus.error) {
+              onError?.call(context, state);
             }
           },
           builder: (context, state) {
