@@ -15,7 +15,8 @@ abstract class ItemCubit<S extends ItemState> extends Cubit<S> {
     final previousState = state.copyWith();
 
     if (state is ItemFilterableState) {
-      (state as ItemFilterableState).searchModel = searchModel ?? (state as ItemFilterableState).searchModel;
+      (state as ItemFilterableState).searchModel =
+          searchModel ?? (state as ItemFilterableState).searchModel;
     }
 
     await onBeforeLoad(searchModel);
@@ -34,7 +35,8 @@ abstract class ItemCubit<S extends ItemState> extends Cubit<S> {
     await onAfterLoad(searchModel, previousState);
   }
 
-  Future<void> onAfterLoad<TSearchModel>(TSearchModel? searchModel, S previousState) async {}
+  Future<void> onAfterLoad<TSearchModel>(
+      TSearchModel? searchModel, S previousState) async {}
 
   S convertResultToState(Result result) {
     state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;

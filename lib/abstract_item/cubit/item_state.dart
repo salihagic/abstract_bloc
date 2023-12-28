@@ -5,7 +5,8 @@ abstract class ItemState<TItem> {
   TItem? item;
 
   bool get hasItem => item != null;
-  bool get isLoaded => [ResultStatus.loaded, ResultStatus.loadedCached].contains(resultStatus);
+  bool get isLoaded =>
+      [ResultStatus.loaded, ResultStatus.loadedCached].contains(resultStatus);
 
   ItemState({
     required this.resultStatus,
@@ -15,7 +16,8 @@ abstract class ItemState<TItem> {
   dynamic copyWith() => this;
 }
 
-abstract class ItemFilterableState<TSearchModel, TItem> extends ItemState<TItem> {
+abstract class ItemFilterableState<TSearchModel, TItem>
+    extends ItemState<TItem> {
   TSearchModel searchModel;
 
   ItemFilterableState({

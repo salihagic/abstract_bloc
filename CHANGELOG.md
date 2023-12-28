@@ -1,3 +1,6 @@
+## [1.2.13] 
+* Removed SafeArea
+
 ## [1.2.12] 
 * AbstractListBuilder onLoaded added
 
@@ -75,7 +78,6 @@
 
 ## [1.0.8] 
 * Removed SafeArea from AbstractFormBuilder
-
 
 ## [1.0.7] 
 * Removed preserve state

@@ -86,59 +86,56 @@ class AbstractFormConsumer<
           _onInit(context);
         }
       },
-      builder: (context) => SafeArea(
-        child: BlocConsumer<B, S>(
-          listener: (context, state) {
-            if (state.formResultStatus == FormResultStatus.submittingSuccess) {
-              onSuccess?.call(context, state);
-            } else if (state.formResultStatus ==
-                FormResultStatus.submittingError) {
-              onError?.call(context, state);
-            } else if (state.formResultStatus ==
-                FormResultStatus.validationError) {
-              onValidationError?.call(context, state);
-            }
+      builder: (context) => BlocConsumer<B, S>(
+        listener: (context, state) {
+          if (state.formResultStatus == FormResultStatus.submittingSuccess) {
+            onSuccess?.call(context, state);
+          } else if (state.formResultStatus ==
+              FormResultStatus.submittingError) {
+            onError?.call(context, state);
+          } else if (state.formResultStatus ==
+              FormResultStatus.validationError) {
+            onValidationError?.call(context, state);
+          }
 
-            listener?.call(context, state);
-          },
-          builder: (context, state) {
-            if (_isLoading(context, state)) {
-              return abstractConfiguration?.loaderBuilder?.call(context) ??
-                  const Loader();
-            }
+          listener?.call(context, state);
+        },
+        builder: (context, state) {
+          if (_isLoading(context, state)) {
+            return abstractConfiguration?.loaderBuilder?.call(context) ??
+                const Loader();
+          }
 
-            if (_isError(context, state)) {
-              return errorBuilder?.call(
-                      context, () => _onInit(context), state) ??
-                  AbstractConfiguration.of(context)
-                      ?.abstractFormErrorBuilder
-                      ?.call(context, () => _onInit(context)) ??
-                  AbstractFormErrorContainer(onInit: () => _onInit(context));
-            }
+          if (_isError(context, state)) {
+            return errorBuilder?.call(context, () => _onInit(context), state) ??
+                AbstractConfiguration.of(context)
+                    ?.abstractFormErrorBuilder
+                    ?.call(context, () => _onInit(context)) ??
+                AbstractFormErrorContainer(onInit: () => _onInit(context));
+          }
 
-            return Form(
-              autovalidateMode: _shouldAutovalidate(context, state)
-                  ? AutovalidateMode.always
-                  : AutovalidateMode.disabled,
-              child: child ??
-                  extendedBuilder?.call(
-                    context,
-                    state,
-                    state.model!,
-                    state.modelValidator!,
-                    _blocInstance(context),
-                    (model) => _blocInstance(context)
-                        .add(AbstractFormUpdateEvent(model: model)),
-                    () => _blocInstance(context).add(AbstractFormSubmitEvent()),
-                  ) ??
-                  builder?.call(
-                    context,
-                    state,
-                  ) ??
-                  Container(),
-            );
-          },
-        ),
+          return Form(
+            autovalidateMode: _shouldAutovalidate(context, state)
+                ? AutovalidateMode.always
+                : AutovalidateMode.disabled,
+            child: child ??
+                extendedBuilder?.call(
+                  context,
+                  state,
+                  state.model!,
+                  state.modelValidator!,
+                  _blocInstance(context),
+                  (model) => _blocInstance(context)
+                      .add(AbstractFormUpdateEvent(model: model)),
+                  () => _blocInstance(context).add(AbstractFormSubmitEvent()),
+                ) ??
+                builder?.call(
+                  context,
+                  state,
+                ) ??
+                Container(),
+          );
+        },
       ),
     );
   }

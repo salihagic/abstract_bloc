@@ -66,54 +66,52 @@ class AbstractItemConsumer<B extends AbstractItemBloc<S>,
           _onInit(context);
         }
       },
-      builder: (context) => SafeArea(
-        child: BlocConsumer<B, S>(
-          listener: (context, state) {
-            listener?.call(context, state);
-          },
-          builder: (context, state) {
-            if (_isLoading(context, state) && _isEmpty(context, state)) {
-              return abstractConfiguration?.loaderBuilder?.call(context) ??
-                  const Loader();
-            }
+      builder: (context) => BlocConsumer<B, S>(
+        listener: (context, state) {
+          listener?.call(context, state);
+        },
+        builder: (context, state) {
+          if (_isLoading(context, state) && _isEmpty(context, state)) {
+            return abstractConfiguration?.loaderBuilder?.call(context) ??
+                const Loader();
+          }
 
-            //There is no network data and nothing is fetched from the cache and network error occured
-            if (_isEmpty(context, state)) {
-              if (_isError(context, state)) {
-                return errorBuilder?.call(
-                        context, () => _onInit(context), state) ??
-                    AbstractConfiguration.of(context)
-                        ?.abstractItemErrorBuilder
-                        ?.call(context, () => _onInit(context)) ??
-                    AbstractItemErrorContainer(onInit: () => _onInit(context));
-              } else {
-                return noDataBuilder?.call(
-                        context, () => _onInit(context), state) ??
-                    AbstractConfiguration.of(context)
-                        ?.abstractItemNoDataBuilder
-                        ?.call(context, () => _onInit(context)) ??
-                    AbstractItemNoDataContainer(onInit: () => _onInit(context));
-              }
+          //There is no network data and nothing is fetched from the cache and network error occured
+          if (_isEmpty(context, state)) {
+            if (_isError(context, state)) {
+              return errorBuilder?.call(
+                      context, () => _onInit(context), state) ??
+                  AbstractConfiguration.of(context)
+                      ?.abstractItemErrorBuilder
+                      ?.call(context, () => _onInit(context)) ??
+                  AbstractItemErrorContainer(onInit: () => _onInit(context));
+            } else {
+              return noDataBuilder?.call(
+                      context, () => _onInit(context), state) ??
+                  AbstractConfiguration.of(context)
+                      ?.abstractItemNoDataBuilder
+                      ?.call(context, () => _onInit(context)) ??
+                  AbstractItemNoDataContainer(onInit: () => _onInit(context));
             }
+          }
 
-            return Stack(
-              children: [
-                child ??
-                    builder?.call(context, state, state.item!) ??
-                    Container(),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: LoadInfoIcon(
-                    isLoading: _isLoading(context, state),
-                    isCached: _isCached(context, state),
-                    onReload: (_) => _onInit(context),
-                  ),
+          return Stack(
+            children: [
+              child ??
+                  builder?.call(context, state, state.item!) ??
+                  Container(),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: LoadInfoIcon(
+                  isLoading: _isLoading(context, state),
+                  isCached: _isCached(context, state),
+                  onReload: (_) => _onInit(context),
                 ),
-              ],
-            );
-          },
-        ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
