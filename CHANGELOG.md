@@ -1,3 +1,6 @@
+## [1.2.16] 
+* AbstractFormBloc submit update
+
 ## [1.2.15] 
 * Updated dependencies
 

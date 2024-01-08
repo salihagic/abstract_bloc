@@ -80,7 +80,7 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
 
     if (state is AbstractFormState &&
         !((state as AbstractFormState).modelValidator?.validate(model) ??
-            false)) {
+            true)) {
       (state as AbstractFormState).autovalidate = true;
       updateStatus(emit, FormResultStatus.validationError);
       await Future.delayed(const Duration(milliseconds: 100));
