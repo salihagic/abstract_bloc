@@ -1,3 +1,6 @@
+## [1.2.19] 
+* Enable load more (bugfix)
+
 ## [1.2.18] 
 * Updated dependencies
 

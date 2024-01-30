@@ -1,3 +1,5 @@
+import 'package:abstract_bloc/extensions/list_extensions.dart';
+
 class GridResult<TListItem> {
   List<TListItem> items;
   bool hasMoreItems;
@@ -13,7 +15,7 @@ class GridResult<TListItem> {
   int hasMultiplePages;
   int firstRowOnPage;
   int lastRowOnPage;
-  int hasItems;
+  bool hasItems;
   dynamic additionalData;
 
   GridResult({
@@ -30,9 +32,12 @@ class GridResult<TListItem> {
     this.hasMultiplePages = 0,
     this.firstRowOnPage = 0,
     this.lastRowOnPage = 0,
-    this.hasItems = 0,
+    this.hasItems = true,
     this.additionalData,
-  });
+  }) {
+    hasMoreItems = hasMoreItems || items.count == pageSize;
+    hasItems = hasItems || items.isNotNullOrEmpty;
+  }
 
   void map(GridResult other) {
     this.items = other.items as List<TListItem>;
@@ -54,17 +59,21 @@ class GridResult<TListItem> {
 
   factory GridResult.fromMap(Map<dynamic, dynamic> map,
       [TListItem Function(Map<String, dynamic> data)? itemParser]) {
+    final List<TListItem> items = map[GridResultJsonConfiguration.itemsJsonKey]
+            ?.map<TListItem>((x) => itemParser?.call(x) ?? x as TListItem)
+            .toList() ??
+        [];
+    final int pageSize = map[GridResultJsonConfiguration.pageSizeJsonKey] ?? 0;
+
     return GridResult<TListItem>(
-      items: map[GridResultJsonConfiguration.itemsJsonKey]
-          ?.map<TListItem>((x) => itemParser?.call(x) ?? x as TListItem)
-          .toList(),
-      hasMoreItems:
-          map[GridResultJsonConfiguration.hasMoreItemsJsonKey] ?? true,
+      items: items,
+      hasMoreItems: map[GridResultJsonConfiguration.hasMoreItemsJsonKey] ??
+          items.count == pageSize,
       currentPage: map[GridResultJsonConfiguration.currentPageJsonKey] ?? 0,
       startPage: map[GridResultJsonConfiguration.startPageJsonKey] ?? 0,
       endPage: map[GridResultJsonConfiguration.endPageJsonKey] ?? 0,
       pageCount: map[GridResultJsonConfiguration.pageCountJsonKey] ?? 0,
-      pageSize: map[GridResultJsonConfiguration.pageSizeJsonKey] ?? 0,
+      pageSize: pageSize,
       rowCount: map[GridResultJsonConfiguration.rowCountJsonKey] ?? 0,
       hasPreviousPage:
           map[GridResultJsonConfiguration.hasPreviousPageJsonKey] ?? 0,
@@ -74,7 +83,8 @@ class GridResult<TListItem> {
       firstRowOnPage:
           map[GridResultJsonConfiguration.firstRowOnPageJsonKey] ?? 0,
       lastRowOnPage: map[GridResultJsonConfiguration.lastRowOnPageJsonKey] ?? 0,
-      hasItems: map[GridResultJsonConfiguration.hasItemsJsonKey] ?? 0,
+      hasItems: map[GridResultJsonConfiguration.hasItemsJsonKey] ??
+          items.isNotNullOrEmpty,
       additionalData: map[GridResultJsonConfiguration.additionalDataJsonKey],
     );
   }

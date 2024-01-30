@@ -100,8 +100,8 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
   bool _enableLoadMore(BuildContext context, S state) =>
       enableLoadMore &&
       _itemCount(context, state) > 0 &&
-      (state is! AbstractListFilterablePaginatedState ||
-          state.result.hasMoreItems);
+      state is AbstractListFilterablePaginatedState &&
+      state.result.hasMoreItems;
   bool _useSmartRefresher() => enableRefresh || enableLoadMore;
   bool _hasData(BuildContext context, S state) =>
       _itemCount(context, state) > 0;
