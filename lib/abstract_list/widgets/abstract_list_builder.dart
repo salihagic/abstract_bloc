@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 enum AbstractScrollBehaviour { fixed, scrollable }
 
-class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
-    extends StatelessWidget {
+class AbstractListBuilder<B extends StateStreamable<S>,
+    S extends AbstractListState> extends StatelessWidget {
   final _refreshController = RefreshController();
   final Axis scrollDirection;
   final ScrollPhysics? physics;
@@ -115,18 +115,57 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
   bool _showErrorContainer(BuildContext context, S state) =>
       _isEmpty(context, state) && _isError(context, state);
 
-  AbstractListBloc? _blocInstance(BuildContext context) {
+  B _blocOrCubitInstance(BuildContext context) {
     try {
-      return (context.read<B>() as AbstractListBloc);
+      return context.read<B>();
     } catch (e) {
-      print('There is no instance of bloc registered: $e');
-      return null;
+      print('There is no instance of bloc or cubit registered: $e');
+
+      throw e;
     }
   }
 
-  void _onInit(BuildContext context) => onInit != null
-      ? onInit?.call(context)
-      : _blocInstance(context)?.add(AbstractListLoadEvent());
+  void _execute(
+    BuildContext context,
+    void Function(BuildContext)? executable,
+    void Function(AbstractListBloc instance)? executableBloc,
+    void Function(AbstractListCubit instance)? executableCubit,
+  ) {
+    if (executable != null) {
+      executable.call(context);
+    } else {
+      final instance = _blocOrCubitInstance(context);
+
+      if (instance is AbstractListBloc) {
+        executableBloc?.call(instance as AbstractListBloc);
+      }
+
+      if (instance is AbstractListCubit) {
+        executableCubit?.call(instance as AbstractListCubit);
+      }
+    }
+  }
+
+  void _onInit(BuildContext context) => _execute(
+        context,
+        onInit,
+        (instance) => instance.add(AbstractListLoadEvent()),
+        (instance) => instance.load(),
+      );
+
+  void _onRefresh(BuildContext context) => _execute(
+        context,
+        onRefresh,
+        (instance) => instance.add(AbstractListRefreshEvent()),
+        (instance) => instance.refresh(),
+      );
+
+  void _onLoadMore(BuildContext context) => _execute(
+        context,
+        onLoadMore,
+        (instance) => instance.add(AbstractListLoadMoreEvent()),
+        (instance) => instance.loadMore(),
+      );
 
   Widget _buildHeader(BuildContext context, S state) =>
       header ?? headerBuilder?.call(context, state) ?? const SizedBox();
@@ -282,14 +321,8 @@ class AbstractListBuilder<B extends BlocBase<S>, S extends AbstractListState>
                       controller: _refreshController,
                       enablePullDown: _enableRefresh(context, state),
                       enablePullUp: _enableLoadMore(context, state),
-                      onRefresh: () => onRefresh != null
-                          ? onRefresh?.call(context)
-                          : _blocInstance(context)
-                              ?.add(AbstractListRefreshEvent()),
-                      onLoading: () => onLoadMore != null
-                          ? onLoadMore?.call(context)
-                          : _blocInstance(context)
-                              ?.add(AbstractListLoadMoreEvent()),
+                      onRefresh: () => _onRefresh(context),
+                      onLoading: () => _onLoadMore(context),
                       child: child,
                     );
                   }

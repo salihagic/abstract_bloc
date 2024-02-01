@@ -1,7 +1,7 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 
-abstract class ItemCubit<S extends ItemState> extends Cubit<S> {
-  ItemCubit(S initialState) : super(initialState);
+abstract class AbstractItemCubit<S extends AbstractItemState> extends Cubit<S> {
+  AbstractItemCubit(S initialState) : super(initialState);
 
   Future<Result> resolveData() async => throw UnimplementedError();
 
@@ -14,9 +14,9 @@ abstract class ItemCubit<S extends ItemState> extends Cubit<S> {
   Future<void> load<TSearchModel>([TSearchModel? searchModel]) async {
     final previousState = state.copyWith();
 
-    if (state is ItemFilterableState) {
-      (state as ItemFilterableState).searchModel =
-          searchModel ?? (state as ItemFilterableState).searchModel;
+    if (state is AbstractItemFilterableState) {
+      (state as AbstractItemFilterableState).searchModel =
+          searchModel ?? (state as AbstractItemFilterableState).searchModel;
     }
 
     await onBeforeLoad(searchModel);

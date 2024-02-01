@@ -1,3 +1,6 @@
+## [1.2.20] 
+* Bloc -> Cubit
+
 ## [1.2.19] 
 * Enable load more (bugfix)
 

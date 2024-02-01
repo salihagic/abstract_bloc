@@ -2,7 +2,7 @@ import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:flutter/material.dart';
 
-class AbstractFormBuilder<B extends AbstractFormBloc<S>,
+class AbstractFormBuilder<B extends StateStreamable<S>,
     S extends AbstractFormBasicState> extends StatelessWidget {
   final void Function(BuildContext context)? onInit;
   final bool skipInitialOnInit;
@@ -49,18 +49,43 @@ class AbstractFormBuilder<B extends AbstractFormBloc<S>,
       isError?.call(context, state) ??
       state.formResultStatus == FormResultStatus.error;
 
-  B _blocInstance(BuildContext context) {
+  B _blocOrCubitInstance(BuildContext context) {
     try {
       return context.read<B>();
     } catch (e) {
-      print('There is no instance of AbstractFormBloc registered: $e');
+      print('There is no instance of bloc or cubit registered: $e');
+
       throw e;
     }
   }
 
-  void _onInit(BuildContext context) => onInit != null
-      ? onInit?.call(context)
-      : _blocInstance(context).add(AbstractFormInitEvent());
+  void _execute(
+    BuildContext context,
+    void Function(BuildContext)? executable,
+    void Function(AbstractFormBloc instance)? executableBloc,
+    void Function(AbstractFormCubit instance)? executableCubit,
+  ) {
+    if (executable != null) {
+      executable.call(context);
+    } else {
+      final instance = _blocOrCubitInstance(context);
+
+      if (instance is AbstractFormBloc) {
+        executableBloc?.call(instance as AbstractFormBloc);
+      }
+
+      if (instance is AbstractFormCubit) {
+        executableCubit?.call(instance as AbstractFormCubit);
+      }
+    }
+  }
+
+  void _onInit(BuildContext context) => _execute(
+        context,
+        onInit,
+        (instance) => instance.add(AbstractFormInitEvent()),
+        (instance) => instance.init(),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -107,8 +132,13 @@ class AbstractFormBuilder<B extends AbstractFormBloc<S>,
               extendedBuilder?.call(
                 context,
                 state,
-                _blocInstance(context),
-                () => _blocInstance(context).add(AbstractFormSubmitEvent()),
+                _blocOrCubitInstance(context),
+                () => _execute(
+                  context,
+                  null,
+                  (instance) => instance.add(AbstractFormSubmitEvent()),
+                  (instance) => instance.submit(),
+                ),
               ) ??
               builder?.call(
                 context,

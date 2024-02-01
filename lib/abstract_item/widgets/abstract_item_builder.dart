@@ -2,7 +2,7 @@ import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:flutter/material.dart';
 
-class AbstractItemBuilder<B extends AbstractItemBloc<S>,
+class AbstractItemBuilder<B extends StateStreamable<S>,
     S extends AbstractItemState> extends StatelessWidget {
   final void Function(BuildContext context)? onInit;
   final bool skipInitialOnInit;
@@ -43,18 +43,31 @@ class AbstractItemBuilder<B extends AbstractItemBloc<S>,
       _isError(context, state) && _hasData(context, state);
   bool _isEmpty(BuildContext context, S state) => !_hasData(context, state);
 
-  B _blocInstance(BuildContext context) {
+  B _blocOrCubitInstance(BuildContext context) {
     try {
       return context.read<B>();
     } catch (e) {
-      print('There is no instance of bloc registered: $e');
+      print('There is no instance of bloc or cubit registered: $e');
+
       throw e;
     }
   }
 
-  void _onInit(BuildContext context) => onInit != null
-      ? onInit?.call(context)
-      : _blocInstance(context).add(AbstractItemLoadEvent());
+  void _onInit(BuildContext context) {
+    if (onInit != null) {
+      onInit?.call(context);
+    } else {
+      final instance = _blocOrCubitInstance(context);
+
+      if (instance is AbstractItemBloc) {
+        (instance as AbstractItemBloc).add(AbstractItemLoadEvent());
+      }
+
+      if (instance is AbstractItemCubit) {
+        (instance as AbstractItemCubit).load();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
