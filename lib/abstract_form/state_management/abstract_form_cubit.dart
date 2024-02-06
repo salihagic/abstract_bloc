@@ -10,7 +10,8 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
   }
 
   // Override this method to initialize referent data or a model from your API
-  Future<Result> initModel<T>([T? model]) async => Result.success();
+  Future<Result> initModel(model) async => Result.success();
+  Future<Result> initModelEmpty() async => Result.success();
 
   Future<void> init<T>([T? model]) async {
     if (state is AbstractFormState) {
@@ -18,7 +19,8 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
     }
     updateStatus(FormResultStatus.initializing);
 
-    final result = await initModel(model);
+    final result =
+        model != null ? await initModel(model) : await initModelEmpty();
 
     if (result.isError) {
       updateStatus(FormResultStatus.error);
