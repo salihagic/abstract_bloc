@@ -1,3 +1,6 @@
+## [1.2.23] 
+* Check if Bloc/Cubit isClosed (fix)
+
 ## [1.2.22] 
 * cacheExtent added
 

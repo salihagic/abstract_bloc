@@ -52,7 +52,7 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
       (state as AbstractFormBasicState).model = event.model;
     }
 
-    emit(state.copyWith() as S);
+    updateState(state.copyWith() as S, emit);
   }
 
   Future<Result> onSubmit(model) => throw Exception('onSubmit Not implemented');
@@ -87,7 +87,7 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
       updateStatus(emit, FormResultStatus.initialized);
     } else {
       state.formResultStatus = FormResultStatus.submitting;
-      emit(state.copyWith());
+      updateState(state.copyWith(), emit);
 
       final result = state is AbstractFormBasicState
           ? await onSubmit(model)
@@ -103,6 +103,12 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
 
   void updateStatus(Emitter<S> emit, FormResultStatus formResultStatus) {
     state.formResultStatus = formResultStatus;
-    emit(state.copyWith());
+    updateState(state.copyWith(), emit);
+  }
+
+  void updateState(S state, Emitter<S> emit) {
+    if (!isClosed) {
+      emit(state);
+    }
   }
 }

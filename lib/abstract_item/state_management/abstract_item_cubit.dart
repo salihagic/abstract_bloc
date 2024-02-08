@@ -22,13 +22,13 @@ abstract class AbstractItemCubit<S extends AbstractItemState> extends Cubit<S> {
     await onBeforeLoad(searchModel);
 
     state.resultStatus = ResultStatus.loading;
-    emit(state.copyWith() as S);
+    updateState(state.copyWith() as S);
 
     try {
-      emit(convertResultToState(await resolveData()));
+      updateState(convertResultToState(await resolveData()));
     } catch (e) {
       await for (final result in resolveStreamData()) {
-        emit(convertResultToState(result));
+        updateState(convertResultToState(result));
       }
     }
 
@@ -53,4 +53,10 @@ abstract class AbstractItemCubit<S extends AbstractItemState> extends Cubit<S> {
       : result.hasData && result is CacheResult
           ? ResultStatus.loadedCached
           : ResultStatus.loaded;
+
+  void updateState(S state) {
+    if (!isClosed) {
+      emit(state);
+    }
+  }
 }

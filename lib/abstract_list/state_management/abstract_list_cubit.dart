@@ -33,13 +33,13 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
     await onBeforeLoad();
 
     state.resultStatus = ResultStatus.loading;
-    emit(state.copyWith() as S);
+    updateState(state.copyWith() as S);
 
     try {
-      emit(await convertResultToStateAfterLoad(await resolveData()));
+      updateState(await convertResultToStateAfterLoad(await resolveData()));
     } catch (e) {
       await for (final result in resolveStreamData()) {
-        emit(await convertResultToStateAfterLoad(result));
+        updateState(await convertResultToStateAfterLoad(result));
         await onAfterLoad(result);
       }
     }
@@ -53,10 +53,10 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
     await onBeforeRefresh();
 
     try {
-      emit(await convertResultToStateAfterRefresh(await resolveData()));
+      updateState(await convertResultToStateAfterRefresh(await resolveData()));
     } catch (e) {
       await for (final result in resolveStreamData()) {
-        emit(await convertResultToStateAfterRefresh(result));
+        updateState(await convertResultToStateAfterRefresh(result));
         await onAfterRefresh(result);
       }
     }
@@ -69,10 +69,11 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
       await onBeforeLoadMore();
 
       try {
-        emit(await convertResultToStateAfterLoadMore(await resolveData()));
+        updateState(
+            await convertResultToStateAfterLoadMore(await resolveData()));
       } catch (e) {
         await for (final result in resolveStreamData()) {
-          emit(await convertResultToStateAfterLoadMore(result));
+          updateState(await convertResultToStateAfterLoadMore(result));
           await onAfterLoadMore(result);
         }
       }
@@ -156,4 +157,10 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
           : state.resultStatus == ResultStatus.loading
               ? ResultStatus.loaded
               : null;
+
+  void updateState(S state) {
+    if (!isClosed) {
+      emit(state);
+    }
+  }
 }

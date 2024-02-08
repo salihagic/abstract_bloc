@@ -46,13 +46,14 @@ abstract class AbstractListBloc<S extends AbstractListState>
     await onBeforeLoad(event, emit);
 
     state.resultStatus = ResultStatus.loading;
-    emit(state.copyWith() as S);
+    updateState(state.copyWith() as S, emit);
 
     try {
-      emit(await convertResultToStateAfterLoad(await resolveData()));
+      updateState(
+          await convertResultToStateAfterLoad(await resolveData()), emit);
     } catch (e) {
       await for (final result in resolveStreamData()) {
-        emit(await convertResultToStateAfterLoad(result));
+        updateState(await convertResultToStateAfterLoad(result), emit);
         await onAfterLoad(event, emit, result);
       }
     }
@@ -66,10 +67,11 @@ abstract class AbstractListBloc<S extends AbstractListState>
     await onBeforeRefresh(event, emit);
 
     try {
-      emit(await convertResultToStateAfterRefresh(await resolveData()));
+      updateState(
+          await convertResultToStateAfterRefresh(await resolveData()), emit);
     } catch (e) {
       await for (final result in resolveStreamData()) {
-        emit(await convertResultToStateAfterRefresh(result));
+        updateState(await convertResultToStateAfterRefresh(result), emit);
         await onAfterRefresh(event, emit, result);
       }
     }
@@ -83,10 +85,11 @@ abstract class AbstractListBloc<S extends AbstractListState>
       await onBeforeLoadMore(event, emit);
 
       try {
-        emit(await convertResultToStateAfterLoadMore(await resolveData()));
+        updateState(
+            await convertResultToStateAfterLoadMore(await resolveData()), emit);
       } catch (e) {
         await for (final result in resolveStreamData()) {
-          emit(await convertResultToStateAfterLoadMore(result));
+          updateState(await convertResultToStateAfterLoadMore(result), emit);
           await onAfterLoadMore(event, emit, result);
         }
       }
@@ -170,4 +173,10 @@ abstract class AbstractListBloc<S extends AbstractListState>
           : state.resultStatus == ResultStatus.loading
               ? ResultStatus.loaded
               : null;
+
+  void updateState(S state, Emitter<S> emit) {
+    if (!isClosed) {
+      emit(state);
+    }
+  }
 }

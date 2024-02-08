@@ -45,10 +45,10 @@ abstract class AbstractItemBloc<S extends AbstractItemState>
     await onBeforeLoad(event, emit);
 
     state.resultStatus = ResultStatus.loading;
-    emit(state.copyWith() as S);
+    updateState(state.copyWith() as S, emit);
 
     try {
-      emit(convertResultToState(await resolveData()));
+      updateState(convertResultToState(await resolveData()), emit);
     } catch (e) {
       await emit.forEach<Result>(
         resolveStreamData(),
@@ -64,4 +64,10 @@ abstract class AbstractItemBloc<S extends AbstractItemState>
       : result.hasData && result is CacheResult
           ? ResultStatus.loadedCached
           : ResultStatus.loaded;
+
+  void updateState(S state, Emitter<S> emit) {
+    if (!isClosed) {
+      emit(state);
+    }
+  }
 }

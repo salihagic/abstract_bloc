@@ -40,7 +40,7 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
       (state as AbstractFormBasicState).model = model;
     }
 
-    emit(state.copyWith() as S);
+    updateState(state.copyWith() as S);
   }
 
   Future<Result> onSubmit(model) => throw Exception('onSubmit Not implemented');
@@ -77,7 +77,7 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
       updateStatus(FormResultStatus.initialized);
     } else {
       state.formResultStatus = FormResultStatus.submitting;
-      emit(state.copyWith());
+      updateState(state.copyWith());
 
       final result = state is AbstractFormBasicState
           ? await onSubmit(model)
@@ -93,6 +93,12 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
 
   void updateStatus(FormResultStatus formResultStatus) {
     state.formResultStatus = formResultStatus;
-    emit(state.copyWith());
+    updateState(state.copyWith());
+  }
+
+  void updateState(S state) {
+    if (!isClosed) {
+      emit(state);
+    }
   }
 }
