@@ -1,3 +1,6 @@
+## [1.2.22] 
+* cacheExtent added
+
 ## [1.2.21] 
 * Bloc -> Cubit
 

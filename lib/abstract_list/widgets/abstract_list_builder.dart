@@ -14,6 +14,7 @@ class AbstractListBuilder<B extends StateStreamable<S>,
   final bool enableRefresh;
   final bool enableLoadMore;
   final int columns;
+  final double? cacheExtent;
   final double mainAxisSpacing;
   final double crossAxisSpacing;
   final double childAspectRatio;
@@ -50,6 +51,7 @@ class AbstractListBuilder<B extends StateStreamable<S>,
   AbstractListBuilder({
     Key? key,
     this.columns = 1,
+    this.cacheExtent,
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
     this.childAspectRatio = 1.0,
@@ -235,6 +237,7 @@ class AbstractListBuilder<B extends StateStreamable<S>,
             final child = () {
               final buildMaybeWithHeaderAndFooter = (Widget child) {
                 return ListView(
+                  cacheExtent: cacheExtent,
                   physics: physics,
                   controller: controller,
                   padding: EdgeInsets.zero,
@@ -280,6 +283,7 @@ class AbstractListBuilder<B extends StateStreamable<S>,
 
               if (columns <= 1) {
                 return ListView.builder(
+                  cacheExtent: cacheExtent,
                   padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   scrollDirection: scrollDirection,
@@ -293,6 +297,7 @@ class AbstractListBuilder<B extends StateStreamable<S>,
               }
 
               return GridView.builder(
+                cacheExtent: cacheExtent,
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 scrollDirection: scrollDirection,
@@ -317,6 +322,7 @@ class AbstractListBuilder<B extends StateStreamable<S>,
                 () {
                   if (_useSmartRefresher()) {
                     return SmartRefresher(
+                      cacheExtent: cacheExtent,
                       scrollDirection: scrollDirection,
                       controller: _refreshController,
                       enablePullDown: _enableRefresh(context, state),
