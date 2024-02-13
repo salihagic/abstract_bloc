@@ -1,3 +1,6 @@
+## [1.2.24] 
+* Updated dependencies
+
 ## [1.2.23] 
 * Check if Bloc/Cubit isClosed (fix)
 
