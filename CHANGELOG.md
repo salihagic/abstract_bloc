@@ -1,3 +1,6 @@
+## [1.2.25] 
+* Updated Form submit method
+
 ## [1.2.24] 
 * Updated dependencies
 

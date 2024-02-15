@@ -89,9 +89,8 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
       state.formResultStatus = FormResultStatus.submitting;
       updateState(state.copyWith(), emit);
 
-      final result = state is AbstractFormBasicState
-          ? await onSubmit(model)
-          : await onSubmitEmpty();
+      final result =
+          model != null ? await onSubmit(model) : await onSubmitEmpty();
 
       if (result.isSuccess) {
         await onSubmitSuccess(result, emit);

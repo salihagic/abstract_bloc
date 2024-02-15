@@ -3,7 +3,7 @@ import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:flutter/material.dart';
 
 class AbstractFormBuilder<B extends StateStreamable<S>,
-    S extends AbstractFormBasicState> extends StatelessWidget {
+    S extends AbstractFormBaseState> extends StatelessWidget {
   final void Function(BuildContext context)? onInit;
   final bool skipInitialOnInit;
   final bool reinitOnSuccess;
