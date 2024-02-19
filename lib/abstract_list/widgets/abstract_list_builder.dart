@@ -1,11 +1,12 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/extensions/_all.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
+import 'package:provider/single_child_widget.dart';
 import 'package:flutter/material.dart';
 
 enum AbstractScrollBehaviour { fixed, scrollable }
 
-class AbstractListBuilder<B extends StateStreamable<S>,
+class AbstractListBuilder<B extends StateStreamableSource<S>,
     S extends AbstractListState> extends StatelessWidget {
   final _refreshController = RefreshController();
   final Axis scrollDirection;
@@ -47,6 +48,9 @@ class AbstractListBuilder<B extends StateStreamable<S>,
   final Widget Function(BuildContext context, S state, int index)?
       separatorBuilder;
   final double Function(BuildContext context, S state)? heightBuilder;
+  final B? providerValue;
+  final B Function(BuildContext context)? provider;
+  final List<SingleChildWidget>? providers;
 
   AbstractListBuilder({
     Key? key,
@@ -85,6 +89,9 @@ class AbstractListBuilder<B extends StateStreamable<S>,
     this.skipInitialOnInit = false,
     this.onRefresh,
     this.onLoadMore,
+    this.providerValue,
+    this.provider,
+    this.providers,
   }) : super(key: key);
 
   bool _isLoadingAny(BuildContext context, S state) =>
@@ -208,7 +215,7 @@ class AbstractListBuilder<B extends StateStreamable<S>,
   Widget build(BuildContext context) {
     final abstractConfiguration = AbstractConfiguration.of(context);
 
-    return StatefullBuilder(
+    final mainChild = StatefullBuilder(
       initState: (context) {
         if (!skipInitialOnInit) {
           _onInit(context);
@@ -372,5 +379,28 @@ class AbstractListBuilder<B extends StateStreamable<S>,
         );
       },
     );
+
+    if (providerValue != null) {
+      return BlocProvider.value(
+        value: providerValue!,
+        child: mainChild,
+      );
+    }
+
+    if (provider != null) {
+      return BlocProvider<B>(
+        create: provider!,
+        child: mainChild,
+      );
+    }
+
+    if (providers.isNotNullOrEmpty) {
+      return MultiBlocProvider(
+        providers: providers!,
+        child: mainChild,
+      );
+    }
+
+    return mainChild;
   }
 }

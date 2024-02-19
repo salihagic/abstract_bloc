@@ -1,3 +1,6 @@
+## [1.2.26] 
+* Provider moved to Abstract_Builder
+
 ## [1.2.25] 
 * Updated Form submit method
 

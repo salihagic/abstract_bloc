@@ -17,9 +17,9 @@ class StatefullBuilder extends StatefulWidget {
 class _StatefullBuilderState extends State<StatefullBuilder> {
   @override
   void initState() {
-    widget.initState?.call(context);
-
     super.initState();
+
+    widget.initState?.call(context);
   }
 
   @override
