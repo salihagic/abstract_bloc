@@ -43,17 +43,17 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
     updateState(state.copyWith() as S);
   }
 
+  Future<void> onBeforeSubmit(model) async {}
   Future<Result> onSubmit(model) => throw Exception('onSubmit Not implemented');
   Future<Result> onSubmitEmpty() =>
       throw Exception('onSubmitEmpty Not implemented');
+  Future<void> onAfterSubmit(Result result, model) async {}
 
   Future<void> onSubmitSuccess(Result result) async {
     updateStatus(FormResultStatus.submittingSuccess);
   }
 
-  Future<void> onSubmitError(
-    Result result,
-  ) async {
+  Future<void> onSubmitError(Result result) async {
     if (state is AbstractFormState) {
       (state as AbstractFormState).autovalidate = true;
     }

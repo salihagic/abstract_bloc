@@ -1,3 +1,6 @@
+## [1.2.27] 
+* Updated dependencies
+
 ## [1.2.26] 
 * Provider moved to Abstract_Builder
 
