@@ -38,6 +38,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
       errorBuilder;
   final Widget Function(BuildContext context, void Function() onInit, S state)?
       noDataBuilder;
+  final Widget Function(BuildContext context, S state)? loaderBuilder;
   final void Function(BuildContext context)? onInit;
   final bool skipInitialOnInit;
   final void Function(BuildContext context)? onRefresh;
@@ -67,6 +68,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
     this.enableLoadMore = true,
     this.errorBuilder,
     this.noDataBuilder,
+    this.loaderBuilder,
     this.header,
     this.headerBuilder,
     this.headerScrollBehaviour = AbstractScrollBehaviour.scrollable,
@@ -262,7 +264,8 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
 
               if (_showBigLoader(context, state)) {
                 return buildMaybeWithHeaderAndFooter(
-                    abstractConfiguration?.loaderBuilder?.call(context) ??
+                    loaderBuilder?.call(context, state) ??
+                        abstractConfiguration?.loaderBuilder?.call(context) ??
                         const Loader());
               }
 

@@ -11,6 +11,7 @@ class AbstractFormBuilder<B extends StateStreamableSource<S>,
   final bool reinitOnSuccess;
   final Widget Function(BuildContext context, void Function() onInit, S state)?
       errorBuilder;
+  final Widget Function(BuildContext context, S state)? loaderBuilder;
   final bool Function(BuildContext context, S state)? isLoading;
   final bool Function(BuildContext context, S state)? shouldAutovalidate;
   final bool Function(BuildContext context, S state)? isError;
@@ -34,6 +35,7 @@ class AbstractFormBuilder<B extends StateStreamableSource<S>,
     this.skipInitialOnInit = false,
     this.reinitOnSuccess = true,
     this.errorBuilder,
+    this.loaderBuilder,
     this.isLoading,
     this.shouldAutovalidate,
     this.isError,
@@ -124,7 +126,8 @@ class AbstractFormBuilder<B extends StateStreamableSource<S>,
         },
         builder: (context, state) {
           if (_isLoading(context, state)) {
-            return abstractConfiguration?.loaderBuilder?.call(context) ??
+            return loaderBuilder?.call(context, state) ??
+                abstractConfiguration?.loaderBuilder?.call(context) ??
                 const Loader();
           }
 

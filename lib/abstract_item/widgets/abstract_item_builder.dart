@@ -12,6 +12,7 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
       errorBuilder;
   final Widget Function(BuildContext context, void Function() onInit, S state)?
       noDataBuilder;
+  final Widget Function(BuildContext context, S state)? loaderBuilder;
   final bool Function(BuildContext context, S state)? isLoading;
   final bool Function(BuildContext context, S state)? isError;
   final bool Function(BuildContext context, S state)? hasData;
@@ -28,6 +29,7 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
     this.skipInitialOnInit = false,
     this.errorBuilder,
     this.noDataBuilder,
+    this.loaderBuilder,
     this.isLoading,
     this.isError,
     this.hasData,
@@ -93,7 +95,8 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
         },
         builder: (context, state) {
           if (_isLoading(context, state) && _isEmpty(context, state)) {
-            return abstractConfiguration?.loaderBuilder?.call(context) ??
+            return loaderBuilder?.call(context, state) ??
+                abstractConfiguration?.loaderBuilder?.call(context) ??
                 const Loader();
           }
 
