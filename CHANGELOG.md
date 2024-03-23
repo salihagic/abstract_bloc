@@ -1,3 +1,6 @@
+## [1.2.30] 
+* Updated dependencies
+
 ## [1.2.29] 
 * override loader in Builder widgets
 
