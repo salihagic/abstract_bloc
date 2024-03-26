@@ -59,10 +59,12 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
   Future<Result> onSubmitEmpty() =>
       throw Exception('onSubmitEmpty Not implemented');
 
+  void success() {}
   Future<void> onSubmitSuccess(Result result, Emitter<S> emit) async {
     updateStatus(emit, FormResultStatus.submittingSuccess);
   }
 
+  void error() {}
   Future<void> onSubmitError(Result result, Emitter<S> emit) async {
     if (state is AbstractFormState) {
       (state as AbstractFormState).autovalidate = true;
@@ -94,8 +96,10 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
 
       if (result.isSuccess) {
         await onSubmitSuccess(result, emit);
+        success();
       } else {
         await onSubmitError(result, emit);
+        error();
       }
     }
   }

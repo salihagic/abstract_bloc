@@ -1,3 +1,6 @@
+## [1.2.32] 
+* Added CopyWith
+
 ## [1.2.31] 
 * Updated dependencies
 

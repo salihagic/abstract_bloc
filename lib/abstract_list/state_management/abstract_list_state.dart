@@ -1,6 +1,6 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 
-abstract class AbstractListState<TListItem> {
+abstract class AbstractListState<TListItem> implements CopyWith {
   ResultStatus resultStatus;
   GridResult<TListItem> result;
 
