@@ -2,9 +2,11 @@ import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/extensions/_all.dart';
 
 abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
-  AbstractListCubit(S initialState) : super(initialState);
+  final S _initialState;
 
-  AbstractListState initialState();
+  AbstractListCubit(S initialState)
+      : _initialState = initialState,
+        super(initialState);
 
   Stream<Result> resolveStreamData() async* {
     throw UnimplementedError();
@@ -27,7 +29,7 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
   Future<void> load<TSearchModel>([TSearchModel? searchModel]) async {
     if (state is AbstractListFilterableState) {
       (state as AbstractListFilterableState).searchModel = searchModel ??
-          (initialState() as AbstractListFilterableState).searchModel;
+          (_initialState as AbstractListFilterableState).searchModel;
     }
 
     await onBeforeLoad();

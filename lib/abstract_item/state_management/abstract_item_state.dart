@@ -1,6 +1,6 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 
-abstract class AbstractItemState<TItem> {
+abstract class AbstractItemState<TItem> implements CopyWith {
   ResultStatus resultStatus;
   TItem? item;
 

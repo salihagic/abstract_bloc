@@ -1,6 +1,9 @@
 ## [1.2.33] 
 * Local Result added, onConnectionError added
 
+## [1.2.32] 
+* Added CopyWith
+
 ## [1.2.31] 
 * Updated dependencies
 
