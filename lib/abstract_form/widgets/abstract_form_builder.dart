@@ -9,6 +9,7 @@ class AbstractFormBuilder<B extends StateStreamableSource<S>,
   final void Function(BuildContext context)? onInit;
   final bool skipInitialOnInit;
   final bool reinitOnSuccess;
+  final bool reinitOnLocalSuccess;
   final Widget Function(BuildContext context, void Function() onInit, S state)?
       errorBuilder;
   final Widget Function(BuildContext context, S state)? loaderBuilder;
@@ -23,7 +24,9 @@ class AbstractFormBuilder<B extends StateStreamableSource<S>,
   final Widget Function(BuildContext context, S state)? builder;
   final void Function(BuildContext context, S state)? listener;
   final void Function(BuildContext context, S state)? onSuccess;
+  final void Function(BuildContext context, S state)? onLocalSuccess;
   final void Function(BuildContext context, S state)? onError;
+  final void Function(BuildContext context, S state)? onLocalError;
   final void Function(BuildContext context, S state)? onValidationError;
   final B? providerValue;
   final B Function(BuildContext context)? provider;
@@ -34,6 +37,7 @@ class AbstractFormBuilder<B extends StateStreamableSource<S>,
     this.onInit,
     this.skipInitialOnInit = false,
     this.reinitOnSuccess = true,
+    this.reinitOnLocalSuccess = false,
     this.errorBuilder,
     this.loaderBuilder,
     this.isLoading,
@@ -45,7 +49,9 @@ class AbstractFormBuilder<B extends StateStreamableSource<S>,
     this.builder,
     this.listener,
     this.onSuccess,
+    this.onLocalSuccess,
     this.onError,
+    this.onLocalError,
     this.onValidationError,
     this.providerValue,
     this.provider,
@@ -109,16 +115,38 @@ class AbstractFormBuilder<B extends StateStreamableSource<S>,
       },
       builder: (context) => BlocConsumer<B, S>(
         listener: (context, state) {
+          if (state.formResultStatus == FormResultStatus.initializing) {
+            // Implement initializing
+          }
+          if (state.formResultStatus == FormResultStatus.initialized) {
+            //  Implement initialized
+          }
+          if (state.formResultStatus == FormResultStatus.error) {
+            onError?.call(context, state);
+          }
+          if (state.formResultStatus == FormResultStatus.submitting) {
+            // Implement submitting
+          }
           if (state.formResultStatus == FormResultStatus.submittingSuccess) {
             onSuccess?.call(context, state);
             if (reinitOnSuccess) {
               _onInit(context);
             }
-          } else if (state.formResultStatus ==
-              FormResultStatus.submittingError) {
+          }
+          if (state.formResultStatus ==
+              FormResultStatus.submittingLocalSuccess) {
+            onLocalSuccess?.call(context, state);
+            if (reinitOnLocalSuccess) {
+              _onInit(context);
+            }
+          }
+          if (state.formResultStatus == FormResultStatus.submittingError) {
             onError?.call(context, state);
-          } else if (state.formResultStatus ==
-              FormResultStatus.validationError) {
+          }
+          if (state.formResultStatus == FormResultStatus.submittingLocalError) {
+            onLocalError?.call(context, state);
+          }
+          if (state.formResultStatus == FormResultStatus.validationError) {
             onValidationError?.call(context, state);
           }
 

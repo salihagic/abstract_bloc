@@ -4,6 +4,8 @@ enum FormResultStatus {
   error,
   submitting,
   submittingSuccess,
+  submittingLocalSuccess,
   submittingError,
+  submittingLocalError,
   validationError,
 }

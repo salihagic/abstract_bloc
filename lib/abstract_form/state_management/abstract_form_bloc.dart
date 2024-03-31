@@ -58,9 +58,31 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
   Future<Result> onSubmit(model) => throw Exception('onSubmit Not implemented');
   Future<Result> onSubmitEmpty() =>
       throw Exception('onSubmitEmpty Not implemented');
+  Future<Result> onSubmitLocal(model) =>
+      throw Exception('onSubmitLocal Not implemented');
+  Future<Result> onSubmitEmptyLocal() =>
+      throw Exception('onSubmitEmptyLocal Not implemented');
 
   Future<void> onSubmitSuccess(Result result, Emitter<S> emit) async {
     updateStatus(emit, FormResultStatus.submittingSuccess);
+  }
+
+  Future<void> onSubmitLocalSuccess(Result result, Emitter<S> emit) async {
+    updateStatus(emit, FormResultStatus.submittingLocalSuccess);
+  }
+
+  Future<void> onConnectionSubmitError(
+      Result result, Emitter<S> emit, dynamic model) async {
+    updateStatus(emit, FormResultStatus.submittingError);
+    await Future.delayed(const Duration(milliseconds: 100));
+    updateStatus(emit, FormResultStatus.initialized);
+  }
+
+  Future<void> onConnectionSubmitEmptyError(
+      Result result, Emitter<S> emit) async {
+    updateStatus(emit, FormResultStatus.submittingError);
+    await Future.delayed(const Duration(milliseconds: 100));
+    updateStatus(emit, FormResultStatus.initialized);
   }
 
   Future<void> onSubmitError(Result result, Emitter<S> emit) async {
@@ -68,6 +90,15 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
       (state as AbstractFormState).autovalidate = true;
     }
     updateStatus(emit, FormResultStatus.submittingError);
+    await Future.delayed(const Duration(milliseconds: 100));
+    updateStatus(emit, FormResultStatus.initialized);
+  }
+
+  Future<void> onSubmitLocalError(Result result, Emitter<S> emit) async {
+    if (state is AbstractFormState) {
+      (state as AbstractFormState).autovalidate = true;
+    }
+    updateStatus(emit, FormResultStatus.submittingLocalError);
     await Future.delayed(const Duration(milliseconds: 100));
     updateStatus(emit, FormResultStatus.initialized);
   }
@@ -95,7 +126,25 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
       if (result.isSuccess) {
         await onSubmitSuccess(result, emit);
       } else {
-        await onSubmitError(result, emit);
+        if (result.isConnectionError) {
+          try {
+            final localResult = model != null
+                ? await onSubmitLocal(model)
+                : await onSubmitEmptyLocal();
+
+            if (localResult.isLocalSuccess) {
+              await onSubmitLocalSuccess(result, emit);
+            } else {
+              await onSubmitLocalError(result, emit);
+            }
+          } catch (e) {
+            model != null
+                ? await onConnectionSubmitError(result, model, emit)
+                : await onConnectionSubmitEmptyError(result, emit);
+          }
+        } else {
+          await onSubmitError(result, emit);
+        }
       }
     }
   }

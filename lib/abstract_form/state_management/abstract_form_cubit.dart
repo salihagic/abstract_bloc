@@ -46,9 +46,29 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
   Future<Result> onSubmit(model) => throw Exception('onSubmit Not implemented');
   Future<Result> onSubmitEmpty() =>
       throw Exception('onSubmitEmpty Not implemented');
+  Future<Result> onSubmitLocal(model) =>
+      throw Exception('onSubmitLocal Not implemented');
+  Future<Result> onSubmitEmptyLocal() =>
+      throw Exception('onSubmitEmptyLocal Not implemented');
 
   Future<void> onSubmitSuccess(Result result) async {
     updateStatus(FormResultStatus.submittingSuccess);
+  }
+
+  Future<void> onSubmitLocalSuccess(Result result) async {
+    updateStatus(FormResultStatus.submittingLocalSuccess);
+  }
+
+  Future<void> onConnectionSubmitError(Result result, dynamic model) async {
+    updateStatus(FormResultStatus.submittingError);
+    await Future.delayed(const Duration(milliseconds: 100));
+    updateStatus(FormResultStatus.initialized);
+  }
+
+  Future<void> onConnectionSubmitEmptyError(Result result) async {
+    updateStatus(FormResultStatus.submittingError);
+    await Future.delayed(const Duration(milliseconds: 100));
+    updateStatus(FormResultStatus.initialized);
   }
 
   Future<void> onSubmitError(Result result) async {
@@ -56,6 +76,15 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
       (state as AbstractFormState).autovalidate = true;
     }
     updateStatus(FormResultStatus.submittingError);
+    await Future.delayed(const Duration(milliseconds: 100));
+    updateStatus(FormResultStatus.initialized);
+  }
+
+  Future<void> onSubmitLocalError(Result result) async {
+    if (state is AbstractFormState) {
+      (state as AbstractFormState).autovalidate = true;
+    }
+    updateStatus(FormResultStatus.submittingLocalError);
     await Future.delayed(const Duration(milliseconds: 100));
     updateStatus(FormResultStatus.initialized);
   }
@@ -83,7 +112,25 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
       if (result.isSuccess) {
         await onSubmitSuccess(result);
       } else {
-        await onSubmitError(result);
+        if (result.isConnectionError) {
+          try {
+            final localResult = model != null
+                ? await onSubmitLocal(model)
+                : await onSubmitEmptyLocal();
+
+            if (localResult.isLocalSuccess) {
+              await onSubmitLocalSuccess(result);
+            } else {
+              await onSubmitLocalError(result);
+            }
+          } catch (e) {
+            model != null
+                ? await onConnectionSubmitError(result, model)
+                : await onConnectionSubmitEmptyError(result);
+          }
+        } else {
+          await onSubmitError(result);
+        }
       }
     }
   }
