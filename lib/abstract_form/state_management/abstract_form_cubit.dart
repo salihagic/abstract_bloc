@@ -1,7 +1,9 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 
-abstract class AbstractFormCubit<S extends AbstractFormBaseState> extends Cubit<S> {
-  AbstractFormCubit(S initialState, [ModelValidator? modelValidator]) : super(initialState) {
+abstract class AbstractFormCubit<S extends AbstractFormBaseState>
+    extends Cubit<S> {
+  AbstractFormCubit(S initialState, [ModelValidator? modelValidator])
+      : super(initialState) {
     if (state is AbstractFormState) {
       (state as AbstractFormState).modelValidator = modelValidator;
     }
@@ -17,7 +19,8 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState> extends Cubit<
     }
     updateStatus(FormResultStatus.initializing);
 
-    final result = model != null ? await initModel(model) : await initModelEmpty();
+    final result =
+        model != null ? await initModel(model) : await initModelEmpty();
 
     if (result.isError) {
       updateStatus(FormResultStatus.error);
@@ -41,9 +44,12 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState> extends Cubit<
   }
 
   Future<Result> onSubmit(model) => throw Exception('onSubmit Not implemented');
-  Future<Result> onSubmitEmpty() => throw Exception('onSubmitEmpty Not implemented');
-  Future<Result> onSubmitLocal(model) => throw Exception('onSubmitLocal Not implemented');
-  Future<Result> onSubmitEmptyLocal() => throw Exception('onSubmitEmptyLocal Not implemented');
+  Future<Result> onSubmitEmpty() =>
+      throw Exception('onSubmitEmpty Not implemented');
+  Future<Result> onSubmitLocal(model) =>
+      throw Exception('onSubmitLocal Not implemented');
+  Future<Result> onSubmitEmptyLocal() =>
+      throw Exception('onSubmitEmptyLocal Not implemented');
 
   void success() {}
   Future<void> onSubmitSuccess(Result result) async {
@@ -85,9 +91,14 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState> extends Cubit<
   }
 
   Future<void> submit<T>([T? pModel]) async {
-    final model = pModel ?? (state is AbstractFormBasicState ? (state as AbstractFormBasicState).model : null);
+    final model = pModel ??
+        (state is AbstractFormBasicState
+            ? (state as AbstractFormBasicState).model
+            : null);
 
-    if (state is AbstractFormState && !((state as AbstractFormState).modelValidator?.validate(model) ?? true)) {
+    if (state is AbstractFormState &&
+        !((state as AbstractFormState).modelValidator?.validate(model) ??
+            true)) {
       (state as AbstractFormState).autovalidate = true;
       updateStatus(FormResultStatus.validationError);
       await Future.delayed(const Duration(milliseconds: 100));
@@ -96,7 +107,8 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState> extends Cubit<
       state.formResultStatus = FormResultStatus.submitting;
       updateState(state.copyWith());
 
-      final result = model != null ? await onSubmit(model) : await onSubmitEmpty();
+      final result =
+          model != null ? await onSubmit(model) : await onSubmitEmpty();
 
       if (result.isSuccess) {
         await onSubmitSuccess(result);
@@ -104,7 +116,9 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState> extends Cubit<
       } else {
         if (result.isConnectionError) {
           try {
-            final localResult = model != null ? await onSubmitLocal(model) : await onSubmitEmptyLocal();
+            final localResult = model != null
+                ? await onSubmitLocal(model)
+                : await onSubmitEmptyLocal();
 
             if (localResult.isLocalSuccess) {
               await onSubmitLocalSuccess(result);
@@ -112,7 +126,9 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState> extends Cubit<
               await onSubmitLocalError(result);
             }
           } catch (e) {
-            model != null ? await onConnectionSubmitError(result, model) : await onConnectionSubmitEmptyError(result);
+            model != null
+                ? await onConnectionSubmitError(result, model)
+                : await onConnectionSubmitEmptyError(result);
           }
         } else {
           await onSubmitError(result);

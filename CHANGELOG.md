@@ -1,3 +1,6 @@
+## [1.2.34] 
+* Updated dependencies
+
 ## [1.2.33] 
 * Local Result added, onConnectionError added
 
