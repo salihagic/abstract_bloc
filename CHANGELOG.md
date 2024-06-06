@@ -1,3 +1,6 @@
+## [1.3.0] 
+* AbstractItemCubit listener
+
 ## [1.2.38] 
 * Updated dependencies
 

@@ -17,7 +17,7 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
   final bool Function(BuildContext context, S state)? isError;
   final bool Function(BuildContext context, S state)? hasData;
   final Widget? child;
-  final Widget Function(BuildContext context, S state)? listener;
+  final void Function(BuildContext context, S state)? listener;
   final Widget Function(BuildContext context, S state)? builder;
   final B? providerValue;
   final B Function(BuildContext context)? provider;
