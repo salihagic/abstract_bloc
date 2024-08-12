@@ -17,8 +17,11 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
   final bool Function(BuildContext context, S state)? isError;
   final bool Function(BuildContext context, S state)? hasData;
   final Widget? child;
-  final void Function(BuildContext context, S state)? listener;
   final Widget Function(BuildContext context, S state)? builder;
+  final void Function(BuildContext context, S state)? listener;
+  final void Function(BuildContext context, S state)? onLoaded;
+  final void Function(BuildContext context, S state)? onLoadedCached;
+  final void Function(BuildContext context, S state)? onError;
   final B? providerValue;
   final B Function(BuildContext context)? provider;
   final List<SingleChildWidget>? providers;
@@ -34,8 +37,11 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
     this.isError,
     this.hasData,
     this.child,
-    this.listener,
     this.builder,
+    this.listener,
+    this.onLoaded,
+    this.onLoadedCached,
+    this.onError,
     this.providerValue,
     this.provider,
     this.providers,
@@ -92,6 +98,16 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
       builder: (context) => BlocConsumer<B, S>(
         listener: (context, state) {
           listener?.call(context, state);
+
+          if (state.resultStatus == ResultStatus.loaded) {
+            onLoaded?.call(context, state);
+          }
+          if (state.resultStatus == ResultStatus.loadedCached) {
+            onLoadedCached?.call(context, state);
+          }
+          if (state.resultStatus == ResultStatus.error) {
+            onError?.call(context, state);
+          }
         },
         builder: (context, state) {
           if (_isLoading(context, state) && _isEmpty(context, state)) {

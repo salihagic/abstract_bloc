@@ -1,3 +1,6 @@
+## [1.3.2] 
+* AbstractItem widget onLoaded added
+
 ## [1.3.1] 
 * Updated dependencies
 
