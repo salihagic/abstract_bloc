@@ -1,3 +1,6 @@
+## [1.3.3] 
+* Fixed exports
+
 ## [1.3.2] 
 * AbstractItem widget onLoaded added
 
