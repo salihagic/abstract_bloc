@@ -119,6 +119,9 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
       updateStatus(emit, FormResultStatus.initialized);
     } else {
       state.formResultStatus = FormResultStatus.submitting;
+      if (state is AbstractFormBasicState) {
+        (state as AbstractFormBasicState).model = model;
+      }
       updateState(state.copyWith(), emit);
 
       final result =

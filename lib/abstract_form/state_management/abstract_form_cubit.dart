@@ -105,6 +105,9 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
       updateStatus(FormResultStatus.initialized);
     } else {
       state.formResultStatus = FormResultStatus.submitting;
+      if (state is AbstractFormBasicState) {
+        (state as AbstractFormBasicState).model = model;
+      }
       updateState(state.copyWith());
 
       final result =
