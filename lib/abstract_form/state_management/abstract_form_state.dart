@@ -8,7 +8,12 @@ abstract class AbstractFormBaseState implements CopyWith {
   bool get isSubmitting => formResultStatus == FormResultStatus.submitting;
   bool get isSubmittingSuccess =>
       formResultStatus == FormResultStatus.submittingSuccess;
-  bool get isSubmittingError => formResultStatus == FormResultStatus.error;
+  bool get isSubmittingError => [
+        FormResultStatus.error,
+        FormResultStatus.submittingError,
+        FormResultStatus.submittingLocalError,
+        FormResultStatus.validationError,
+      ].contains(formResultStatus);
 
   AbstractFormBaseState({
     required this.formResultStatus,

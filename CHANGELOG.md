@@ -1,3 +1,6 @@
+## [1.3.5] 
+* isSubmittingError updated
+
 ## [1.3.4] 
 * AbstractForm [Cubit/Bloc] yield model on submit (parameter model on submitting status)
 
