@@ -1,3 +1,6 @@
+## [1.3.7] 
+* Updated dependencies
+
 ## [1.3.6] 
 * Pagination model updated
 
