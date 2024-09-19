@@ -1,7 +1,7 @@
 class Pagination {
   late int skip;
   late int take;
-  int get page => (skip ~/ take) + 1;
+  int get page => (skip ~/ take) + configuration.initialPage;
 
   late int _skip;
   late int _take;
@@ -26,7 +26,7 @@ class Pagination {
   Map<String, dynamic> toJson() => configuration.toJson(page, take);
 
   static PaginationConfiguration configuration = PaginationConfiguration(
-    page: 1,
+    initialPage: 1,
     pageSize: 10,
     toJson: (page, pageSize) => {
       'page': page,
@@ -36,12 +36,12 @@ class Pagination {
 }
 
 class PaginationConfiguration {
-  final int page;
+  final int initialPage;
   final int pageSize;
   final Map<String, dynamic> Function(int page, int pageSize) toJson;
 
   const PaginationConfiguration({
-    this.page = 1,
+    this.initialPage = 1,
     this.pageSize = 10,
     required this.toJson,
   });

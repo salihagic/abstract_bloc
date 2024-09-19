@@ -1,3 +1,6 @@
+## [1.3.6] 
+* Pagination model updated
+
 ## [1.3.5] 
 * isSubmittingError updated
 
