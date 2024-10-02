@@ -21,7 +21,7 @@ class UsersRepository implements IUsersRepository {
     return restApiClient.getStreamed(
       '/users',
       queryParameters: model.toJson(),
-      parser: (data) => GridResult(
+      onSuccess: (data) => GridResult(
         items: data.map<User>((map) => User.fromMap(map)).toList(),
       ),
     );
@@ -32,7 +32,7 @@ class UsersRepository implements IUsersRepository {
   Stream<Result<UserDetails>> getDetails(UserDetailsSearchModel model) {
     return restApiClient.getStreamed(
       '/users/${model.id}',
-      parser: (data) => UserDetails.fromMap(data),
+      onSuccess: (data) => UserDetails.fromMap(data),
     );
   }
 
@@ -42,7 +42,7 @@ class UsersRepository implements IUsersRepository {
       UserDetailsSearchModel model) {
     return restApiClient.get(
       '/users/${model.id}',
-      parser: (data) => UserDetails.fromMap(data),
+      onSuccess: (data) => UserDetails.fromMap(data),
     );
   }
 }
