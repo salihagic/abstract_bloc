@@ -286,10 +286,11 @@ packages:
   rest_api_client:
     dependency: "direct main"
     description:
-      path: "C:\\dev\\Projects\\Github\\rest_api_client"
-      relative: false
-    source: path
-    version: "2.2.27"
+      name: rest_api_client
+      sha256: "376576217a7f72f86b0315d06ea54dbec5643d486befab76443ec9a860bb19dc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.28"
   sky_engine:
     dependency: transitive
     description: flutter
