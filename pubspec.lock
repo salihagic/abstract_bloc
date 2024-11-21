@@ -163,6 +163,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.7"
+  jwt_decoder:
+    dependency: transitive
+    description:
+      name: jwt_decoder
+      sha256: "54774aebf83f2923b99e6416b4ea915d47af3bde56884eb622de85feabbc559f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   material_color_utilities:
     dependency: transitive
     description:
@@ -287,10 +295,10 @@ packages:
     dependency: "direct main"
     description:
       name: rest_api_client
-      sha256: "376576217a7f72f86b0315d06ea54dbec5643d486befab76443ec9a860bb19dc"
+      sha256: "52e2460e03d4c5a61c460574871357f30449f53632c51b8de0f52072d3db2b6b"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.28"
+    version: "2.3.0"
   sky_engine:
     dependency: transitive
     description: flutter

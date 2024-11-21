@@ -1,4 +1,7 @@
 ## [1.3.12] 
+* Updated dependencies
+
+## [1.3.12] 
 * model passed
 
 ## [1.3.11] 
