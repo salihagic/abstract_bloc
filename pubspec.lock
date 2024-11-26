@@ -295,10 +295,10 @@ packages:
     dependency: "direct main"
     description:
       name: rest_api_client
-      sha256: a590b173d9ffe7d270a5f560bd8215a410747abc49d4963baf46cd8f7f4092d4
+      sha256: "41a311e197285352ddf483304d63ad428aa4bdb76c586cc9e54e9ef4960bef0c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.1"
+    version: "2.3.2"
   sky_engine:
     dependency: transitive
     description: flutter
