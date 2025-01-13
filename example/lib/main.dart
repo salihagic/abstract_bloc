@@ -63,7 +63,7 @@ Future main() async {
             smallLoaderBuilder: (context) => ClipRRect(
               borderRadius: BorderRadius.circular(50),
               child: Container(
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 padding: const EdgeInsets.all(14.0),
                 child: const SizedBox(
                   height: 12,
@@ -80,7 +80,7 @@ Future main() async {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
                 child: Container(
-                  color: Colors.white.withOpacity(0.5),
+                  color: Colors.white.withValues(alpha: 0.5),
                   padding: const EdgeInsets.all(8.0),
                   child: const Icon(
                     Icons.info_outline,

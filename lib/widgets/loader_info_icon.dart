@@ -23,7 +23,7 @@ class LoadInfoIcon extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(50),
             child: Container(
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.white.withValues(alpha: 0.5),
               padding: const EdgeInsets.all(14.0),
               child: const Loader(size: 12),
             ),
@@ -93,7 +93,7 @@ class _CachedDataIcon extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(50),
         child: Container(
-          color: Colors.white.withOpacity(0.5),
+          color: Colors.white.withValues(alpha: 0.5),
           padding: const EdgeInsets.all(8.0),
           child: Icon(
             Icons.info_outline,
