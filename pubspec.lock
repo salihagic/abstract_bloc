@@ -294,10 +294,9 @@ packages:
   rest_api_client:
     dependency: "direct main"
     description:
-      name: rest_api_client
-      sha256: "41a311e197285352ddf483304d63ad428aa4bdb76c586cc9e54e9ef4960bef0c"
-      url: "https://pub.dev"
-    source: hosted
+      path: "C:\\dev\\Projects\\Github\\rest_api_client"
+      relative: false
+    source: path
     version: "2.3.2"
   sky_engine:
     dependency: transitive
