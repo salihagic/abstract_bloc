@@ -60,7 +60,7 @@ Future main() async {
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
               ),
             ),
-            smallLoaderBuilder: (context) => ClipRRect(
+            cachedDataLoaderBuilder: (context) => ClipRRect(
               borderRadius: BorderRadius.circular(50),
               child: Container(
                 color: Colors.white.withValues(alpha: 0.5),

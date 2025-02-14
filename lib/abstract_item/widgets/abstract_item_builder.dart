@@ -8,6 +8,7 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
     S extends AbstractItemState> extends StatelessWidget {
   final void Function(BuildContext context)? onInit;
   final bool skipInitialOnInit;
+  final bool showCachedDataWarningIcon;
   final Widget Function(BuildContext context, void Function() onInit, S state)?
       errorBuilder;
   final Widget Function(BuildContext context, void Function() onInit, S state)?
@@ -30,6 +31,7 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
     Key? key,
     this.onInit,
     this.skipInitialOnInit = false,
+    this.showCachedDataWarningIcon = true,
     this.errorBuilder,
     this.noDataBuilder,
     this.loaderBuilder,
@@ -138,15 +140,16 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
           return Stack(
             children: [
               child ?? builder?.call(context, state) ?? Container(),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: LoadInfoIcon(
-                  isLoading: _isLoading(context, state),
-                  isCached: _isCached(context, state),
-                  onReload: (_) => _onInit(context),
+              if (showCachedDataWarningIcon)
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: LoadInfoIcon(
+                    isLoading: _isLoading(context, state),
+                    isCached: _isCached(context, state),
+                    onReload: (_) => _onInit(context),
+                  ),
                 ),
-              ),
             ],
           );
         },

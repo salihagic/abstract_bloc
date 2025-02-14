@@ -19,7 +19,7 @@ class LoadInfoIcon extends StatelessWidget {
     final abstractConfiguration = AbstractConfiguration.of(context);
 
     if (isLoading) {
-      return abstractConfiguration?.smallLoaderBuilder?.call(context) ??
+      return abstractConfiguration?.cachedDataLoaderBuilder?.call(context) ??
           ClipRRect(
             borderRadius: BorderRadius.circular(50),
             child: Container(
