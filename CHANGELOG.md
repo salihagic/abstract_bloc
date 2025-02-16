@@ -1,3 +1,6 @@
+## [1.3.19] 
+* Updated dependencies
+
 ## [1.3.18] 
 * Override cached data warning icon
 
