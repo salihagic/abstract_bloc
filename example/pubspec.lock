@@ -394,10 +394,9 @@ packages:
   rest_api_client:
     dependency: transitive
     description:
-      name: rest_api_client
-      sha256: "4df3ae8234d40f0cb67aaead9970c2c9a5cbfeb40780f78009c6eb2a5ef90564"
-      url: "https://pub.dev"
-    source: hosted
+      path: "S:/Development/Projects/rest_api_client"
+      relative: false
+    source: path
     version: "2.3.3"
   sky_engine:
     dependency: transitive

@@ -14,6 +14,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
   final ScrollController? controller;
   final bool enableRefresh;
   final bool enableLoadMore;
+  final bool showCachedDataWarningIcon;
   final int columns;
   final double? cacheExtent;
   final double mainAxisSpacing;
@@ -68,6 +69,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
     this.controller,
     this.enableRefresh = true,
     this.enableLoadMore = true,
+    this.showCachedDataWarningIcon = true,
     this.errorBuilder,
     this.noDataBuilder,
     this.loaderBuilder,
@@ -347,17 +349,18 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
 
                   return child;
                 }(),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: LoadInfoIcon(
-                    isLoading: !_showBigLoader(context, state) &&
-                        _isLoading(context, state) &&
-                        _hasData(context, state),
-                    isCached: _isCached(context, state),
-                    onReload: (_) => _onInit(context),
+                if (showCachedDataWarningIcon)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: LoadInfoIcon(
+                      isLoading: !_showBigLoader(context, state) &&
+                          _isLoading(context, state) &&
+                          _hasData(context, state),
+                      isCached: _isCached(context, state),
+                      onReload: (_) => _onInit(context),
+                    ),
                   ),
-                ),
               ],
             );
 

@@ -1,5 +1,11 @@
-## [1.3.18] 
+## [1.3.20] 
 * AbstractListBuilder - added padding property
+
+## [1.3.19] 
+* Updated dependencies
+
+## [1.3.18] 
+* Override cached data warning icon
 
 ## [1.3.17] 
 * Updated dependencies

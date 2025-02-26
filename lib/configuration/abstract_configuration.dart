@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class AbstractConfiguration extends InheritedWidget {
   final Widget Function(BuildContext context)? loaderBuilder;
-  final Widget Function(BuildContext context)? smallLoaderBuilder;
+  final Widget Function(BuildContext context)? cachedDataLoaderBuilder;
   final Widget Function(BuildContext context, void Function() onTap)?
       cachedDataWarningIconBuilder;
   final Widget Function(
@@ -29,7 +29,7 @@ class AbstractConfiguration extends InheritedWidget {
     Key? key,
     required Widget child,
     this.loaderBuilder,
-    this.smallLoaderBuilder,
+    this.cachedDataLoaderBuilder,
     this.cachedDataWarningIconBuilder,
     this.cachedDataWarningDialogBuilder,
     this.abstractFormErrorBuilder,
