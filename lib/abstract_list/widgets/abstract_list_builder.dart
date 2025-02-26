@@ -20,6 +20,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
   final double crossAxisSpacing;
   final double childAspectRatio;
   final double? mainAxisExtent;
+  final EdgeInsetsGeometry? padding;
   final Widget? header;
   final Widget Function(BuildContext context, S state)? headerBuilder;
   final AbstractScrollBehaviour headerScrollBehaviour;
@@ -61,6 +62,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
     this.crossAxisSpacing = 0.0,
     this.childAspectRatio = 1.0,
     this.mainAxisExtent,
+    this.padding,
     this.scrollDirection = Axis.vertical,
     this.physics,
     this.controller,
@@ -249,7 +251,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                   cacheExtent: cacheExtent,
                   physics: physics,
                   controller: controller,
-                  padding: EdgeInsets.zero,
+                  padding: padding ?? EdgeInsets.zero,
                   children: [
                     if (headerScrollBehaviour ==
                         AbstractScrollBehaviour.scrollable)
@@ -294,7 +296,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
               if (columns <= 1) {
                 return ListView.builder(
                   cacheExtent: cacheExtent,
-                  padding: EdgeInsets.zero,
+                  padding: padding ?? EdgeInsets.zero,
                   shrinkWrap: true,
                   scrollDirection: scrollDirection,
                   physics: physics,
@@ -308,7 +310,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
 
               return GridView.builder(
                 cacheExtent: cacheExtent,
-                padding: EdgeInsets.zero,
+                padding: padding ?? EdgeInsets.zero,
                 shrinkWrap: true,
                 scrollDirection: scrollDirection,
                 physics: physics,
