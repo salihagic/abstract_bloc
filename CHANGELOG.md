@@ -1,3 +1,6 @@
+## [1.3.21] 
+* Updated dependencies
+
 ## [1.3.20] 
 * AbstractListBuilder - added padding property
 
