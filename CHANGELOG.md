@@ -1,3 +1,6 @@
+## [1.3.23] 
+* Updated dependencies
+
 ## [1.3.22] 
 * Form cubit and bloc submit improved
 
