@@ -113,8 +113,9 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
         (state is AbstractFormBasicState
             ? (state as AbstractFormBasicState).model
             : null);
-    final modelValidator = (state as AbstractFormState).modelValidator;
-    final isValid = modelValidator?.validate(model) ?? true;
+    final isValid = state is AbstractFormState
+        ? (state as AbstractFormState).modelValidator?.validate(model) ?? false
+        : true;
 
     if (!isValid) {
       (state as AbstractFormState).autovalidate = true;
