@@ -105,14 +105,18 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
   }
 
   Future<void> submit(AbstractFormSubmitEvent event, Emitter<S> emit) async {
+    if ((state as AbstractFormBaseState).isSubmitting) {
+      return;
+    }
+
     final model = event.model ??
         (state is AbstractFormBasicState
             ? (state as AbstractFormBasicState).model
             : null);
+    final modelValidator = (state as AbstractFormState).modelValidator;
+    final isValid = modelValidator?.validate(model) ?? true;
 
-    if (state is AbstractFormState &&
-        !((state as AbstractFormState).modelValidator?.validate(model) ??
-            true)) {
+    if (!isValid) {
       (state as AbstractFormState).autovalidate = true;
       updateStatus(emit, FormResultStatus.validationError);
       await Future.delayed(const Duration(milliseconds: 100));

@@ -91,14 +91,18 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
   }
 
   Future<void> submit<T>([T? pModel]) async {
+    if ((state as AbstractFormBaseState).isSubmitting) {
+      return;
+    }
+
     final model = pModel ??
         (state is AbstractFormBasicState
             ? (state as AbstractFormBasicState).model
             : null);
+    final modelValidator = (state as AbstractFormState).modelValidator;
+    final isValid = modelValidator?.validate(model) ?? true;
 
-    if (state is AbstractFormState &&
-        !((state as AbstractFormState).modelValidator?.validate(model) ??
-            true)) {
+    if (!isValid) {
       (state as AbstractFormState).autovalidate = true;
       updateStatus(FormResultStatus.validationError);
       await Future.delayed(const Duration(milliseconds: 100));
