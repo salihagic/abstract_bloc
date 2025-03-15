@@ -6,8 +6,10 @@ abstract class AbstractListState<TListItem> implements CopyWith {
 
   List<TListItem> get items => result.items;
 
-  bool get isLoaded =>
+  bool get isLoadedAny =>
       [ResultStatus.loaded, ResultStatus.loadedCached].contains(resultStatus);
+  bool get isLoadedNetwork => ResultStatus.loaded == resultStatus;
+  bool get isLoadedCached => ResultStatus.loadedCached == resultStatus;
 
   AbstractListState({
     required this.resultStatus,

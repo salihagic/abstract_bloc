@@ -5,8 +5,10 @@ abstract class AbstractItemState<TItem> implements CopyWith {
   TItem? item;
 
   bool get hasItem => item != null;
-  bool get isLoaded =>
+  bool get isLoadedAny =>
       [ResultStatus.loaded, ResultStatus.loadedCached].contains(resultStatus);
+  bool get isLoadedNetwork => ResultStatus.loaded == resultStatus;
+  bool get isLoadedCached => ResultStatus.loadedCached == resultStatus;
 
   AbstractItemState({
     required this.resultStatus,

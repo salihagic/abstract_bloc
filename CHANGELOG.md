@@ -1,3 +1,6 @@
+## [1.3.25] 
+* Separated isLoaded to isLoadedAny, isLoadedNetwork and isLoadedCached
+
 ## [1.3.24] 
 * Updated dependencies
 

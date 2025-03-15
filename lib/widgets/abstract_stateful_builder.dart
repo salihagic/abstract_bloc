@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 
-class StatefullBuilder extends StatefulWidget {
+class AbstractStatefulBuilder extends StatefulWidget {
   final Widget Function(BuildContext context) builder;
   final void Function(BuildContext context)? initState;
 
-  const StatefullBuilder({
+  const AbstractStatefulBuilder({
     Key? key,
     required this.builder,
     this.initState,
   }) : super(key: key);
 
   @override
-  _StatefullBuilderState createState() => _StatefullBuilderState();
+  _AbstractStatefulBuilderState createState() =>
+      _AbstractStatefulBuilderState();
 }
 
-class _StatefullBuilderState extends State<StatefullBuilder> {
+class _AbstractStatefulBuilderState extends State<AbstractStatefulBuilder> {
   @override
   void initState() {
     super.initState();

@@ -221,7 +221,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
   Widget build(BuildContext context) {
     final abstractConfiguration = AbstractConfiguration.of(context);
 
-    final mainChild = StatefullBuilder(
+    final mainChild = AbstractStatefulBuilder(
       initState: (context) {
         if (!skipInitialOnInit) {
           _onInit(context);
