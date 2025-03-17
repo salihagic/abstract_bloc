@@ -4,57 +4,146 @@ import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:flutter/material.dart';
 
+/// Enum to define the behavior of scrollable headers or footers.
 enum AbstractScrollBehaviour { fixed, scrollable }
 
+/// A generic widget for building lists that support state management,
+/// pagination, and refresh functionalities.
+///
+/// [B] - The type of BLoC or Cubit that manages the state of this list.
+/// [S] - The type of state that this BLoC or Cubit provides, extending [AbstractListState].
 class AbstractListBuilder<B extends StateStreamableSource<S>,
     S extends AbstractListState> extends StatelessWidget {
   final _refreshController = RefreshController();
+
+  /// The direction of the scrollable list, either vertical or horizontal.
   final Axis scrollDirection;
+
+  /// Physics to apply to the scroll view.
   final ScrollPhysics? physics;
+
+  /// Optional scroll controller to control the scroll view.
   final ScrollController? controller;
+
+  /// Indicates if pull-to-refresh functionality is enabled.
   final bool enableRefresh;
+
+  /// Indicates if load more functionality is enabled.
   final bool enableLoadMore;
+
+  /// Whether to show a warning icon when displaying cached data.
   final bool showCachedDataWarningIcon;
+
+  /// Number of columns for grid layouts.
   final int columns;
+
+  /// Cache extent for the scrollable list.
   final double? cacheExtent;
+
+  /// Spacing between items in the main axis (for grids).
   final double mainAxisSpacing;
+
+  /// Spacing between items in the cross axis (for grids).
   final double crossAxisSpacing;
+
+  /// The aspect ratio of the children in a grid layout.
   final double childAspectRatio;
+
+  /// The main axis extent for grid items.
   final double? mainAxisExtent;
+
+  /// Padding for the entire list.
   final EdgeInsetsGeometry? padding;
+
+  /// Optional header widget.
   final Widget? header;
+
+  /// Optional builder function for the header widget.
   final Widget Function(BuildContext context, S state)? headerBuilder;
+
+  /// Behavior of the header scrolling (fixed or scrollable).
   final AbstractScrollBehaviour headerScrollBehaviour;
+
+  /// Function to build each item in the list.
   final Widget Function(BuildContext context, S state, int index)? itemBuilder;
+
+  /// Function to build the overall content of the list.
   final Widget Function(BuildContext context, S state)? builder;
+
+  /// Listener for changes in the state.
   final void Function(BuildContext context, S state)? listener;
+
+  /// Callback when data is successfully loaded from the network.
   final void Function(BuildContext context, S state)? onLoaded;
+
+  /// Callback when cached data is successfully loaded.
   final void Function(BuildContext context, S state)? onLoadedCached;
+
+  /// Callback when an error occurs during data loading.
   final void Function(BuildContext context, S state)? onError;
+
+  /// Optional footer widget.
   final Widget? footer;
+
+  /// Optional builder function for the footer widget.
   final Widget Function(BuildContext context, S state)? footerBuilder;
+
+  /// Behavior of the footer scrolling (fixed or scrollable).
   final AbstractScrollBehaviour footerScrollBehaviour;
+
+  /// Additional widget builder function for extra customization.
   final Widget Function(BuildContext context, S state, Widget child)?
       additionalBuilder;
+
+  /// Builder function for error state.
   final Widget Function(BuildContext context, void Function() onInit, S state)?
       errorBuilder;
+
+  /// Builder function for no data state.
   final Widget Function(BuildContext context, void Function() onInit, S state)?
       noDataBuilder;
+
+  /// Builder function for loading state.
   final Widget Function(BuildContext context, S state)? loaderBuilder;
+
+  /// Callback for initial execution logic.
   final void Function(BuildContext context)? onInit;
+
+  /// Indicates whether to skip the initial call to onInit function.
   final bool skipInitialOnInit;
+
+  /// Callback for pull-to-refresh logic.
   final void Function(BuildContext context)? onRefresh;
+
+  /// Callback for loading more data logic.
   final void Function(BuildContext context)? onLoadMore;
+
+  /// Function to check if loading is occurring.
   final bool Function(BuildContext context, S state)? isLoading;
+
+  /// Function to check if an error occurred.
   final bool Function(BuildContext context, S state)? isError;
+
+  /// Function to get the item count for the list.
   final int Function(BuildContext context, S state)? itemCount;
+
+  /// Function to build separator items between list items.
   final Widget Function(BuildContext context, S state, int index)?
       separatorBuilder;
+
+  /// Function to dynamically set item height.
   final double Function(BuildContext context, S state)? heightBuilder;
+
+  /// An optional instance of the BLoC or Cubit.
   final B? providerValue;
+
+  /// A function to create a BLoC or Cubit instance.
   final B Function(BuildContext context)? provider;
+
+  /// A list of providers to be created using MultiBlocProvider.
   final List<SingleChildWidget>? providers;
 
+  /// Main constructor for [AbstractListBuilder].
   AbstractListBuilder({
     super.key,
     this.columns = 1,
@@ -100,33 +189,47 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
     this.providers,
   });
 
+  // Internal methods for various state checks, item counts, refresh logic, etc.
+
   bool _isLoadingAny(BuildContext context, S state) =>
       isLoading?.call(context, state) ??
       state.resultStatus == ResultStatus.loading;
+
   bool _isLoading(BuildContext context, S state) =>
       isLoading?.call(context, state) ??
       (state.resultStatus == ResultStatus.loading ||
           state.resultStatus == ResultStatus.loadedCached);
+
   bool _isError(BuildContext context, S state) =>
       isError?.call(context, state) ?? state.resultStatus == ResultStatus.error;
+
   int _itemCount(BuildContext context, S state) =>
       itemCount?.call(context, state) ?? state.result.items.count;
+
   bool _enableRefresh(BuildContext context, S state) => enableRefresh;
+
   bool _enableLoadMore(BuildContext context, S state) =>
       enableLoadMore &&
       _itemCount(context, state) > 0 &&
       state is AbstractListFilterablePaginatedState &&
       state.result.hasMoreItems;
+
   bool _useSmartRefresher() => enableRefresh || enableLoadMore;
+
   bool _hasData(BuildContext context, S state) =>
       _itemCount(context, state) > 0;
+
   bool _isEmpty(BuildContext context, S state) => !_hasData(context, state);
+
   bool _isCached(BuildContext context, S state) =>
       _isError(context, state) && _hasData(context, state);
+
   bool _showBigLoader(BuildContext context, S state) =>
       _isLoadingAny(context, state);
+
   bool _showEmptyContainer(BuildContext context, S state) =>
       _isEmpty(context, state) && !_isError(context, state);
+
   bool _showErrorContainer(BuildContext context, S state) =>
       _isEmpty(context, state) && _isError(context, state);
 
@@ -182,20 +285,27 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
         (instance) => instance.loadMore(),
       );
 
+  // Widget building methods to create header, item, and footer widgets.
   Widget _buildHeader(BuildContext context, S state) =>
       header ?? headerBuilder?.call(context, state) ?? const SizedBox();
+
   Widget _buildItem(BuildContext context, S state, int index) =>
       itemBuilder?.call(context, state, index) ?? const SizedBox();
+
   Widget _buildFooter(BuildContext context, S state) =>
       footer ?? footerBuilder?.call(context, state) ?? const SizedBox();
+
   bool _shouldAddHeaderToThisItem(int index) =>
       index == 0 && headerScrollBehaviour == AbstractScrollBehaviour.scrollable;
+
   bool _shouldAddFooterToThisItem(BuildContext context, S state, int index) =>
       _isLastItem(context, state, index) &&
       footerScrollBehaviour == AbstractScrollBehaviour.scrollable;
+
   bool _isLastItem(BuildContext context, S state, int index) =>
       index == _itemCount(context, state) - 1;
 
+  /// Builds each item in the list with proper headers, footers, and separators.
   Widget _buildListItem(BuildContext context, S state, int index) {
     final children = [
       if (_shouldAddHeaderToThisItem(index)) _buildHeader(context, state),
@@ -214,7 +324,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
       return Row(mainAxisSize: MainAxisSize.min, children: children);
     }
 
-    return const SizedBox();
+    return const SizedBox(); // For unsupported scroll direction
   }
 
   @override
@@ -248,6 +358,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
           },
           builder: (context, state) {
             final child = () {
+              // Function to build a ListView with optional header and footer
               buildMaybeWithHeaderAndFooter(Widget child) {
                 return ListView(
                   cacheExtent: cacheExtent,
@@ -266,35 +377,42 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                 );
               }
 
+              // Check if we need to show a big loader
               if (_showBigLoader(context, state)) {
                 return buildMaybeWithHeaderAndFooter(
-                    loaderBuilder?.call(context, state) ??
-                        abstractConfiguration?.loaderBuilder?.call(context) ??
-                        const Loader());
+                  loaderBuilder?.call(context, state) ??
+                      abstractConfiguration?.loaderBuilder?.call(context) ??
+                      const Loader(),
+                );
               }
 
-              //There is no network data and nothing is fetched from the cache and network error occured
+              // Check if we need to show an empty state
               if (_showEmptyContainer(context, state)) {
-                return buildMaybeWithHeaderAndFooter(noDataBuilder?.call(
-                        context, () => _onInit(context), state) ??
-                    abstractConfiguration?.abstractListNoDataBuilder
-                        ?.call(context, () => _onInit(context)) ??
-                    AbstractListNoDataContainer(
-                        onInit: () => _onInit(context)));
+                return buildMaybeWithHeaderAndFooter(
+                  noDataBuilder?.call(context, () => _onInit(context), state) ??
+                      abstractConfiguration?.abstractListNoDataBuilder
+                          ?.call(context, () => _onInit(context)) ??
+                      AbstractListNoDataContainer(
+                          onInit: () => _onInit(context)),
+                );
               }
 
+              // Check if we need to show an error state
               if (_showErrorContainer(context, state)) {
-                return buildMaybeWithHeaderAndFooter(errorBuilder?.call(
-                        context, () => _onInit(context), state) ??
-                    abstractConfiguration?.abstractListErrorBuilder
-                        ?.call(context, () => _onInit(context)) ??
-                    AbstractLisErrorContainer(onInit: () => _onInit(context)));
+                return buildMaybeWithHeaderAndFooter(
+                  errorBuilder?.call(context, () => _onInit(context), state) ??
+                      abstractConfiguration?.abstractListErrorBuilder
+                          ?.call(context, () => _onInit(context)) ??
+                      AbstractLisErrorContainer(onInit: () => _onInit(context)),
+                );
               }
 
+              // Check if a custom builder is provided
               if (builder != null) {
                 return buildMaybeWithHeaderAndFooter(builder!(context, state));
               }
 
+              // Determine the appropriate list view or grid view based on the columns property
               if (columns <= 1) {
                 return ListView.builder(
                   cacheExtent: cacheExtent,
@@ -331,6 +449,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
               );
             }();
 
+            // Stack to include the SmartRefresher if enabled
             final content = Stack(
               children: [
                 () {
@@ -347,7 +466,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                     );
                   }
 
-                  return child;
+                  return child; // Return plain child if no SmartRefresher is used
                 }(),
                 if (showCachedDataWarningIcon)
                   Positioned(
@@ -364,6 +483,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
               ],
             );
 
+            // Wrap the final content with headers and footers based on configuration
             final result = SizedBox(
               height: heightBuilder?.call(context, state),
               child: () {
@@ -382,12 +502,14 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
               }(),
             );
 
+            // Return additional customization if provided
             return additionalBuilder?.call(context, state, result) ?? result;
           },
         );
       },
     );
 
+    // Determine how to provide the BLoC or Cubit to the widget tree
     if (providerValue != null) {
       return BlocProvider.value(
         value: providerValue!,
@@ -409,6 +531,6 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
       );
     }
 
-    return mainChild;
+    return mainChild; // No providers used, return main child directly
   }
 }

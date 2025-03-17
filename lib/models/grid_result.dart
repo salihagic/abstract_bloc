@@ -1,23 +1,26 @@
 import 'package:abstract_bloc/extensions/list_extensions.dart';
 
+/// A class representing the result of a paginated grid, containing a list of items
+/// and pagination-related metadata.
 class GridResult<TListItem> {
-  List<TListItem> items;
-  bool hasMoreItems;
-  int numberOfCachedItems = 0;
-  int currentPage;
-  int startPage;
-  int endPage;
-  int pageCount;
-  int pageSize;
-  int rowCount;
-  int hasPreviousPage;
-  int hasNextPage;
-  int hasMultiplePages;
-  int firstRowOnPage;
-  int lastRowOnPage;
-  bool hasItems;
-  dynamic additionalData;
+  List<TListItem> items; // The list of items in the current grid result
+  bool hasMoreItems; // Indicates if there are more items available for loading
+  int numberOfCachedItems = 0; // Number of items cached
+  int currentPage; // The current page number
+  int startPage; // The start page of the grid result
+  int endPage; // The end page of the grid result
+  int pageCount; // Total number of pages available
+  int pageSize; // Number of items per page
+  int rowCount; // Total number of rows available across all pages
+  int hasPreviousPage; // Indicator for existence of a previous page (1 or 0)
+  int hasNextPage; // Indicator for existence of a next page (1 or 0)
+  int hasMultiplePages; // Indicator for existence of multiple pages
+  int firstRowOnPage; // Index of the first row on the current page
+  int lastRowOnPage; // Index of the last row on the current page
+  bool hasItems; // Indicates if the current result contains any items
+  dynamic additionalData; // Any additional data that might be needed
 
+  /// Constructs a [GridResult] instance with optional parameters.
   GridResult({
     this.items = const [],
     this.hasMoreItems = true,
@@ -35,34 +38,40 @@ class GridResult<TListItem> {
     this.hasItems = true,
     this.additionalData,
   }) {
+    // Determine whether there are more items based on items count and page size
     hasMoreItems = hasMoreItems || items.count == pageSize;
     hasItems = hasItems || items.isNotNullOrEmpty;
   }
 
-  void map(GridResult other) {
-    this.items = other.items as List<TListItem>;
-    this.hasMoreItems = other.hasMoreItems;
-    this.currentPage = other.currentPage;
-    this.startPage = other.startPage;
-    this.endPage = other.endPage;
-    this.pageCount = other.pageCount;
-    this.pageSize = other.pageSize;
-    this.rowCount = other.rowCount;
-    this.hasPreviousPage = other.hasPreviousPage;
-    this.hasNextPage = other.hasNextPage;
-    this.hasMultiplePages = other.hasMultiplePages;
-    this.firstRowOnPage = other.firstRowOnPage;
-    this.lastRowOnPage = other.lastRowOnPage;
-    this.hasItems = other.hasItems;
-    this.additionalData = other.additionalData;
+  /// Maps the properties of another [GridResult] instance to the current instance.
+  void map(GridResult<TListItem> other) {
+    items = other.items;
+    hasMoreItems = other.hasMoreItems;
+    currentPage = other.currentPage;
+    startPage = other.startPage;
+    endPage = other.endPage;
+    pageCount = other.pageCount;
+    pageSize = other.pageSize;
+    rowCount = other.rowCount;
+    hasPreviousPage = other.hasPreviousPage;
+    hasNextPage = other.hasNextPage;
+    hasMultiplePages = other.hasMultiplePages;
+    firstRowOnPage = other.firstRowOnPage;
+    lastRowOnPage = other.lastRowOnPage;
+    hasItems = other.hasItems;
+    additionalData = other.additionalData;
   }
 
+  /// Factory constructor that creates an instance of [GridResult] from a Map.
+  ///
+  /// Takes an optional [itemParser] function for custom mapping of items.
   factory GridResult.fromMap(Map<dynamic, dynamic> map,
       [TListItem Function(Map<String, dynamic> data)? itemParser]) {
-    final List<TListItem> items = map[GridResultJsonConfiguration.itemsJsonKey]
-            ?.map<TListItem>((x) => itemParser?.call(x) ?? x as TListItem)
-            .toList() ??
-        [];
+    final List<TListItem> items =
+        (map[GridResultJsonConfiguration.itemsJsonKey] as List<dynamic>?)
+                ?.map<TListItem>((x) => itemParser?.call(x) ?? x as TListItem)
+                .toList() ??
+            [];
     final int pageSize = map[GridResultJsonConfiguration.pageSizeJsonKey] ?? 0;
 
     return GridResult<TListItem>(
@@ -90,6 +99,7 @@ class GridResult<TListItem> {
   }
 }
 
+/// A utility class that provides JSON key configurations for the [GridResult].
 class GridResultJsonConfiguration {
   static String itemsJsonKey = 'items';
   static String hasMoreItemsJsonKey = 'hasMoreItems';
@@ -107,6 +117,7 @@ class GridResultJsonConfiguration {
   static String hasItemsJsonKey = 'hasItems';
   static String additionalDataJsonKey = 'additionalData';
 
+  /// Configures JSON keys for the [GridResult].
   GridResultJsonConfiguration.configure({
     String? itemsJsonKey,
     String? hasMoreItemsJsonKey,

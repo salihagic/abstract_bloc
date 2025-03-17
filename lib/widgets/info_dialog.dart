@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:flutter/material.dart';
 
+/// A customizable information dialog widget.
 class InfoDialog extends StatelessWidget {
   final Widget? child;
   final String? message;
@@ -50,100 +51,116 @@ class InfoDialog extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            padding: contentPadding,
-            decoration: BoxDecoration(
-              color: backgroundColor,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: child ??
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 30, horizontal: 20),
-                        child: Text(
-                          message ?? '',
-                          softWrap: true,
-                        ),
-                      ),
+          _buildContent(context),
+          _buildActionButtons(context, abstractConfiguration),
+        ],
+      ),
+    );
+  }
+
+  /// Builds the content of the dialog.
+  Widget _buildContent(BuildContext context) {
+    return Container(
+      padding: contentPadding,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(borderRadius),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: child ??
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                  child: Text(
+                    message ?? '',
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Builds the action buttons (cancel and apply) at the bottom of the dialog.
+  Widget _buildActionButtons(
+      BuildContext context, AbstractConfiguration? configuration) {
+    return Row(
+      children: [
+        if (showCancelButton) _buildCancelButton(context, configuration),
+        if (showApplyButton) _buildApplyButton(context, configuration),
+      ],
+    );
+  }
+
+  /// Builds the cancel button.
+  Widget _buildCancelButton(
+      BuildContext context, AbstractConfiguration? configuration) {
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          if (onCancel != null) {
+            onCancel!();
+          } else {
+            Navigator.of(context).pop();
+          }
+        },
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(borderRadius),
+        ),
+        child: _buildButtonText(
+          text: onCancelText ?? configuration?.translations.cancel ?? 'Cancel',
+          textColor: onCancelTextColor,
+        ),
+      ),
+    );
+  }
+
+  /// Builds the apply button.
+  Widget _buildApplyButton(
+      BuildContext context, AbstractConfiguration? configuration) {
+    return Expanded(
+      child: InkWell(
+        onTap: () async {
+          if (onApply != null) {
+            await onApply!();
+          } else {
+            Navigator.of(context).pop();
+          }
+        },
+        borderRadius: BorderRadius.only(
+          bottomRight: Radius.circular(borderRadius),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              left: BorderSide(color: actionLineColor),
             ),
           ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  if (showCancelButton)
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          if (onCancel != null) {
-                            onCancel!();
-                          } else {
-                            Navigator.of(context).pop();
-                          }
-                        },
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(borderRadius)),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 15),
-                          child: Text(
-                            onCancelText ??
-                                abstractConfiguration?.translations.cancel ??
-                                'Cancel',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: onCancelTextColor,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (showApplyButton)
-                    Expanded(
-                      child: InkWell(
-                        onTap: () async {
-                          if (onApply != null) {
-                            await onApply!();
-                          } else {
-                            Navigator.of(context).pop();
-                          }
-                        },
-                        borderRadius: BorderRadius.only(
-                            bottomRight: Radius.circular(borderRadius)),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              left: BorderSide(color: actionLineColor),
-                            ),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 15),
-                          child: Text(
-                            onApplyText ??
-                                abstractConfiguration?.translations.okay ??
-                                'Okay',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: onApplyTextColor,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          )
-        ],
+          child: _buildButtonText(
+            text: onApplyText ?? configuration?.translations.okay ?? 'Okay',
+            textColor: onApplyTextColor,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Builds stylized button text.
+  Widget _buildButtonText({required String text, Color? textColor}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: textColor ?? Colors.black, // Handle null textColor
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }

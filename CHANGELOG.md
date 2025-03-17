@@ -1,3 +1,7 @@
+## 1.4.3
+
+* Docs updated
+
 ## 1.4.2
 
 * Shrunk example size
