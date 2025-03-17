@@ -78,6 +78,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.1.0"
+  flutter_bloc_event_bus:
+    dependency: "direct main"
+    description:
+      name: flutter_bloc_event_bus
+      sha256: b24c6b2cc7e65eedd0dd14d35ec31c9094b3df9db643dc8063ff1789be4b2b5c
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   flutter_secure_storage:
     dependency: transitive
     description:
@@ -377,5 +385,5 @@ packages:
     source: hosted
     version: "1.0.4"
 sdks:
-  dart: ">=3.7.0-0 <4.0.0"
+  dart: ">=3.7.0 <4.0.0"
   flutter: ">=3.22.0"

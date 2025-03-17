@@ -16,7 +16,7 @@ abstract class AbstractListState<TListItem> implements CopyWith {
     required this.result,
   });
 
-  dynamic copyWith() => this;
+  dynamic copyWith();
 }
 
 abstract class AbstractListFilterableState<TSearchModel, TListItem>
@@ -33,7 +33,7 @@ abstract class AbstractListFilterableState<TSearchModel, TListItem>
         );
 
   @override
-  dynamic copyWith() => this;
+  dynamic copyWith();
 }
 
 abstract class AbstractListFilterablePaginatedState<
@@ -50,5 +50,5 @@ abstract class AbstractListFilterablePaginatedState<
         );
 
   @override
-  dynamic copyWith() => this;
+  dynamic copyWith();
 }

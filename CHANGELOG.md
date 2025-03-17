@@ -1,3 +1,6 @@
+## [1.4.0] 
+* Introduced event-drive approach
+
 ## [1.3.25] 
 * Separated isLoaded to isLoadedAny, isLoadedNetwork and isLoadedCached
 

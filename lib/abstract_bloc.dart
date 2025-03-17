@@ -8,6 +8,7 @@ export 'enumerations/_all.dart';
 export 'models/_all.dart';
 export 'package:rest_api_client/rest_api_client.dart';
 export 'package:flutter_bloc/flutter_bloc.dart';
+export 'package:flutter_bloc_event_bus/flutter_bloc_event_bus.dart';
 export 'package:pull_to_refresh/src/smart_refresher.dart';
 export 'package:pull_to_refresh/src/indicator/bezier_indicator.dart';
 export 'package:pull_to_refresh/src/indicator/classic_indicator.dart';

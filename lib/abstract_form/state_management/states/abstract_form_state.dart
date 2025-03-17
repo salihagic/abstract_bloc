@@ -19,7 +19,7 @@ abstract class AbstractFormBaseState implements CopyWith {
     required this.formResultStatus,
   });
 
-  dynamic copyWith() => this;
+  dynamic copyWith();
 }
 
 abstract class AbstractFormBasicState<TModel> extends AbstractFormBaseState {
@@ -30,7 +30,7 @@ abstract class AbstractFormBasicState<TModel> extends AbstractFormBaseState {
     required this.model,
   });
 
-  dynamic copyWith() => this;
+  dynamic copyWith();
 }
 
 abstract class AbstractFormState<TModel, TModelValidator extends ModelValidator>
@@ -51,5 +51,5 @@ abstract class AbstractFormState<TModel, TModelValidator extends ModelValidator>
           formResultStatus: formResultStatus,
         );
 
-  dynamic copyWith() => this;
+  dynamic copyWith();
 }
