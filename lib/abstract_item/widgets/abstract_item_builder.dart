@@ -27,8 +27,8 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
   final B Function(BuildContext context)? provider;
   final List<SingleChildWidget>? providers;
 
-  AbstractItemBuilder({
-    Key? key,
+  const AbstractItemBuilder({
+    super.key,
     this.onInit,
     this.skipInitialOnInit = false,
     this.showCachedDataWarningIcon = true,
@@ -47,7 +47,7 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
     this.providerValue,
     this.provider,
     this.providers,
-  }) : super(key: key);
+  });
 
   bool _isLoading(BuildContext context, S state) =>
       isLoading?.call(context, state) ??
@@ -65,9 +65,9 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
     try {
       return context.read<B>();
     } catch (e) {
-      print('There is no instance of bloc or cubit registered: $e');
+      debugPrint('There is no instance of bloc or cubit registered: $e');
 
-      throw e;
+      rethrow;
     }
   }
 

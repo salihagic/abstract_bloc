@@ -2,8 +2,7 @@ import 'package:abstract_bloc/abstract_bloc.dart';
 
 abstract class AbstractFormCubit<S extends AbstractFormBaseState>
     extends Cubit<S> {
-  AbstractFormCubit(S initialState, [ModelValidator? modelValidator])
-      : super(initialState) {
+  AbstractFormCubit(super.initialState, [ModelValidator? modelValidator]) {
     if (state is AbstractFormState) {
       (state as AbstractFormState).modelValidator = modelValidator;
     }

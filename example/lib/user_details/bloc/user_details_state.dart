@@ -5,24 +5,19 @@ import 'package:example/models/user_details_search_model.dart';
 class UserDetailsState
     extends AbstractItemFilterableState<UserDetailsSearchModel, UserDetails> {
   UserDetailsState({
-    required ResultStatus resultStatus,
-    required UserDetailsSearchModel searchModel,
-    UserDetails? item,
-  }) : super(
-          resultStatus: resultStatus,
-          searchModel: searchModel,
-          item: item,
-        );
+    required super.resultStatus,
+    required super.searchModel,
+    super.item,
+  });
 
   @override
   UserDetailsState copyWith({
     ResultStatus? resultStatus,
     UserDetailsSearchModel? searchModel,
     UserDetails? item,
-  }) =>
-      UserDetailsState(
-        resultStatus: resultStatus ?? this.resultStatus,
-        searchModel: searchModel ?? this.searchModel,
-        item: item ?? this.item,
-      );
+  }) => UserDetailsState(
+    resultStatus: resultStatus ?? this.resultStatus,
+    searchModel: searchModel ?? this.searchModel,
+    item: item ?? this.item,
+  );
 }

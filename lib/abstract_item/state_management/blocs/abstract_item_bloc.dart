@@ -2,7 +2,7 @@ import 'package:abstract_bloc/abstract_bloc.dart';
 
 abstract class AbstractItemBloc<S extends AbstractItemState>
     extends Bloc<AbstractItemEvent, S> {
-  AbstractItemBloc(S initialState) : super(initialState) {
+  AbstractItemBloc(super.initialState) {
     on(
       (AbstractItemEvent event, Emitter<S> emit) async {
         if (event is AbstractItemLoadEvent) {

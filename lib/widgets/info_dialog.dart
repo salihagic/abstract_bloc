@@ -19,7 +19,8 @@ class InfoDialog extends StatelessWidget {
   final Color actionLineColor;
   final EdgeInsetsGeometry contentPadding;
 
-  InfoDialog({
+  const InfoDialog({
+    super.key,
     this.child,
     this.message,
     this.onCancel,

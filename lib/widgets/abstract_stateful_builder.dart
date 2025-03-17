@@ -5,13 +5,13 @@ class AbstractStatefulBuilder extends StatefulWidget {
   final void Function(BuildContext context)? initState;
 
   const AbstractStatefulBuilder({
-    Key? key,
+    super.key,
     required this.builder,
     this.initState,
-  }) : super(key: key);
+  });
 
   @override
-  _AbstractStatefulBuilderState createState() =>
+  State<AbstractStatefulBuilder> createState() =>
       _AbstractStatefulBuilderState();
 }
 

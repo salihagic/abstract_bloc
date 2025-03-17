@@ -16,6 +16,7 @@ abstract class AbstractListState<TListItem> implements CopyWith {
     required this.result,
   });
 
+  @override
   dynamic copyWith();
 }
 
@@ -24,13 +25,10 @@ abstract class AbstractListFilterableState<TSearchModel, TListItem>
   TSearchModel searchModel;
 
   AbstractListFilterableState({
-    required ResultStatus resultStatus,
+    required super.resultStatus,
     required this.searchModel,
-    required GridResult<TListItem> result,
-  }) : super(
-          resultStatus: resultStatus,
-          result: result,
-        );
+    required super.result,
+  });
 
   @override
   dynamic copyWith();
@@ -40,14 +38,10 @@ abstract class AbstractListFilterablePaginatedState<
     TSearchModel extends Pagination,
     TListItem> extends AbstractListFilterableState<TSearchModel, TListItem> {
   AbstractListFilterablePaginatedState({
-    required ResultStatus resultStatus,
-    required TSearchModel searchModel,
-    required GridResult<TListItem> result,
-  }) : super(
-          resultStatus: resultStatus,
-          searchModel: searchModel,
-          result: result,
-        );
+    required super.resultStatus,
+    required super.searchModel,
+    required super.result,
+  });
 
   @override
   dynamic copyWith();

@@ -56,7 +56,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
   final List<SingleChildWidget>? providers;
 
   AbstractListBuilder({
-    Key? key,
+    super.key,
     this.columns = 1,
     this.cacheExtent,
     this.mainAxisSpacing = 0.0,
@@ -98,7 +98,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
     this.providerValue,
     this.provider,
     this.providers,
-  }) : super(key: key);
+  });
 
   bool _isLoadingAny(BuildContext context, S state) =>
       isLoading?.call(context, state) ??
@@ -134,9 +134,9 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
     try {
       return context.read<B>();
     } catch (e) {
-      print('There is no instance of bloc or cubit registered: $e');
+      debugPrint('There is no instance of bloc or cubit registered: $e');
 
-      throw e;
+      rethrow;
     }
   }
 
@@ -248,7 +248,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
           },
           builder: (context, state) {
             final child = () {
-              final buildMaybeWithHeaderAndFooter = (Widget child) {
+              buildMaybeWithHeaderAndFooter(Widget child) {
                 return ListView(
                   cacheExtent: cacheExtent,
                   physics: physics,
@@ -264,7 +264,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                       _buildFooter(context, state),
                   ],
                 );
-              };
+              }
 
               if (_showBigLoader(context, state)) {
                 return buildMaybeWithHeaderAndFooter(
@@ -364,7 +364,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
               ],
             );
 
-            final result = Container(
+            final result = SizedBox(
               height: heightBuilder?.call(context, state),
               child: () {
                 return Column(

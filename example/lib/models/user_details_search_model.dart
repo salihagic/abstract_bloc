@@ -1,13 +1,9 @@
 class UserDetailsSearchModel {
   final int? id;
 
-  UserDetailsSearchModel({
-    this.id,
-  });
+  UserDetailsSearchModel({this.id});
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-    };
+    return {'id': id};
   }
 }

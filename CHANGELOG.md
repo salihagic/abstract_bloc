@@ -1,3 +1,7 @@
+## 1.4.2
+
+* Shrunk example size
+
 ## [1.4.1] 
 * Updated dependencies
 

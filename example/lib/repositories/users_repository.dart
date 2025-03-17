@@ -8,7 +8,8 @@ abstract class IUsersRepository {
   Stream<Result<GridResult<User>>> get(UsersSearchModel model);
   Stream<Result<UserDetails>> getDetails(UserDetailsSearchModel model);
   Future<Result<UserDetails>> getDetailsOnlyNetwork(
-      UserDetailsSearchModel model);
+    UserDetailsSearchModel model,
+  );
 }
 
 class UsersRepository implements IUsersRepository {
@@ -21,9 +22,10 @@ class UsersRepository implements IUsersRepository {
     return restApiClient.getStreamed(
       '/users',
       queryParameters: model.toJson(),
-      onSuccess: (data) => GridResult(
-        items: data.map<User>((map) => User.fromMap(map)).toList(),
-      ),
+      onSuccess:
+          (data) => GridResult(
+            items: data.map<User>((map) => User.fromMap(map)).toList(),
+          ),
     );
   }
 
@@ -39,7 +41,8 @@ class UsersRepository implements IUsersRepository {
   // Example for loading only network data
   @override
   Future<Result<UserDetails>> getDetailsOnlyNetwork(
-      UserDetailsSearchModel model) {
+    UserDetailsSearchModel model,
+  ) {
     return restApiClient.get(
       '/users/${model.id}',
       onSuccess: (data) => UserDetails.fromMap(data),

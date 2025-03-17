@@ -4,9 +4,9 @@ class AbstractItemErrorContainer extends StatelessWidget {
   final void Function()? onInit;
 
   const AbstractItemErrorContainer({
-    Key? key,
+    super.key,
     this.onInit,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

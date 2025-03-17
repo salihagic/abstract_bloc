@@ -1,7 +1,7 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 
 abstract class AbstractItemCubit<S extends AbstractItemState> extends Cubit<S> {
-  AbstractItemCubit(S initialState) : super(initialState);
+  AbstractItemCubit(super.initialState);
 
   Future<Result> resolveData() async => throw UnimplementedError();
 

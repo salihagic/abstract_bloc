@@ -9,23 +9,20 @@ import 'package:flutter/material.dart';
 class UserDetailsPage extends StatelessWidget {
   final int id;
 
-  const UserDetailsPage({
-    Key? key,
-    required this.id,
-  }) : super(key: key);
+  const UserDetailsPage({super.key, required this.id});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('User details page'),
-      ),
+      appBar: AppBar(title: const Text('User details page')),
       body: BlocProvider(
-        create: (context) => UserDetailsBloc(
-          usersRepository: context.read<IUsersRepository>(),
-        ),
+        create:
+            (context) => UserDetailsBloc(
+              usersRepository: context.read<IUsersRepository>(),
+            ),
         child: AbstractItemBuilder<UserDetailsBloc, UserDetailsState>(
-          onInit: (context) => context.read<UserDetailsBloc>().add(
+          onInit:
+              (context) => context.read<UserDetailsBloc>().add(
                 UserDetailsLoadEvent(
                   searchModel: UserDetailsSearchModel(id: id),
                 ),
@@ -39,14 +36,20 @@ class UserDetailsPage extends StatelessWidget {
                     children: [
                       const Expanded(
                         flex: 1,
-                        child: Text('Name:',
-                            style: TextStyle(
-                                fontSize: 18, color: Colors.blueAccent)),
+                        child: Text(
+                          'Name:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.blueAccent,
+                          ),
+                        ),
                       ),
                       Expanded(
                         flex: 3,
-                        child: Text(userDetailsState.item?.name ?? '',
-                            style: const TextStyle(fontSize: 20)),
+                        child: Text(
+                          userDetailsState.item?.name ?? '',
+                          style: const TextStyle(fontSize: 20),
+                        ),
                       ),
                     ],
                   ),
@@ -55,14 +58,20 @@ class UserDetailsPage extends StatelessWidget {
                     children: [
                       const Expanded(
                         flex: 1,
-                        child: Text('Email:',
-                            style: TextStyle(
-                                fontSize: 18, color: Colors.blueAccent)),
+                        child: Text(
+                          'Email:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.blueAccent,
+                          ),
+                        ),
                       ),
                       Expanded(
                         flex: 3,
-                        child: Text(userDetailsState.item?.email ?? '',
-                            style: const TextStyle(fontSize: 20)),
+                        child: Text(
+                          userDetailsState.item?.email ?? '',
+                          style: const TextStyle(fontSize: 20),
+                        ),
                       ),
                     ],
                   ),
@@ -71,14 +80,20 @@ class UserDetailsPage extends StatelessWidget {
                     children: [
                       const Expanded(
                         flex: 1,
-                        child: Text('Gender:',
-                            style: TextStyle(
-                                fontSize: 18, color: Colors.blueAccent)),
+                        child: Text(
+                          'Gender:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.blueAccent,
+                          ),
+                        ),
                       ),
                       Expanded(
                         flex: 3,
-                        child: Text(userDetailsState.item?.gender ?? '',
-                            style: const TextStyle(fontSize: 20)),
+                        child: Text(
+                          userDetailsState.item?.gender ?? '',
+                          style: const TextStyle(fontSize: 20),
+                        ),
                       ),
                     ],
                   ),
@@ -87,14 +102,20 @@ class UserDetailsPage extends StatelessWidget {
                     children: [
                       const Expanded(
                         flex: 1,
-                        child: Text('Status:',
-                            style: TextStyle(
-                                fontSize: 18, color: Colors.blueAccent)),
+                        child: Text(
+                          'Status:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.blueAccent,
+                          ),
+                        ),
                       ),
                       Expanded(
                         flex: 3,
-                        child: Text(userDetailsState.item?.status ?? '',
-                            style: const TextStyle(fontSize: 20)),
+                        child: Text(
+                          userDetailsState.item?.status ?? '',
+                          style: const TextStyle(fontSize: 20),
+                        ),
                       ),
                     ],
                   ),

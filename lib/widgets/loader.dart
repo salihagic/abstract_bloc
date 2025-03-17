@@ -7,6 +7,7 @@ class Loader extends StatelessWidget {
   final Color? color;
 
   const Loader({
+    super.key,
     this.width,
     this.height,
     this.size,
@@ -14,6 +15,7 @@ class Loader extends StatelessWidget {
   });
 
   const Loader.sm({
+    super.key,
     this.width = 16,
     this.height = 16,
     this.size = 16,
@@ -22,13 +24,13 @@ class Loader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: height,
       width: width,
       child: Material(
         color: Colors.transparent,
         child: Center(
-          child: Container(
+          child: SizedBox(
             height: size,
             width: size,
             child: CircularProgressIndicator(

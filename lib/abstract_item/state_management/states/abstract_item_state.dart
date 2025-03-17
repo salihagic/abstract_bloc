@@ -15,6 +15,7 @@ abstract class AbstractItemState<TItem> implements CopyWith {
     this.item,
   });
 
+  @override
   dynamic copyWith();
 }
 
@@ -23,13 +24,10 @@ abstract class AbstractItemFilterableState<TSearchModel, TItem>
   TSearchModel searchModel;
 
   AbstractItemFilterableState({
-    required ResultStatus resultStatus,
+    required super.resultStatus,
     required this.searchModel,
-    TItem? item,
-  }) : super(
-          resultStatus: resultStatus,
-          item: item,
-        );
+    super.item,
+  });
 
   @override
   dynamic copyWith();

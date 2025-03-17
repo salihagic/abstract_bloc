@@ -3,7 +3,7 @@ import 'package:abstract_bloc/extensions/_all.dart';
 
 abstract class AbstractListBloc<S extends AbstractListState>
     extends Bloc<AbstractListEvent, S> {
-  AbstractListBloc(S initialState) : super(initialState) {
+  AbstractListBloc(super.initialState) {
     on(
       (AbstractListEvent event, Emitter<S> emit) async {
         if (event is AbstractListLoadEvent) {

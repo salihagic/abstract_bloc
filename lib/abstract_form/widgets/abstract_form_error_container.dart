@@ -4,9 +4,9 @@ class AbstractFormErrorContainer extends StatelessWidget {
   final void Function()? onInit;
 
   const AbstractFormErrorContainer({
-    Key? key,
+    super.key,
     this.onInit,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

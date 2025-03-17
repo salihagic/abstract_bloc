@@ -26,8 +26,8 @@ class AbstractConfiguration extends InheritedWidget {
   final AbstractTranslations translations;
 
   AbstractConfiguration({
-    Key? key,
-    required Widget child,
+    super.key,
+    required super.child,
     this.loaderBuilder,
     this.cachedDataLoaderBuilder,
     this.cachedDataWarningIconBuilder,
@@ -39,10 +39,7 @@ class AbstractConfiguration extends InheritedWidget {
     this.abstractListNoDataBuilder,
     this.translations = const AbstractTranslations(),
     PaginationConfiguration? paginationConfiguration,
-  }) : super(
-          key: key,
-          child: child,
-        ) {
+  }) {
     if (paginationConfiguration != null) {
       Pagination.configuration = paginationConfiguration;
     }

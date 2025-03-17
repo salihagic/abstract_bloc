@@ -4,9 +4,9 @@ class AbstractFormNoDataContainer extends StatelessWidget {
   final void Function()? onInit;
 
   const AbstractFormNoDataContainer({
-    Key? key,
+    super.key,
     this.onInit,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

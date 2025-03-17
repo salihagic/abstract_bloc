@@ -6,14 +6,12 @@ import 'package:example/user_details/bloc/user_details_state.dart';
 class UserDetailsBloc extends AbstractItemBloc<UserDetailsState> {
   final IUsersRepository usersRepository;
 
-  UserDetailsBloc({
-    required this.usersRepository,
-  }) : super(_initialState());
+  UserDetailsBloc({required this.usersRepository}) : super(_initialState());
 
   static UserDetailsState _initialState() => UserDetailsState(
-        resultStatus: ResultStatus.loading,
-        searchModel: UserDetailsSearchModel(),
-      );
+    resultStatus: ResultStatus.loading,
+    searchModel: UserDetailsSearchModel(),
+  );
 
   // Example for loading cached and then network data
   @override

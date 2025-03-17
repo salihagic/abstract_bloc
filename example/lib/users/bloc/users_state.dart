@@ -5,24 +5,19 @@ import 'package:example/models/users_search_model.dart';
 class UsersState
     extends AbstractListFilterablePaginatedState<UsersSearchModel, User> {
   UsersState({
-    required ResultStatus resultStatus,
-    required UsersSearchModel searchModel,
-    required GridResult<User> result,
-  }) : super(
-          resultStatus: resultStatus,
-          searchModel: searchModel,
-          result: result,
-        );
+    required super.resultStatus,
+    required super.searchModel,
+    required super.result,
+  });
 
   @override
   UsersState copyWith({
     ResultStatus? resultStatus,
     UsersSearchModel? searchModel,
     GridResult<User>? result,
-  }) =>
-      UsersState(
-        resultStatus: resultStatus ?? this.resultStatus,
-        searchModel: searchModel ?? this.searchModel,
-        result: result ?? this.result,
-      );
+  }) => UsersState(
+    resultStatus: resultStatus ?? this.resultStatus,
+    searchModel: searchModel ?? this.searchModel,
+    result: result ?? this.result,
+  );
 }

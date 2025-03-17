@@ -7,18 +7,16 @@ import 'package:example/models/user.dart';
 class UsersBloc extends AbstractListBloc<UsersState> {
   final IUsersRepository usersRepository;
 
-  UsersBloc({
-    required this.usersRepository,
-  }) : super(_initialState());
+  UsersBloc({required this.usersRepository}) : super(_initialState());
 
   @override
   UsersState initialState() => _initialState();
 
   static UsersState _initialState() => UsersState(
-        resultStatus: ResultStatus.loading,
-        searchModel: UsersSearchModel(),
-        result: GridResult<User>(),
-      );
+    resultStatus: ResultStatus.loading,
+    searchModel: UsersSearchModel(),
+    result: GridResult<User>(),
+  );
 
   @override
   Stream<Result> resolveStreamData() => usersRepository.get(state.searchModel);

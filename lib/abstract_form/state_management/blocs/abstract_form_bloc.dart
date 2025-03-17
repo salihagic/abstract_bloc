@@ -2,8 +2,7 @@ import 'package:abstract_bloc/abstract_bloc.dart';
 
 abstract class AbstractFormBloc<S extends AbstractFormBaseState>
     extends Bloc<AbstractFormEvent, S> {
-  AbstractFormBloc(S initialState, [ModelValidator? modelValidator])
-      : super(initialState) {
+  AbstractFormBloc(super.initialState, [ModelValidator? modelValidator]) {
     if (state is AbstractFormState) {
       (state as AbstractFormState).modelValidator = modelValidator;
     }

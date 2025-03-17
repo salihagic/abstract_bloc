@@ -8,11 +8,11 @@ class LoadInfoIcon extends StatelessWidget {
   final void Function(BuildContext)? onReload;
 
   const LoadInfoIcon({
-    Key? key,
+    super.key,
     required this.isLoading,
     required this.isCached,
     this.onReload,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class LoadInfoIcon extends StatelessWidget {
 class _CachedDataIcon extends StatelessWidget {
   final void Function(BuildContext context)? onReload;
 
-  const _CachedDataIcon({Key? key, this.onReload}) : super(key: key);
+  const _CachedDataIcon({this.onReload});
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +56,10 @@ class _CachedDataIcon extends StatelessWidget {
             }
 
             return InfoDialog(
+              showCancelButton: true,
+              onApplyText:
+                  abstractConfiguration?.translations.reload ?? 'Reload',
+              onApply: () => onReload?.call(context),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -74,10 +78,6 @@ class _CachedDataIcon extends StatelessWidget {
                   ),
                 ],
               ),
-              showCancelButton: true,
-              onApplyText:
-                  abstractConfiguration?.translations.reload ?? 'Reload',
-              onApply: () => onReload?.call(context),
             );
           },
         );

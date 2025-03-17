@@ -4,9 +4,7 @@ import 'package:abstract_bloc/extensions/_all.dart';
 abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
   final S _initialState;
 
-  AbstractListCubit(S initialState)
-      : _initialState = initialState,
-        super(initialState);
+  AbstractListCubit(super.initialState) : _initialState = initialState;
 
   Stream<Result> resolveStreamData() async* {
     throw UnimplementedError();
