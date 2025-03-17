@@ -1,3 +1,7 @@
+## 1.4.4
+
+* Updated dependencies
+
 ## 1.4.3
 
 * Docs updated
