@@ -1,3 +1,6 @@
+## [1.4.1] 
+* Updated dependencies
+
 ## [1.4.0] 
 * Introduced event-drive approach
 
