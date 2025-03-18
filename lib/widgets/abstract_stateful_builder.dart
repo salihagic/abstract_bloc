@@ -1,19 +1,5 @@
 import 'package:flutter/material.dart';
 
-class MyWidget extends StatefulWidget {
-  const MyWidget({super.key});
-
-  @override
-  State<MyWidget> createState() => _MyWidgetState();
-}
-
-class _MyWidgetState extends State<MyWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
 /// A reusable stateful widget that allows for initialization logic
 /// through a builder function and an optional initState callback.
 class AbstractStatefulBuilder extends StatefulWidget {
@@ -24,11 +10,16 @@ class AbstractStatefulBuilder extends StatefulWidget {
   /// the stateful widget.
   final void Function(BuildContext context)? initState;
 
+  /// An optional callback that runs during the dispose phase of
+  /// the stateful widget.
+  final void Function()? dispose;
+
   const AbstractStatefulBuilder({
     super.key, // Use Key? instead of super.key for clarity
     required this.builder,
     this.initState,
-  }); // Pass the key to the superclass constructor
+    this.dispose,
+  });
 
   @override
   State<AbstractStatefulBuilder> createState() =>
@@ -41,6 +32,14 @@ class _AbstractStatefulBuilderState extends State<AbstractStatefulBuilder> {
     super.initState();
     // Call the optional initState method if provided
     widget.initState?.call(context);
+  }
+
+  @override
+  void dispose() {
+    // Call the optional dispose method if provided
+    widget.dispose?.call();
+
+    super.dispose();
   }
 
   @override

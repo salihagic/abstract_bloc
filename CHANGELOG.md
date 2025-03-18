@@ -1,3 +1,7 @@
+## 1.4.5
+
+* Fixed sudden twitch/refresh of the header in AbstractListBuilder
+
 ## 1.4.4
 
 * Updated dependencies

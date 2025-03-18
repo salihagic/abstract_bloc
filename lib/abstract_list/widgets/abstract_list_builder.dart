@@ -233,13 +233,13 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
   bool _showErrorContainer(BuildContext context, S state) =>
       _isEmpty(context, state) && _isError(context, state);
 
-  B _blocOrCubitInstance(BuildContext context) {
+  B? _blocOrCubitInstance(BuildContext context) {
     try {
       return context.read<B>();
     } catch (e) {
       debugPrint('There is no instance of bloc or cubit registered: $e');
 
-      rethrow;
+      return null;
     }
   }
 
@@ -285,60 +285,26 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
         (instance) => instance.loadMore(),
       );
 
-  // Widget building methods to create header, item, and footer widgets.
-  Widget _buildHeader(BuildContext context, S state) =>
-      header ?? headerBuilder?.call(context, state) ?? const SizedBox();
-
-  Widget _buildItem(BuildContext context, S state, int index) =>
-      itemBuilder?.call(context, state, index) ?? const SizedBox();
-
-  Widget _buildFooter(BuildContext context, S state) =>
-      footer ?? footerBuilder?.call(context, state) ?? const SizedBox();
-
-  bool _shouldAddHeaderToThisItem(int index) =>
-      index == 0 && headerScrollBehaviour == AbstractScrollBehaviour.scrollable;
-
-  bool _shouldAddFooterToThisItem(BuildContext context, S state, int index) =>
-      _isLastItem(context, state, index) &&
-      footerScrollBehaviour == AbstractScrollBehaviour.scrollable;
-
-  bool _isLastItem(BuildContext context, S state, int index) =>
-      index == _itemCount(context, state) - 1;
-
-  /// Builds each item in the list with proper headers, footers, and separators.
-  Widget _buildListItem(BuildContext context, S state, int index) {
-    final children = [
-      if (_shouldAddHeaderToThisItem(index)) _buildHeader(context, state),
-      _buildItem(context, state, index),
-      if (!_isLastItem(context, state, index))
-        separatorBuilder?.call(context, state, index) ?? const SizedBox(),
-      if (_shouldAddFooterToThisItem(context, state, index))
-        _buildFooter(context, state),
-    ];
-
-    if (scrollDirection == Axis.vertical) {
-      return Column(mainAxisSize: MainAxisSize.min, children: children);
-    }
-
-    if (scrollDirection == Axis.horizontal) {
-      return Row(mainAxisSize: MainAxisSize.min, children: children);
-    }
-
-    return const SizedBox(); // For unsupported scroll direction
-  }
-
   @override
   Widget build(BuildContext context) {
     final abstractConfiguration = AbstractConfiguration.of(context);
 
-    final mainChild = AbstractStatefulBuilder(
+    return AbstractStatefulBuilder(
       initState: (context) {
         if (!skipInitialOnInit) {
           _onInit(context);
         }
       },
+      dispose: () {
+        try {
+          _refreshController.dispose();
+        } catch (e) {
+          debugPrint(
+              'There is an error while trying to dispose of _refreshController: $e');
+        }
+      },
       builder: (context) {
-        return BlocConsumer<B, S>(
+        final mainChild = BlocConsumer<B, S>(
           listener: (context, state) {
             if (!_showBigLoader(context, state)) {
               _refreshController.complete();
@@ -357,6 +323,13 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
             }
           },
           builder: (context, state) {
+            final calculatedHeader = header ??
+                headerBuilder?.call(context, state) ??
+                const SizedBox();
+            final calculatedFooter = footer ??
+                footerBuilder?.call(context, state) ??
+                const SizedBox();
+
             final child = () {
               // Function to build a ListView with optional header and footer
               buildMaybeWithHeaderAndFooter(Widget child) {
@@ -368,42 +341,12 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                   children: [
                     if (headerScrollBehaviour ==
                         AbstractScrollBehaviour.scrollable)
-                      _buildHeader(context, state),
+                      calculatedHeader,
                     child,
                     if (footerScrollBehaviour ==
                         AbstractScrollBehaviour.scrollable)
-                      _buildFooter(context, state),
+                      calculatedFooter,
                   ],
-                );
-              }
-
-              // Check if we need to show a big loader
-              if (_showBigLoader(context, state)) {
-                return buildMaybeWithHeaderAndFooter(
-                  loaderBuilder?.call(context, state) ??
-                      abstractConfiguration?.loaderBuilder?.call(context) ??
-                      const Loader(),
-                );
-              }
-
-              // Check if we need to show an empty state
-              if (_showEmptyContainer(context, state)) {
-                return buildMaybeWithHeaderAndFooter(
-                  noDataBuilder?.call(context, () => _onInit(context), state) ??
-                      abstractConfiguration?.abstractListNoDataBuilder
-                          ?.call(context, () => _onInit(context)) ??
-                      AbstractListNoDataContainer(
-                          onInit: () => _onInit(context)),
-                );
-              }
-
-              // Check if we need to show an error state
-              if (_showErrorContainer(context, state)) {
-                return buildMaybeWithHeaderAndFooter(
-                  errorBuilder?.call(context, () => _onInit(context), state) ??
-                      abstractConfiguration?.abstractListErrorBuilder
-                          ?.call(context, () => _onInit(context)) ??
-                      AbstractLisErrorContainer(onInit: () => _onInit(context)),
                 );
               }
 
@@ -412,19 +355,69 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                 return buildMaybeWithHeaderAndFooter(builder!(context, state));
               }
 
+              final calculatedItemCount = _itemCount(context, state) + 2;
+
+              Widget? calculatedItemBuilder(BuildContext context, int index) {
+                final shouldBuildHeader =
+                    headerScrollBehaviour == AbstractScrollBehaviour.scrollable;
+                final shouldBuildFooter =
+                    footerScrollBehaviour == AbstractScrollBehaviour.scrollable;
+
+                if (index == 0) {
+                  return shouldBuildHeader
+                      ? calculatedHeader
+                      : const SizedBox();
+                }
+
+                if (index == (calculatedItemCount - 1)) {
+                  return shouldBuildFooter
+                      ? calculatedFooter
+                      : const SizedBox();
+                }
+
+                // Check if we need to show a big loader
+                if (_showBigLoader(context, state)) {
+                  return loaderBuilder?.call(context, state) ??
+                      abstractConfiguration?.loaderBuilder?.call(context) ??
+                      const Loader();
+                }
+
+                // Check if we need to show an empty state
+                if (_showEmptyContainer(context, state)) {
+                  return noDataBuilder?.call(
+                          context, () => _onInit(context), state) ??
+                      abstractConfiguration?.abstractListNoDataBuilder
+                          ?.call(context, () => _onInit(context)) ??
+                      AbstractListNoDataContainer(
+                          onInit: () => _onInit(context));
+                }
+
+                // Check if we need to show an error state
+                if (_showErrorContainer(context, state)) {
+                  return errorBuilder?.call(
+                          context, () => _onInit(context), state) ??
+                      abstractConfiguration?.abstractListErrorBuilder
+                          ?.call(context, () => _onInit(context)) ??
+                      AbstractLisErrorContainer(onInit: () => _onInit(context));
+                }
+
+                return itemBuilder?.call(context, state, index - 1);
+              }
+
               // Determine the appropriate list view or grid view based on the columns property
               if (columns <= 1) {
-                return ListView.builder(
+                return ListView.separated(
                   cacheExtent: cacheExtent,
                   padding: padding ?? EdgeInsets.zero,
                   shrinkWrap: true,
                   scrollDirection: scrollDirection,
                   physics: physics,
                   controller: controller,
-                  itemCount: _itemCount(context, state),
-                  itemBuilder: (context, index) {
-                    return _buildListItem(context, state, index);
-                  },
+                  itemCount: calculatedItemCount,
+                  itemBuilder: calculatedItemBuilder,
+                  separatorBuilder: (context, index) =>
+                      separatorBuilder?.call(context, state, index) ??
+                      const SizedBox(),
                 );
               }
 
@@ -442,10 +435,8 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                   childAspectRatio: childAspectRatio,
                   mainAxisExtent: mainAxisExtent,
                 ),
-                itemCount: _itemCount(context, state),
-                itemBuilder: (context, index) {
-                  return _buildListItem(context, state, index);
-                },
+                itemCount: calculatedItemCount,
+                itemBuilder: calculatedItemBuilder,
               );
             }();
 
@@ -486,51 +477,49 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
             // Wrap the final content with headers and footers based on configuration
             final result = SizedBox(
               height: heightBuilder?.call(context, state),
-              child: () {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (headerScrollBehaviour == AbstractScrollBehaviour.fixed)
-                      _buildHeader(context, state),
-                    Expanded(
-                      child: content,
-                    ),
-                    if (footerScrollBehaviour == AbstractScrollBehaviour.fixed)
-                      _buildFooter(context, state),
-                  ],
-                );
-              }(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (headerScrollBehaviour == AbstractScrollBehaviour.fixed)
+                    calculatedHeader,
+                  Expanded(
+                    child: content,
+                  ),
+                  if (footerScrollBehaviour == AbstractScrollBehaviour.fixed)
+                    calculatedFooter,
+                ],
+              ),
             );
 
             // Return additional customization if provided
             return additionalBuilder?.call(context, state, result) ?? result;
           },
         );
+
+        // Determine how to provide the BLoC or Cubit to the widget tree
+        if (providerValue != null) {
+          return BlocProvider.value(
+            value: providerValue!,
+            child: mainChild,
+          );
+        }
+
+        if (provider != null) {
+          return BlocProvider<B>(
+            create: provider!,
+            child: mainChild,
+          );
+        }
+
+        if (providers.isNotNullOrEmpty) {
+          return MultiBlocProvider(
+            providers: providers!,
+            child: mainChild,
+          );
+        }
+
+        return mainChild; // No providers used, return main child directly
       },
     );
-
-    // Determine how to provide the BLoC or Cubit to the widget tree
-    if (providerValue != null) {
-      return BlocProvider.value(
-        value: providerValue!,
-        child: mainChild,
-      );
-    }
-
-    if (provider != null) {
-      return BlocProvider<B>(
-        create: provider!,
-        child: mainChild,
-      );
-    }
-
-    if (providers.isNotNullOrEmpty) {
-      return MultiBlocProvider(
-        providers: providers!,
-        child: mainChild,
-      );
-    }
-
-    return mainChild; // No providers used, return main child directly
   }
 }
