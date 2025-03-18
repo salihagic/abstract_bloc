@@ -315,20 +315,20 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
             if (state.resultStatus == ResultStatus.loaded) {
               onLoaded?.call(context, state);
             }
+
             if (state.resultStatus == ResultStatus.loadedCached) {
               onLoadedCached?.call(context, state);
             }
+
             if (state.resultStatus == ResultStatus.error) {
               onError?.call(context, state);
             }
           },
           builder: (context, state) {
-            final calculatedHeader = header ??
-                headerBuilder?.call(context, state) ??
-                const SizedBox();
-            final calculatedFooter = footer ??
-                footerBuilder?.call(context, state) ??
-                const SizedBox();
+            final calculatedHeader =
+                header ?? headerBuilder?.call(context, state);
+            final calculatedFooter =
+                footer ?? footerBuilder?.call(context, state);
 
             final child = () {
               // Function to build a ListView with optional header and footer
@@ -340,11 +340,13 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                   padding: padding ?? EdgeInsets.zero,
                   children: [
                     if (headerScrollBehaviour ==
-                        AbstractScrollBehaviour.scrollable)
+                            AbstractScrollBehaviour.scrollable &&
+                        calculatedHeader != null)
                       calculatedHeader,
                     child,
                     if (footerScrollBehaviour ==
-                        AbstractScrollBehaviour.scrollable)
+                            AbstractScrollBehaviour.scrollable &&
+                        calculatedFooter != null)
                       calculatedFooter,
                   ],
                 );
@@ -355,35 +357,25 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                 return buildMaybeWithHeaderAndFooter(builder!(context, state));
               }
 
-              final calculatedItemCount = _itemCount(context, state) + 2;
+              final calculatedShowBigLoader = _showBigLoader(context, state);
+              final calculatedShowEmptyContainer =
+                  _showEmptyContainer(context, state);
+              final calculatedShowErrorContainer =
+                  _showErrorContainer(context, state);
+              final shouldBuildTransitionItem = calculatedShowBigLoader ||
+                  calculatedShowEmptyContainer ||
+                  calculatedShowErrorContainer;
 
-              Widget? calculatedItemBuilder(BuildContext context, int index) {
-                final shouldBuildHeader =
-                    headerScrollBehaviour == AbstractScrollBehaviour.scrollable;
-                final shouldBuildFooter =
-                    footerScrollBehaviour == AbstractScrollBehaviour.scrollable;
-
-                if (index == 0) {
-                  return shouldBuildHeader
-                      ? calculatedHeader
-                      : const SizedBox();
-                }
-
-                if (index == (calculatedItemCount - 1)) {
-                  return shouldBuildFooter
-                      ? calculatedFooter
-                      : const SizedBox();
-                }
-
+              Widget transitionItemBuilder(BuildContext context) {
                 // Check if we need to show a big loader
-                if (_showBigLoader(context, state)) {
+                if (calculatedShowBigLoader) {
                   return loaderBuilder?.call(context, state) ??
                       abstractConfiguration?.loaderBuilder?.call(context) ??
                       const Loader();
                 }
 
                 // Check if we need to show an empty state
-                if (_showEmptyContainer(context, state)) {
+                if (calculatedShowEmptyContainer) {
                   return noDataBuilder?.call(
                           context, () => _onInit(context), state) ??
                       abstractConfiguration?.abstractListNoDataBuilder
@@ -393,7 +385,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                 }
 
                 // Check if we need to show an error state
-                if (_showErrorContainer(context, state)) {
+                if (calculatedShowErrorContainer) {
                   return errorBuilder?.call(
                           context, () => _onInit(context), state) ??
                       abstractConfiguration?.abstractListErrorBuilder
@@ -401,7 +393,38 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                       AbstractLisErrorContainer(onInit: () => _onInit(context));
                 }
 
-                return itemBuilder?.call(context, state, index - 1);
+                return const SizedBox();
+              }
+
+              final shouldBuildHeader =
+                  headerScrollBehaviour == AbstractScrollBehaviour.scrollable &&
+                      calculatedHeader != null;
+              final shouldBuildFooter =
+                  footerScrollBehaviour == AbstractScrollBehaviour.scrollable &&
+                      calculatedFooter != null;
+
+              final resolvedItemCount = _itemCount(context, state);
+              final calculatedItemCount =
+                  (shouldBuildTransitionItem ? 1 : resolvedItemCount) +
+                      (shouldBuildHeader ? 1 : 0) +
+                      (shouldBuildFooter ? 1 : 0);
+              final calculatedIndexOffset = shouldBuildHeader ? 1 : 0;
+
+              Widget? calculatedItemBuilder(BuildContext context, int index) {
+                if (shouldBuildHeader && index == 0) {
+                  return calculatedHeader;
+                }
+
+                if (shouldBuildFooter && index == (calculatedItemCount - 1)) {
+                  return calculatedFooter;
+                }
+
+                if (shouldBuildTransitionItem) {
+                  return transitionItemBuilder(context);
+                }
+
+                return itemBuilder?.call(
+                    context, state, index - calculatedIndexOffset);
               }
 
               // Determine the appropriate list view or grid view based on the columns property
@@ -480,12 +503,14 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (headerScrollBehaviour == AbstractScrollBehaviour.fixed)
+                  if (headerScrollBehaviour == AbstractScrollBehaviour.fixed &&
+                      calculatedHeader != null)
                     calculatedHeader,
                   Expanded(
                     child: content,
                   ),
-                  if (footerScrollBehaviour == AbstractScrollBehaviour.fixed)
+                  if (footerScrollBehaviour == AbstractScrollBehaviour.fixed &&
+                      calculatedFooter != null)
                     calculatedFooter,
                 ],
               ),
