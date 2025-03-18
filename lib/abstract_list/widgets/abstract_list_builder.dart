@@ -452,10 +452,11 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                 physics: physics,
                 controller: controller,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: columns,
+                  crossAxisCount: shouldBuildTransitionItem ? 1 : columns,
                   mainAxisSpacing: mainAxisSpacing,
                   crossAxisSpacing: crossAxisSpacing,
-                  childAspectRatio: childAspectRatio,
+                  childAspectRatio:
+                      shouldBuildTransitionItem ? 0.5 : childAspectRatio,
                   mainAxisExtent: mainAxisExtent,
                 ),
                 itemCount: calculatedItemCount,
