@@ -1,3 +1,7 @@
+## 1.4.7
+
+* BlocProvider fix
+
 ## 1.4.6
 
 * Fixed sudden twitch/refresh of the header in AbstractListBuilder

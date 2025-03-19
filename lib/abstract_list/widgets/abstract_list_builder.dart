@@ -289,7 +289,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
   Widget build(BuildContext context) {
     final abstractConfiguration = AbstractConfiguration.of(context);
 
-    return AbstractStatefulBuilder(
+    final resultBuilder = AbstractStatefulBuilder(
       initState: (context) {
         if (!skipInitialOnInit) {
           _onInit(context);
@@ -304,7 +304,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
         }
       },
       builder: (context) {
-        final mainChild = BlocConsumer<B, S>(
+        return BlocConsumer<B, S>(
           listener: (context, state) {
             if (!_showBigLoader(context, state)) {
               _refreshController.complete();
@@ -521,31 +521,31 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
             return additionalBuilder?.call(context, state, result) ?? result;
           },
         );
-
-        // Determine how to provide the BLoC or Cubit to the widget tree
-        if (providerValue != null) {
-          return BlocProvider.value(
-            value: providerValue!,
-            child: mainChild,
-          );
-        }
-
-        if (provider != null) {
-          return BlocProvider<B>(
-            create: provider!,
-            child: mainChild,
-          );
-        }
-
-        if (providers.isNotNullOrEmpty) {
-          return MultiBlocProvider(
-            providers: providers!,
-            child: mainChild,
-          );
-        }
-
-        return mainChild; // No providers used, return main child directly
       },
     );
+
+    // Determine how to provide the BLoC or Cubit to the widget tree
+    if (providerValue != null) {
+      return BlocProvider.value(
+        value: providerValue!,
+        child: resultBuilder,
+      );
+    }
+
+    if (provider != null) {
+      return BlocProvider<B>(
+        create: provider!,
+        child: resultBuilder,
+      );
+    }
+
+    if (providers.isNotNullOrEmpty) {
+      return MultiBlocProvider(
+        providers: providers!,
+        child: resultBuilder,
+      );
+    }
+
+    return resultBuilder; // No providers used, return main child directly
   }
 }
