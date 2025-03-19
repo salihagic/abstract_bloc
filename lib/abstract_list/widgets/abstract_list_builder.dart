@@ -427,6 +427,24 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                     context, state, index - calculatedIndexOffset);
               }
 
+              Widget calculatedSeparatorBuilder(
+                  BuildContext context, int index) {
+                if (shouldBuildHeader && index == 0) {
+                  return const SizedBox();
+                }
+
+                if (shouldBuildFooter && index == (calculatedItemCount - 1)) {
+                  return const SizedBox();
+                }
+
+                if (shouldBuildTransitionItem) {
+                  return const SizedBox();
+                }
+
+                return separatorBuilder?.call(context, state, index) ??
+                    const SizedBox();
+              }
+
               // Determine the appropriate list view or grid view based on the columns property
               if (columns <= 1) {
                 return ListView.separated(
@@ -438,9 +456,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                   controller: controller,
                   itemCount: calculatedItemCount,
                   itemBuilder: calculatedItemBuilder,
-                  separatorBuilder: (context, index) =>
-                      separatorBuilder?.call(context, state, index) ??
-                      const SizedBox(),
+                  separatorBuilder: calculatedSeparatorBuilder,
                 );
               }
 

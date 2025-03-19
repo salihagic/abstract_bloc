@@ -1,3 +1,7 @@
+## 1.4.8
+
+* Separator builder fix
+
 ## 1.4.7
 
 * BlocProvider fix
