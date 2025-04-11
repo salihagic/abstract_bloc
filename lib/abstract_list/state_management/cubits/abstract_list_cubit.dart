@@ -48,8 +48,10 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
     updateState(state.copyWith() as S);
 
     try {
-      // resolveData may throw, so it's handled
-      updateState(await convertResultToStateAfterLoad(await resolveData()));
+      final result = await resolveData();
+
+      updateState(await convertResultToStateAfterLoad(result));
+      await onAfterLoad(result);
     } catch (e) {
       // Handle errors by streaming data
       await for (final result in resolveStreamData()) {
@@ -68,7 +70,10 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
     await onBeforeRefresh();
 
     try {
-      updateState(await convertResultToStateAfterRefresh(await resolveData()));
+      final result = await resolveData();
+
+      updateState(await convertResultToStateAfterRefresh(result));
+      await onAfterRefresh(result);
     } catch (e) {
       await for (final result in resolveStreamData()) {
         updateState(await convertResultToStateAfterRefresh(result));
@@ -85,8 +90,10 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
       await onBeforeLoadMore();
 
       try {
-        updateState(
-            await convertResultToStateAfterLoadMore(await resolveData()));
+        final result = await resolveData();
+
+        updateState(await convertResultToStateAfterLoadMore(result));
+        await onAfterLoadMore(result);
       } catch (e) {
         await for (final result in resolveStreamData()) {
           updateState(await convertResultToStateAfterLoadMore(result));

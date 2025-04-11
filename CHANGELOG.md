@@ -1,3 +1,7 @@
+## 1.4.10
+
+* Updated dependencies
+
 ## 1.4.9
 
 * Updated dependencies
