@@ -7,7 +7,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.4.11"
+    version: "1.4.13"
   async:
     dependency: transitive
     description:
@@ -113,18 +113,18 @@ packages:
     dependency: transitive
     description:
       name: flutter_bloc
-      sha256: "1046d719fbdf230330d3443187cc33cc11963d15c9089f6cc56faa42a4c5f0cc"
+      sha256: cf51747952201a455a1c840f8171d273be009b932c75093020f9af64f2123e38
       url: "https://pub.dev"
     source: hosted
-    version: "9.1.0"
+    version: "9.1.1"
   flutter_bloc_event_bus:
     dependency: transitive
     description:
       name: flutter_bloc_event_bus
-      sha256: "54a6f7a9f5cd43883735ebf3cad4a4eb629dc70d155592a979df45a8649f78cb"
+      sha256: "9a57f531fa81f30cfd326dd5d528b66e860a7ebfc2b51a1100d32899a1075a24"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.4"
+    version: "0.0.5"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -387,10 +387,10 @@ packages:
     dependency: transitive
     description:
       name: provider
-      sha256: c8a055ee5ce3fd98d6fc872478b03823ffdb448699c6ebdbbc71d59b596fd48c
+      sha256: "4abbd070a04e9ddc287673bf5a030c7ca8b685ff70218720abab8b092f53dd84"
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.2"
+    version: "6.1.5"
   pull_to_refresh:
     dependency: transitive
     description:
@@ -403,10 +403,10 @@ packages:
     dependency: transitive
     description:
       name: rest_api_client
-      sha256: "32c99ec69f74b57aa4ac12c072277a0c8919b807c7b1f521cd50f82dd27c03a4"
+      sha256: "90573889946229b39a64bda8b6e4534eab71e7ddbfa4ea74a99ec08a10710322"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.12"
+    version: "2.3.13"
   sky_engine:
     dependency: transitive
     description: flutter
