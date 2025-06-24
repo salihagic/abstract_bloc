@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/extensions/_all.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
@@ -410,6 +412,11 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                       (shouldBuildFooter ? 1 : 0);
               final calculatedIndexOffset = shouldBuildHeader ? 1 : 0;
 
+              if (shouldBuildTransitionItem &&
+                  headerScrollBehaviour == AbstractScrollBehaviour.fixed) {
+                return transitionItemBuilder(context);
+              }
+
               Widget? calculatedItemBuilder(BuildContext context, int index) {
                 if (shouldBuildHeader && index == 0) {
                   return calculatedHeader;
@@ -485,15 +492,20 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
               children: [
                 () {
                   if (_useSmartRefresher()) {
-                    return SmartRefresher(
-                      cacheExtent: cacheExtent,
-                      scrollDirection: scrollDirection,
-                      controller: _refreshController,
-                      enablePullDown: _enableRefresh(context, state),
-                      enablePullUp: _enableLoadMore(context, state),
-                      onRefresh: () => _onRefresh(context),
-                      onLoading: () => _onLoadMore(context),
-                      child: child,
+                    return ScrollConfiguration(
+                      behavior: ScrollConfiguration.of(context).copyWith(
+                        dragDevices: PointerDeviceKind.values.toSet(),
+                      ),
+                      child: SmartRefresher(
+                        cacheExtent: cacheExtent,
+                        scrollDirection: scrollDirection,
+                        controller: _refreshController,
+                        enablePullDown: _enableRefresh(context, state),
+                        enablePullUp: _enableLoadMore(context, state),
+                        onRefresh: () => _onRefresh(context),
+                        onLoading: () => _onLoadMore(context),
+                        child: child,
+                      ),
                     );
                   }
 
