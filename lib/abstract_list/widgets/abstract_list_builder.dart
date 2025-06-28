@@ -166,7 +166,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
     this.loaderBuilder,
     this.header,
     this.headerBuilder,
-    this.headerScrollBehaviour = AbstractScrollBehaviour.scrollable,
+    this.headerScrollBehaviour = AbstractScrollBehaviour.fixed,
     this.isLoading,
     this.isError,
     this.itemCount,
@@ -180,7 +180,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
     this.onError,
     this.footer,
     this.footerBuilder,
-    this.footerScrollBehaviour = AbstractScrollBehaviour.scrollable,
+    this.footerScrollBehaviour = AbstractScrollBehaviour.fixed,
     this.additionalBuilder,
     this.onInit,
     this.skipInitialOnInit = false,
@@ -413,7 +413,8 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
               final calculatedIndexOffset = shouldBuildHeader ? 1 : 0;
 
               if (shouldBuildTransitionItem &&
-                  headerScrollBehaviour == AbstractScrollBehaviour.fixed) {
+                  (headerScrollBehaviour == AbstractScrollBehaviour.fixed ||
+                      !shouldBuildHeader)) {
                 return transitionItemBuilder(context);
               }
 
