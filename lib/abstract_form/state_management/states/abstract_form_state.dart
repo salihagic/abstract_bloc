@@ -66,6 +66,8 @@ abstract class AbstractFormState<TModel, TModelValidator extends ModelValidator>
   AutovalidateMode get autovalidateMode =>
       autovalidate ? AutovalidateMode.always : AutovalidateMode.disabled;
 
+  bool get isValid => modelValidator?.validate(model) ?? true;
+
   /// Creates an [AbstractFormState].
   /// - [model]: The model associated with the form.
   /// - [modelValidator]: The validator for the form model.

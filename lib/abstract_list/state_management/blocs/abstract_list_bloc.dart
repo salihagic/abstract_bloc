@@ -1,5 +1,6 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/extensions/_all.dart';
+import 'package:abstract_bloc/models/cursor_pagination.dart';
 
 /// An abstract bloc class for handling a list of items with various states.
 abstract class AbstractListBloc<S extends AbstractListState>
@@ -131,16 +132,26 @@ abstract class AbstractListBloc<S extends AbstractListState>
 
       if (result is CacheResult) {
         state.result.numberOfCachedItems +=
-            state.result.items.count; // Update cached items
+            state.result.items.abstractBlocListCount; // Update cached items
       } else {
         state.result.numberOfCachedItems = 0;
       }
 
+      // If paginated, check if more items are to load
       if (state is AbstractListFilterablePaginatedState) {
-        state.result.hasMoreItems = state.result.items.count ==
-            (state as AbstractListFilterablePaginatedState)
-                .searchModel
-                .take; // Check for more items
+        final searchModel =
+            (state as AbstractListFilterablePaginatedState).searchModel;
+
+        searchModel.update(state.result);
+
+        if (searchModel is Pagination) {
+          state.result.hasMoreItems =
+              state.result.items.abstractBlocListCount == searchModel.take;
+        }
+
+        if (searchModel is CursorPagination) {
+          state.result.hasMoreItems = searchModel.nextCursor.isNotEmpty;
+        }
       }
     }
 
@@ -164,7 +175,7 @@ abstract class AbstractListBloc<S extends AbstractListState>
           .map(result.data as GridResult); // Update the state with new results
 
       state.result.numberOfCachedItems +=
-          state.result.items.count; // Update cached items
+          state.result.items.abstractBlocListCount; // Update cached items
 
       state.result.items.insertAll(0, stateItems); // Merge items
 
@@ -183,7 +194,7 @@ abstract class AbstractListBloc<S extends AbstractListState>
           .map(result.data as GridResult); // Update with new grid results
 
       if (state.resultStatus == ResultStatus.loadedCached) {
-        stateItems.removeLastItems(
+        stateItems.abstractBlocListRemoveLastItems(
             state.result.numberOfCachedItems); // Clear cached items
         state.result.numberOfCachedItems = 0;
       }

@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/extensions/_all.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
-import 'package:provider/single_child_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/single_child_widget.dart';
 
 /// Enum to define the behavior of scrollable headers or footers.
 enum AbstractScrollBehaviour { fixed, scrollable }
@@ -35,6 +35,8 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
 
   /// Whether to show a warning icon when displaying cached data.
   final bool showCachedDataWarningIcon;
+
+  final bool reverse;
 
   /// Number of columns for grid layouts.
   final int columns;
@@ -161,12 +163,13 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
     this.enableRefresh = true,
     this.enableLoadMore = true,
     this.showCachedDataWarningIcon = true,
+    this.reverse = false,
     this.errorBuilder,
     this.noDataBuilder,
     this.loaderBuilder,
     this.header,
     this.headerBuilder,
-    this.headerScrollBehaviour = AbstractScrollBehaviour.fixed,
+    this.headerScrollBehaviour = AbstractScrollBehaviour.scrollable,
     this.isLoading,
     this.isError,
     this.itemCount,
@@ -180,7 +183,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
     this.onError,
     this.footer,
     this.footerBuilder,
-    this.footerScrollBehaviour = AbstractScrollBehaviour.fixed,
+    this.footerScrollBehaviour = AbstractScrollBehaviour.scrollable,
     this.additionalBuilder,
     this.onInit,
     this.skipInitialOnInit = false,
@@ -206,7 +209,8 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
       isError?.call(context, state) ?? state.resultStatus == ResultStatus.error;
 
   int _itemCount(BuildContext context, S state) =>
-      itemCount?.call(context, state) ?? state.result.items.count;
+      itemCount?.call(context, state) ??
+      state.result.items.abstractBlocListCount;
 
   bool _enableRefresh(BuildContext context, S state) => enableRefresh;
 
@@ -338,6 +342,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                 return ListView(
                   cacheExtent: cacheExtent,
                   physics: physics,
+                  reverse: reverse,
                   controller: controller,
                   padding: padding ?? EdgeInsets.zero,
                   children: [
@@ -459,6 +464,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                   cacheExtent: cacheExtent,
                   padding: padding ?? EdgeInsets.zero,
                   shrinkWrap: true,
+                  reverse: reverse,
                   scrollDirection: scrollDirection,
                   physics: physics,
                   controller: controller,
@@ -472,6 +478,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                 cacheExtent: cacheExtent,
                 padding: padding ?? EdgeInsets.zero,
                 shrinkWrap: true,
+                reverse: reverse,
                 scrollDirection: scrollDirection,
                 physics: physics,
                 controller: controller,
@@ -501,6 +508,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                         cacheExtent: cacheExtent,
                         scrollDirection: scrollDirection,
                         controller: _refreshController,
+                        reverse: reverse,
                         enablePullDown: _enableRefresh(context, state),
                         enablePullUp: _enableLoadMore(context, state),
                         onRefresh: () => _onRefresh(context),
@@ -568,7 +576,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
       );
     }
 
-    if (providers.isNotNullOrEmpty) {
+    if (providers.abstractBlocListIsNotNullOrEmpty) {
       return MultiBlocProvider(
         providers: providers!,
         child: resultBuilder,

@@ -18,6 +18,8 @@ class GridResult<TListItem> {
   int firstRowOnPage; // Index of the first row on the current page
   int lastRowOnPage; // Index of the last row on the current page
   bool hasItems; // Indicates if the current result contains any items
+  String? nextCursor; // Token for fetching the next page, if applicable
+  String? previousCursor; // Token for fetching the previous page, if applicable
   dynamic additionalData; // Any additional data that might be needed
 
   /// Constructs a [GridResult] instance with optional parameters.
@@ -36,11 +38,13 @@ class GridResult<TListItem> {
     this.firstRowOnPage = 0,
     this.lastRowOnPage = 0,
     this.hasItems = true,
+    this.nextCursor,
+    this.previousCursor,
     this.additionalData,
   }) {
     // Determine whether there are more items based on items count and page size
-    hasMoreItems = hasMoreItems || items.count == pageSize;
-    hasItems = hasItems || items.isNotNullOrEmpty;
+    hasMoreItems = hasMoreItems || items.abstractBlocListCount == pageSize;
+    hasItems = hasItems || items.abstractBlocListIsNotNullOrEmpty;
   }
 
   /// Maps the properties of another [GridResult] instance to the current instance.
@@ -59,6 +63,8 @@ class GridResult<TListItem> {
     firstRowOnPage = other.firstRowOnPage;
     lastRowOnPage = other.lastRowOnPage;
     hasItems = other.hasItems;
+    nextCursor = other.nextCursor;
+    previousCursor = other.previousCursor;
     additionalData = other.additionalData;
   }
 
@@ -73,11 +79,13 @@ class GridResult<TListItem> {
                 .toList() ??
             [];
     final int pageSize = map[GridResultJsonConfiguration.pageSizeJsonKey] ?? 0;
+    final String nextCursor =
+        map[GridResultJsonConfiguration.nextCursorJsonKey] ?? '';
 
     return GridResult<TListItem>(
       items: items,
       hasMoreItems: map[GridResultJsonConfiguration.hasMoreItemsJsonKey] ??
-          items.count == pageSize,
+          (nextCursor.isNotEmpty || items.abstractBlocListCount == pageSize),
       currentPage: map[GridResultJsonConfiguration.currentPageJsonKey] ?? 0,
       startPage: map[GridResultJsonConfiguration.startPageJsonKey] ?? 0,
       endPage: map[GridResultJsonConfiguration.endPageJsonKey] ?? 0,
@@ -93,7 +101,9 @@ class GridResult<TListItem> {
           map[GridResultJsonConfiguration.firstRowOnPageJsonKey] ?? 0,
       lastRowOnPage: map[GridResultJsonConfiguration.lastRowOnPageJsonKey] ?? 0,
       hasItems: map[GridResultJsonConfiguration.hasItemsJsonKey] ??
-          items.isNotNullOrEmpty,
+          items.abstractBlocListIsNotNullOrEmpty,
+      nextCursor: map[GridResultJsonConfiguration.nextCursorJsonKey],
+      previousCursor: map[GridResultJsonConfiguration.previousCursorJsonKey],
       additionalData: map[GridResultJsonConfiguration.additionalDataJsonKey],
     );
   }
@@ -115,6 +125,8 @@ class GridResultJsonConfiguration {
   static String firstRowOnPageJsonKey = 'firstRowOnPage';
   static String lastRowOnPageJsonKey = 'lastRowOnPage';
   static String hasItemsJsonKey = 'hasItems';
+  static String nextCursorJsonKey = 'nextCursor';
+  static String previousCursorJsonKey = 'previousCursor';
   static String additionalDataJsonKey = 'additionalData';
 
   /// Configures JSON keys for the [GridResult].

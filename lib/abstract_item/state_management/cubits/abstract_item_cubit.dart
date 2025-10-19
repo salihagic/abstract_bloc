@@ -20,8 +20,6 @@ abstract class AbstractItemCubit<S extends AbstractItemState> extends Cubit<S> {
 
   /// Loads data and updates the state accordingly.
   Future<void> load<TSearchModel>([TSearchModel? searchModel]) async {
-    final previousState = state.copyWith();
-
     // Update the search model if the current state is filterable
     if (state is AbstractItemFilterableState) {
       (state as AbstractItemFilterableState).searchModel =
@@ -36,21 +34,22 @@ abstract class AbstractItemCubit<S extends AbstractItemState> extends Cubit<S> {
 
     try {
       // Attempt to resolve data and update state
-      updateState(convertResultToState(await resolveData()));
+      final result = await resolveData();
+
+      updateState(convertResultToState(result));
+      await onAfterLoad(result);
     } catch (e) {
       // On error, resolve data via stream and update state for each result
       await for (final result in resolveStreamData()) {
         updateState(convertResultToState(result));
+        await onAfterLoad(result);
       }
     }
-
-    await onAfterLoad(searchModel, previousState);
   }
 
   /// A hook method that can be overridden to perform actions
   /// after data loading is completed.
-  Future<void> onAfterLoad<TSearchModel>(
-      TSearchModel? searchModel, S previousState) async {}
+  Future<void> onAfterLoad(Result result) async {}
 
   /// Converts the result obtained from data resolution into a state.
   S convertResultToState(Result result) {

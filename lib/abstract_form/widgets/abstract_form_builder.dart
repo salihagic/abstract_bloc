@@ -263,7 +263,7 @@ class AbstractFormBuilder<B extends StateStreamableSource<S>,
       );
     }
 
-    if (providers.isNotNullOrEmpty) {
+    if (providers.abstractBlocListIsNotNullOrEmpty) {
       return MultiBlocProvider(
         providers: providers!,
         child: mainChild,

@@ -1,5 +1,6 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/extensions/_all.dart';
+import 'package:abstract_bloc/models/cursor_pagination.dart';
 
 /// An abstract class representing a cubit for managing a list state in a generic manner.
 abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
@@ -40,6 +41,10 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
     if (state is AbstractListFilterableState) {
       (state as AbstractListFilterableState).searchModel = searchModel ??
           (_initialState as AbstractListFilterableState).searchModel;
+    }
+
+    if (state is AbstractListFilterablePaginatedState) {
+      (state as AbstractListFilterablePaginatedState).searchModel.reset();
     }
 
     await onBeforeLoad();
@@ -112,15 +117,27 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
 
       // Manage cached items
       if (result is CacheResult) {
-        state.result.numberOfCachedItems += state.result.items.count;
+        state.result.numberOfCachedItems +=
+            state.result.items.abstractBlocListCount;
       } else {
         state.result.numberOfCachedItems = 0;
       }
 
       // If paginated, check if more items are to load
       if (state is AbstractListFilterablePaginatedState) {
-        state.result.hasMoreItems = state.result.items.count ==
-            (state as AbstractListFilterablePaginatedState).searchModel.take;
+        final searchModel =
+            (state as AbstractListFilterablePaginatedState).searchModel;
+
+        searchModel.update(state.result);
+
+        if (searchModel is Pagination) {
+          state.result.hasMoreItems =
+              state.result.items.abstractBlocListCount == searchModel.take;
+        }
+
+        if (searchModel is CursorPagination) {
+          state.result.hasMoreItems = searchModel.nextCursor.isNotEmpty;
+        }
       }
     }
 
@@ -139,7 +156,8 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
       final stateItems = state.result.items;
 
       state.result.map(result.data as GridResult);
-      state.result.numberOfCachedItems += state.result.items.count;
+      state.result.numberOfCachedItems +=
+          state.result.items.abstractBlocListCount;
       state.result.items.insertAll(0, stateItems);
 
       state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
@@ -149,11 +167,25 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
     // Handle network result similarly
     if (result is! CacheResult && result.data is GridResult) {
       final stateItems = state.result.items;
+      final searchModel =
+          (state as AbstractListFilterablePaginatedState).searchModel;
+      final gridResult = result.data as GridResult;
 
-      state.result.map(result.data as GridResult);
+      state.result.map(gridResult);
+      searchModel.update(gridResult);
+
+      if (searchModel is Pagination) {
+        state.result.hasMoreItems =
+            gridResult.items.abstractBlocListCount == searchModel.take;
+      }
+
+      if (searchModel is CursorPagination) {
+        state.result.hasMoreItems = searchModel.nextCursor.isNotEmpty;
+      }
 
       if (state.resultStatus == ResultStatus.loadedCached) {
-        stateItems.removeLastItems(state.result.numberOfCachedItems);
+        stateItems
+            .abstractBlocListRemoveLastItems(state.result.numberOfCachedItems);
         state.result.numberOfCachedItems = 0;
       }
 

@@ -207,7 +207,12 @@ Future main() async {
             paginationConfiguration: PaginationConfiguration(
               initialPage: 1,
               pageSize: 10,
-              toJson: (page, pageSize) => {'page': page},
+              toJson:
+                  (pagination) => {
+                    'page': pagination.page,
+                    'pageSize': pagination.take,
+                    'offset': pagination.offset,
+                  },
             ),
             child: RefreshConfiguration(
               headerBuilder:

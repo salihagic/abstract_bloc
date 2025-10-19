@@ -1,52 +1,42 @@
 import 'package:flutter/material.dart';
 
-/// A customizable loading spinner widget.
+/// The generic loader widget.
 class Loader extends StatelessWidget {
-  /// The width of the loader.
-  final double? width;
-
-  /// The height of the loader.
-  final double? height;
-
-  /// The size of the circular loader.
-  final double? size;
-
-  /// The color of the loader. If null, defaults to the primary color of the theme.
+  /// The color of the loader. If null, defaults to the primary color of the app.
   final Color? color;
 
-  /// Creates a loader with optional width, height, size, and color.
+  /// The size of the loader.
+  final double? size;
+
+  /// The thickness of the loader.
+  final double? thickness;
+
   const Loader({
     super.key,
-    this.width,
-    this.height,
     this.size,
     this.color,
+    this.thickness = 1.0,
   });
 
-  /// Creates a small loader with fixed size and optional color.
   const Loader.sm({
     super.key,
+    this.size = 16,
     this.color,
-  })  : width = 16,
-        height = 16,
-        size = 16;
+    this.thickness = 1.0,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: height ?? size,
-      width: width ?? size,
-      child: Material(
-        color: Colors.transparent,
-        child: Center(
-          child: SizedBox(
-            height: size,
-            width: size,
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(
-                color ?? Theme.of(context).primaryColor,
-              ),
-            ),
+      height: size,
+      width: size,
+      child: Center(
+        child: SizedBox.square(
+          dimension: size,
+          child: CircularProgressIndicator(
+            color: color ?? Theme.of(context).primaryColor,
+            strokeCap: StrokeCap.round,
+            strokeWidth: thickness,
           ),
         ),
       ),

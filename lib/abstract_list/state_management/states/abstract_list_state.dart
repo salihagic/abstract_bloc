@@ -1,4 +1,5 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
+import 'package:abstract_bloc/models/base_pagination.dart';
 
 /// An abstract class representing the state of a list.
 ///
@@ -73,10 +74,10 @@ abstract class AbstractListFilterableState<TSearchModel, TListItem>
 /// This class extends [AbstractListFilterableState] to support pagination,
 /// allowing dynamic loading of items based on pagination mechanics.
 ///
-/// [TSearchModel] - The type of the search model used to filter items (must extend [Pagination]).
+/// [TSearchModel] - The type of the search model used to filter items (must extend [BasePagination]).
 /// [TListItem] - The type of items contained in the list.
 abstract class AbstractListFilterablePaginatedState<
-    TSearchModel extends Pagination,
+    TSearchModel extends BasePagination,
     TListItem> extends AbstractListFilterableState<TSearchModel, TListItem> {
   /// Constructor to initialize [AbstractListFilterablePaginatedState].
   ///

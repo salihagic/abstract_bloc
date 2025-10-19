@@ -10,6 +10,7 @@ extension RefreshControllerExtension on RefreshController {
   /// to indicate that the refresh has finished.
   void complete() {
     if (isLoading) {
+      footerMode!.value = LoadStatus.idle;
       loadComplete(); // Call to mark loading as complete
     } else if (isRefresh) {
       refreshCompleted(); // Call to mark refreshing as complete
