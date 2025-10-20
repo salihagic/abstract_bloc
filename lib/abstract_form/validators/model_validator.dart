@@ -5,16 +5,16 @@ abstract class ModelValidator {
   /// Validates the given model.
   /// Returns `true` if the model is valid, otherwise `false`.
   /// By default, this method always returns `true`.
-  bool validate(model) => true;
+  bool validate(dynamic model) => true;
 
   /// Retrieves a list of validation messages for the given model.
   /// By default, this method returns an empty list.
-  List<String> messages(model) => [];
+  List<String> messages(dynamic model) => [];
 
   /// Formats the validation messages into a single string.
   /// - [model]: The model to validate.
   /// - [messagePrefix]: A prefix to add to each message (default is '- ').
   /// Returns a formatted string of validation messages.
-  String message(model, [String messagePrefix = '- ']) =>
+  String message(dynamic model, [String messagePrefix = '- ']) =>
       messagePrefix + messages(model).join('\n$messagePrefix');
 }

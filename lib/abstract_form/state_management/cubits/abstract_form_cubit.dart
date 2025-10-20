@@ -17,7 +17,7 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
 
   /// Initializes the form model with data from an API or other source.
   /// Override this method to provide custom initialization logic.
-  Future<Result> initModel(model) async => Result.success(data: model);
+  Future<Result> initModel(dynamic model) async => Result.success(data: model);
 
   /// Initializes the form model with an empty state.
   Future<Result> initModelEmpty() async => Result.success();
@@ -60,7 +60,8 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
 
   /// Submits the form with the provided model.
   /// Throws an exception if not implemented.
-  Future<Result> onSubmit(model) => throw Exception('onSubmit Not implemented');
+  Future<Result> onSubmit(dynamic model) =>
+      throw Exception('onSubmit Not implemented');
 
   /// Submits the form with an empty model.
   /// Throws an exception if not implemented.
@@ -69,7 +70,7 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
 
   /// Submits the form locally with the provided model.
   /// Throws an exception if not implemented.
-  Future<Result> onSubmitLocal(model) =>
+  Future<Result> onSubmitLocal(dynamic model) =>
       throw Exception('onSubmitLocal Not implemented');
 
   /// Submits the form locally with an empty model.

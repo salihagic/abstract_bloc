@@ -1,3 +1,7 @@
+## 2.0.0
+
+* Revised and updated
+
 ## 1.4.15
 
 * AbstractList headerScrollBehaviour default fixed

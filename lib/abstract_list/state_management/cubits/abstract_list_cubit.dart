@@ -110,7 +110,7 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
   }
 
   /// Convert results to state after loading data.
-  Future<S> convertResultToStateAfterLoad(result) async {
+  Future<S> convertResultToStateAfterLoad(dynamic result) async {
     state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
 
     if (result.isSuccess) {
@@ -147,11 +147,11 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
 
   // Helper methods to convert results after refresh and load more
 
-  Future<S> convertResultToStateAfterRefresh(result) async {
+  Future<S> convertResultToStateAfterRefresh(dynamic result) async {
     return await convertResultToStateAfterLoad(result);
   }
 
-  Future<S> convertResultToStateAfterLoadMore(result) async {
+  Future<S> convertResultToStateAfterLoadMore(dynamic result) async {
     // Logic for handling cached and network responses while loading more items
     if (result is CacheResult && result.data is GridResult) {
       final stateItems = state.result.items;

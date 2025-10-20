@@ -66,10 +66,11 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
   }
 
   /// Abstract submission methods to be implemented in subclasses.
-  Future<Result> onSubmit(model) => throw Exception('onSubmit Not implemented');
+  Future<Result> onSubmit(dynamic model) =>
+      throw Exception('onSubmit Not implemented');
   Future<Result> onSubmitEmpty() =>
       throw Exception('onSubmitEmpty Not implemented');
-  Future<Result> onSubmitLocal(model) =>
+  Future<Result> onSubmitLocal(dynamic model) =>
       throw Exception('onSubmitLocal Not implemented');
   Future<Result> onSubmitEmptyLocal() =>
       throw Exception('onSubmitEmptyLocal Not implemented');

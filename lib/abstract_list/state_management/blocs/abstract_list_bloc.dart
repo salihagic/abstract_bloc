@@ -32,22 +32,34 @@ abstract class AbstractListBloc<S extends AbstractListState>
       throw UnimplementedError(); // Must be implemented
 
   /// Additional operations to perform before loading data.
-  Future<void> onBeforeLoad(event, Emitter<S> emit) async {}
+  Future<void> onBeforeLoad(dynamic event, Emitter<S> emit) async {}
 
   /// Additional operations to perform before refreshing data.
-  Future<void> onBeforeRefresh(event, Emitter<S> emit) async {}
+  Future<void> onBeforeRefresh(dynamic event, Emitter<S> emit) async {}
 
   /// Additional operations to perform before loading more data.
-  Future<void> onBeforeLoadMore(event, Emitter<S> emit) async {}
+  Future<void> onBeforeLoadMore(dynamic event, Emitter<S> emit) async {}
 
   /// Additional operations to perform after loading data.
-  Future<void> onAfterLoad(event, Emitter<S> emit, Result result) async {}
+  Future<void> onAfterLoad(
+    dynamic event,
+    Emitter<S> emit,
+    Result result,
+  ) async {}
 
   /// Additional operations to perform after refreshing data.
-  Future<void> onAfterRefresh(event, Emitter<S> emit, Result result) async {}
+  Future<void> onAfterRefresh(
+    dynamic event,
+    Emitter<S> emit,
+    Result result,
+  ) async {}
 
   /// Additional operations to perform after loading more data.
-  Future<void> onAfterLoadMore(event, Emitter<S> emit, Result result) async {}
+  Future<void> onAfterLoadMore(
+    dynamic event,
+    Emitter<S> emit,
+    Result result,
+  ) async {}
 
   /// Handles loading data when requested.
   Future<void> load(AbstractListLoadEvent event, Emitter<S> emit) async {
@@ -131,7 +143,7 @@ abstract class AbstractListBloc<S extends AbstractListState>
   }
 
   /// Converts the result after loading data into a new state.
-  Future<S> convertResultToStateAfterLoad(result) async {
+  Future<S> convertResultToStateAfterLoad(dynamic result) async {
     state.resultStatus = _getStatusFromResult(result) ?? state.resultStatus;
 
     if (result.isSuccess) {
@@ -166,12 +178,12 @@ abstract class AbstractListBloc<S extends AbstractListState>
   }
 
   /// Converts result after refresh into a new state.
-  Future<S> convertResultToStateAfterRefresh(result) async {
+  Future<S> convertResultToStateAfterRefresh(dynamic result) async {
     return await convertResultToStateAfterLoad(result); // Reuse load conversion
   }
 
   /// Converts result after loading more data into a new state.
-  Future<S> convertResultToStateAfterLoadMore(result) async {
+  Future<S> convertResultToStateAfterLoadMore(dynamic result) async {
     // Handle cached data
     if (result is CacheResult &&
         result.data != null &&
