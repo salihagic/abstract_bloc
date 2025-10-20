@@ -12,32 +12,34 @@ class AbstractConfiguration extends InheritedWidget {
 
   // Optional builder for a warning icon related to cached data, with an onTap callback
   final Widget Function(BuildContext context, void Function() onTap)?
-      cachedDataWarningIconBuilder;
+  cachedDataWarningIconBuilder;
 
   // Optional builder for a dialog warning about cached data, with an onReload callback
   final Widget Function(
-          BuildContext context, void Function(BuildContext context)? onReload)?
-      cachedDataWarningDialogBuilder;
+    BuildContext context,
+    void Function(BuildContext context)? onReload,
+  )?
+  cachedDataWarningDialogBuilder;
 
   // Optional builder for displaying form-related errors, with an onInit callback
   final Widget Function(BuildContext context, void Function() onInit)?
-      abstractFormErrorBuilder;
+  abstractFormErrorBuilder;
 
   // Optional builder for displaying item-specific errors, with an onInit callback
   final Widget Function(BuildContext context, void Function() onInit)?
-      abstractItemErrorBuilder;
+  abstractItemErrorBuilder;
 
   // Optional builder for displaying a "no data" state for an item, with an onInit callback
   final Widget Function(BuildContext context, void Function() onInit)?
-      abstractItemNoDataBuilder;
+  abstractItemNoDataBuilder;
 
   // Optional builder for displaying list-related errors, with an onInit callback
   final Widget Function(BuildContext context, void Function() onInit)?
-      abstractListErrorBuilder;
+  abstractListErrorBuilder;
 
   // Optional builder for displaying a "no data" state for a list, with an onInit callback
   final Widget Function(BuildContext context, void Function() onInit)?
-      abstractListNoDataBuilder;
+  abstractListNoDataBuilder;
 
   // Stores translation configurations for the abstract widgets
   final AbstractTranslations translations;
@@ -58,9 +60,9 @@ class AbstractConfiguration extends InheritedWidget {
     this.translations =
         const AbstractTranslations(), // Default translations if none provided
     PaginationConfiguration?
-        paginationConfiguration, // Optional pagination configuration
+    paginationConfiguration, // Optional pagination configuration
     CursorPaginationConfiguration?
-        cursorPaginationConfiguration, // Optional pagination configuration
+    cursorPaginationConfiguration, // Optional pagination configuration
   }) {
     // If pagination configuration is provided, set it in the Pagination class
     if (paginationConfiguration != null) {

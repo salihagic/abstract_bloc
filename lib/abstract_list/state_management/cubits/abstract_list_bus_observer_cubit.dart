@@ -18,7 +18,6 @@ abstract class AbstractListBusObserverCubit<S extends AbstractListState>
   void observe(Object event);
 
   @override
-
   /// Override the close method to cancel the event bus subscription when the cubit is closed.
   Future<void> close() async {
     // Cancel the event bus stream subscription to prevent memory leaks

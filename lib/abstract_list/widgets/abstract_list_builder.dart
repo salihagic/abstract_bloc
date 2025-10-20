@@ -14,8 +14,11 @@ enum AbstractScrollBehaviour { fixed, scrollable }
 ///
 /// [B] - The type of BLoC or Cubit that manages the state of this list.
 /// [S] - The type of state that this BLoC or Cubit provides, extending [AbstractListState].
-class AbstractListBuilder<B extends StateStreamableSource<S>,
-    S extends AbstractListState> extends StatelessWidget {
+class AbstractListBuilder<
+  B extends StateStreamableSource<S>,
+  S extends AbstractListState
+>
+    extends StatelessWidget {
   final _refreshController = RefreshController();
 
   /// The direction of the scrollable list, either vertical or horizontal.
@@ -97,15 +100,15 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
 
   /// Additional widget builder function for extra customization.
   final Widget Function(BuildContext context, S state, Widget child)?
-      additionalBuilder;
+  additionalBuilder;
 
   /// Builder function for error state.
   final Widget Function(BuildContext context, void Function() onInit, S state)?
-      errorBuilder;
+  errorBuilder;
 
   /// Builder function for no data state.
   final Widget Function(BuildContext context, void Function() onInit, S state)?
-      noDataBuilder;
+  noDataBuilder;
 
   /// Builder function for loading state.
   final Widget Function(BuildContext context, S state)? loaderBuilder;
@@ -133,7 +136,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
 
   /// Function to build separator items between list items.
   final Widget Function(BuildContext context, S state, int index)?
-      separatorBuilder;
+  separatorBuilder;
 
   /// Function to dynamically set item height.
   final double Function(BuildContext context, S state)? heightBuilder;
@@ -271,25 +274,25 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
   }
 
   void _onInit(BuildContext context) => _execute(
-        context,
-        onInit,
-        (instance) => instance.add(AbstractListLoadEvent()),
-        (instance) => instance.load(),
-      );
+    context,
+    onInit,
+    (instance) => instance.add(AbstractListLoadEvent()),
+    (instance) => instance.load(),
+  );
 
   void _onRefresh(BuildContext context) => _execute(
-        context,
-        onRefresh,
-        (instance) => instance.add(AbstractListRefreshEvent()),
-        (instance) => instance.refresh(),
-      );
+    context,
+    onRefresh,
+    (instance) => instance.add(AbstractListRefreshEvent()),
+    (instance) => instance.refresh(),
+  );
 
   void _onLoadMore(BuildContext context) => _execute(
-        context,
-        onLoadMore,
-        (instance) => instance.add(AbstractListLoadMoreEvent()),
-        (instance) => instance.loadMore(),
-      );
+    context,
+    onLoadMore,
+    (instance) => instance.add(AbstractListLoadMoreEvent()),
+    (instance) => instance.loadMore(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -306,7 +309,8 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
           _refreshController.dispose();
         } catch (e) {
           debugPrint(
-              'There is an error while trying to dispose of _refreshController: $e');
+            'There is an error while trying to dispose of _refreshController: $e',
+          );
         }
       },
       builder: (context) {
@@ -365,11 +369,16 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
               }
 
               final calculatedShowBigLoader = _showBigLoader(context, state);
-              final calculatedShowEmptyContainer =
-                  _showEmptyContainer(context, state);
-              final calculatedShowErrorContainer =
-                  _showErrorContainer(context, state);
-              final shouldBuildTransitionItem = calculatedShowBigLoader ||
+              final calculatedShowEmptyContainer = _showEmptyContainer(
+                context,
+                state,
+              );
+              final calculatedShowErrorContainer = _showErrorContainer(
+                context,
+                state,
+              );
+              final shouldBuildTransitionItem =
+                  calculatedShowBigLoader ||
                   calculatedShowEmptyContainer ||
                   calculatedShowErrorContainer;
 
@@ -384,19 +393,30 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                 // Check if we need to show an empty state
                 if (calculatedShowEmptyContainer) {
                   return noDataBuilder?.call(
-                          context, () => _onInit(context), state) ??
-                      abstractConfiguration?.abstractListNoDataBuilder
-                          ?.call(context, () => _onInit(context)) ??
+                        context,
+                        () => _onInit(context),
+                        state,
+                      ) ??
+                      abstractConfiguration?.abstractListNoDataBuilder?.call(
+                        context,
+                        () => _onInit(context),
+                      ) ??
                       AbstractListNoDataContainer(
-                          onInit: () => _onInit(context));
+                        onInit: () => _onInit(context),
+                      );
                 }
 
                 // Check if we need to show an error state
                 if (calculatedShowErrorContainer) {
                   return errorBuilder?.call(
-                          context, () => _onInit(context), state) ??
-                      abstractConfiguration?.abstractListErrorBuilder
-                          ?.call(context, () => _onInit(context)) ??
+                        context,
+                        () => _onInit(context),
+                        state,
+                      ) ??
+                      abstractConfiguration?.abstractListErrorBuilder?.call(
+                        context,
+                        () => _onInit(context),
+                      ) ??
                       AbstractLisErrorContainer(onInit: () => _onInit(context));
                 }
 
@@ -405,16 +425,16 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
 
               final shouldBuildHeader =
                   headerScrollBehaviour == AbstractScrollBehaviour.scrollable &&
-                      calculatedHeader != null;
+                  calculatedHeader != null;
               final shouldBuildFooter =
                   footerScrollBehaviour == AbstractScrollBehaviour.scrollable &&
-                      calculatedFooter != null;
+                  calculatedFooter != null;
 
               final resolvedItemCount = _itemCount(context, state);
               final calculatedItemCount =
                   (shouldBuildTransitionItem ? 1 : resolvedItemCount) +
-                      (shouldBuildHeader ? 1 : 0) +
-                      (shouldBuildFooter ? 1 : 0);
+                  (shouldBuildHeader ? 1 : 0) +
+                  (shouldBuildFooter ? 1 : 0);
               final calculatedIndexOffset = shouldBuildHeader ? 1 : 0;
 
               if (shouldBuildTransitionItem &&
@@ -437,11 +457,16 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                 }
 
                 return itemBuilder?.call(
-                    context, state, index - calculatedIndexOffset);
+                  context,
+                  state,
+                  index - calculatedIndexOffset,
+                );
               }
 
               Widget calculatedSeparatorBuilder(
-                  BuildContext context, int index) {
+                BuildContext context,
+                int index,
+              ) {
                 if (shouldBuildHeader && index == 0) {
                   return const SizedBox();
                 }
@@ -486,8 +511,9 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                   crossAxisCount: shouldBuildTransitionItem ? 1 : columns,
                   mainAxisSpacing: mainAxisSpacing,
                   crossAxisSpacing: crossAxisSpacing,
-                  childAspectRatio:
-                      shouldBuildTransitionItem ? 0.5 : childAspectRatio,
+                  childAspectRatio: shouldBuildTransitionItem
+                      ? 0.5
+                      : childAspectRatio,
                   mainAxisExtent: mainAxisExtent,
                 ),
                 itemCount: calculatedItemCount,
@@ -501,9 +527,9 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                 () {
                   if (_useSmartRefresher()) {
                     return ScrollConfiguration(
-                      behavior: ScrollConfiguration.of(context).copyWith(
-                        dragDevices: PointerDeviceKind.values.toSet(),
-                      ),
+                      behavior: ScrollConfiguration.of(
+                        context,
+                      ).copyWith(dragDevices: PointerDeviceKind.values.toSet()),
                       child: SmartRefresher(
                         cacheExtent: cacheExtent,
                         scrollDirection: scrollDirection,
@@ -525,7 +551,8 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                     top: 0,
                     right: 0,
                     child: LoadInfoIcon(
-                      isLoading: !_showBigLoader(context, state) &&
+                      isLoading:
+                          !_showBigLoader(context, state) &&
                           _isLoading(context, state) &&
                           _hasData(context, state),
                       isCached: _isCached(context, state),
@@ -544,9 +571,7 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
                   if (headerScrollBehaviour == AbstractScrollBehaviour.fixed &&
                       calculatedHeader != null)
                     calculatedHeader,
-                  Expanded(
-                    child: content,
-                  ),
+                  Expanded(child: content),
                   if (footerScrollBehaviour == AbstractScrollBehaviour.fixed &&
                       calculatedFooter != null)
                     calculatedFooter,
@@ -563,24 +588,15 @@ class AbstractListBuilder<B extends StateStreamableSource<S>,
 
     // Determine how to provide the BLoC or Cubit to the widget tree
     if (providerValue != null) {
-      return BlocProvider.value(
-        value: providerValue!,
-        child: resultBuilder,
-      );
+      return BlocProvider.value(value: providerValue!, child: resultBuilder);
     }
 
     if (provider != null) {
-      return BlocProvider<B>(
-        create: provider!,
-        child: resultBuilder,
-      );
+      return BlocProvider<B>(create: provider!, child: resultBuilder);
     }
 
     if (providers.abstractBlocListIsNotNullOrEmpty) {
-      return MultiBlocProvider(
-        providers: providers!,
-        child: resultBuilder,
-      );
+      return MultiBlocProvider(providers: providers!, child: resultBuilder);
     }
 
     return resultBuilder; // No providers used, return main child directly

@@ -11,12 +11,7 @@ class Loader extends StatelessWidget {
   /// The thickness of the loader.
   final double? thickness;
 
-  const Loader({
-    super.key,
-    this.size,
-    this.color,
-    this.thickness = 1.0,
-  });
+  const Loader({super.key, this.size, this.color, this.thickness = 1.0});
 
   const Loader.sm({
     super.key,

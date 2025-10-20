@@ -8,17 +8,15 @@ abstract class AbstractListBloc<S extends AbstractListState>
   /// Constructor initializes the bloc with the given initial state.
   AbstractListBloc(super.initialState) {
     // Handle incoming events
-    on(
-      (AbstractListEvent event, Emitter<S> emit) async {
-        if (event is AbstractListLoadEvent) {
-          await load(event, emit); // Load initial data
-        } else if (event is AbstractListRefreshEvent) {
-          await refresh(event, emit); // Refresh existing data
-        } else if (event is AbstractListLoadMoreEvent) {
-          await loadMore(event, emit); // Load additional items
-        }
-      },
-    );
+    on((AbstractListEvent event, Emitter<S> emit) async {
+      if (event is AbstractListLoadEvent) {
+        await load(event, emit); // Load initial data
+      } else if (event is AbstractListRefreshEvent) {
+        await refresh(event, emit); // Refresh existing data
+      } else if (event is AbstractListLoadMoreEvent) {
+        await loadMore(event, emit); // Load additional items
+      }
+    });
   }
 
   /// Returns the initial state of the list.
@@ -55,7 +53,8 @@ abstract class AbstractListBloc<S extends AbstractListState>
   Future<void> load(AbstractListLoadEvent event, Emitter<S> emit) async {
     // Set search model if the state supports filtering
     if (state is AbstractListFilterableState) {
-      (state as AbstractListFilterableState).searchModel = event.searchModel ??
+      (state as AbstractListFilterableState).searchModel =
+          event.searchModel ??
           (initialState() as AbstractListFilterableState).searchModel;
     }
 
@@ -68,7 +67,9 @@ abstract class AbstractListBloc<S extends AbstractListState>
     try {
       // Attempt to resolve and update state with data
       updateState(
-          await convertResultToStateAfterLoad(await resolveData()), emit);
+        await convertResultToStateAfterLoad(await resolveData()),
+        emit,
+      );
     } catch (e) {
       // Handle loading errors and stream results
       await for (final result in resolveStreamData()) {
@@ -90,7 +91,9 @@ abstract class AbstractListBloc<S extends AbstractListState>
     try {
       // Attempt to resolve and update state with refreshed data
       updateState(
-          await convertResultToStateAfterRefresh(await resolveData()), emit);
+        await convertResultToStateAfterRefresh(await resolveData()),
+        emit,
+      );
     } catch (e) {
       // Handle refreshing errors and stream results
       await for (final result in resolveStreamData()) {
@@ -102,7 +105,9 @@ abstract class AbstractListBloc<S extends AbstractListState>
 
   /// Handles loading more data.
   Future<void> loadMore(
-      AbstractListLoadMoreEvent event, Emitter<S> emit) async {
+    AbstractListLoadMoreEvent event,
+    Emitter<S> emit,
+  ) async {
     // Increment search model if the state supports pagination
     if (state is AbstractListFilterablePaginatedState) {
       (state as AbstractListFilterablePaginatedState).searchModel.increment();
@@ -112,7 +117,9 @@ abstract class AbstractListBloc<S extends AbstractListState>
       try {
         // Attempt to resolve and update state with more data
         updateState(
-            await convertResultToStateAfterLoadMore(await resolveData()), emit);
+          await convertResultToStateAfterLoadMore(await resolveData()),
+          emit,
+        );
       } catch (e) {
         // Handle load more errors and stream results
         await for (final result in resolveStreamData()) {
@@ -171,8 +178,9 @@ abstract class AbstractListBloc<S extends AbstractListState>
         result.data is GridResult) {
       final stateItems = state.result.items;
 
-      state.result
-          .map(result.data as GridResult); // Update the state with new results
+      state.result.map(
+        result.data as GridResult,
+      ); // Update the state with new results
 
       state.result.numberOfCachedItems +=
           state.result.items.abstractBlocListCount; // Update cached items
@@ -190,12 +198,14 @@ abstract class AbstractListBloc<S extends AbstractListState>
         result.data is GridResult) {
       final stateItems = state.result.items;
 
-      state.result
-          .map(result.data as GridResult); // Update with new grid results
+      state.result.map(
+        result.data as GridResult,
+      ); // Update with new grid results
 
       if (state.resultStatus == ResultStatus.loadedCached) {
         stateItems.abstractBlocListRemoveLastItems(
-            state.result.numberOfCachedItems); // Clear cached items
+          state.result.numberOfCachedItems,
+        ); // Clear cached items
         state.result.numberOfCachedItems = 0;
       }
 
@@ -215,12 +225,12 @@ abstract class AbstractListBloc<S extends AbstractListState>
   ResultStatus? _getStatusFromResult(Result result) => result.isError
       ? ResultStatus.error
       : result.hasData
-          ? result is CacheResult
-              ? ResultStatus.loadedCached
-              : ResultStatus.loaded
-          : state.resultStatus == ResultStatus.loading
-              ? ResultStatus.loaded
-              : null;
+      ? result is CacheResult
+            ? ResultStatus.loadedCached
+            : ResultStatus.loaded
+      : state.resultStatus == ResultStatus.loading
+      ? ResultStatus.loaded
+      : null;
 
   /// Updates the current state and emits it if the bloc is not closed.
   void updateState(S state, Emitter<S> emit) {

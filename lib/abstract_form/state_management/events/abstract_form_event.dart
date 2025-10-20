@@ -30,7 +30,5 @@ class AbstractFormSubmitEvent<TModel> extends AbstractFormEvent {
 
   /// Creates an [AbstractFormSubmitEvent].
   /// - [model]: Optional model data to submit.
-  AbstractFormSubmitEvent({
-    this.model,
-  });
+  AbstractFormSubmitEvent({this.model});
 }

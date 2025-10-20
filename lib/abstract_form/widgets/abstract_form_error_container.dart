@@ -11,10 +11,7 @@ class AbstractFormErrorContainer extends StatelessWidget {
 
   /// Creates an [AbstractFormErrorContainer].
   /// - [onInit]: Callback for the retry action.
-  const AbstractFormErrorContainer({
-    super.key,
-    this.onInit,
-  });
+  const AbstractFormErrorContainer({super.key, this.onInit});
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +23,10 @@ class AbstractFormErrorContainer extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           // Display an error message
-          Text(abstractConfiguration
-                  ?.translations.anErrorOccuredPleaseTryAgain ??
-              'An error occurred, please try again'),
+          Text(
+            abstractConfiguration?.translations.anErrorOccuredPleaseTryAgain ??
+                'An error occurred, please try again',
+          ),
           SizedBox(height: 15),
 
           // Retry button to trigger the `onInit` callback

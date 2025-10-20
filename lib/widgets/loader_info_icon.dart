@@ -33,7 +33,9 @@ class LoadInfoIcon extends StatelessWidget {
   }
 
   Widget _buildLoadingIndicator(
-      AbstractConfiguration? config, BuildContext context) {
+    AbstractConfiguration? config,
+    BuildContext context,
+  ) {
     return config?.cachedDataLoaderBuilder?.call(context) ??
         ClipRRect(
           borderRadius: BorderRadius.circular(50),
@@ -66,25 +68,33 @@ class _CachedDataIcon extends StatelessWidget {
         builder: (context) {
           if (abstractConfiguration?.cachedDataWarningDialogBuilder != null) {
             return abstractConfiguration!.cachedDataWarningDialogBuilder!(
-                context, onReload);
+              context,
+              onReload,
+            );
           }
 
           return _defaultCachedDataWarningDialog(
-              abstractConfiguration, context);
+            abstractConfiguration,
+            context,
+          );
         },
       );
     }
 
     if (abstractConfiguration?.cachedDataWarningIconBuilder != null) {
       return abstractConfiguration!.cachedDataWarningIconBuilder!(
-          context, onTap);
+        context,
+        onTap,
+      );
     }
 
     return _defaultCachedDataIcon(onTap);
   }
 
   Widget _defaultCachedDataWarningDialog(
-      AbstractConfiguration? config, BuildContext context) {
+    AbstractConfiguration? config,
+    BuildContext context,
+  ) {
     return InfoDialog(
       showCancelButton: true,
       onApplyText: config?.translations.reload ?? 'Reload',
@@ -117,10 +127,7 @@ class _CachedDataIcon extends StatelessWidget {
         child: Container(
           color: Colors.white.withAlpha(125),
           padding: const EdgeInsets.all(8.0),
-          child: Icon(
-            Icons.info_outline,
-            color: const Color(0xFFC42A03),
-          ),
+          child: Icon(Icons.info_outline, color: const Color(0xFFC42A03)),
         ),
       ),
     );

@@ -67,8 +67,8 @@ abstract class AbstractItemCubit<S extends AbstractItemState> extends Cubit<S> {
   ResultStatus? _getStatusFromResult(Result result) => result.isError
       ? ResultStatus.error
       : result.hasData && result is CacheResult
-          ? ResultStatus.loadedCached
-          : ResultStatus.loaded;
+      ? ResultStatus.loadedCached
+      : ResultStatus.loaded;
 
   /// Updates the current state of the Cubit if it is not closed.
   void updateState(S state) {

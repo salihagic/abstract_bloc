@@ -39,7 +39,8 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
   Future<void> load<TSearchModel>([TSearchModel? searchModel]) async {
     // Update the search model in the state if it is of type AbstractListFilterableState.
     if (state is AbstractListFilterableState) {
-      (state as AbstractListFilterableState).searchModel = searchModel ??
+      (state as AbstractListFilterableState).searchModel =
+          searchModel ??
           (_initialState as AbstractListFilterableState).searchModel;
     }
 
@@ -184,8 +185,9 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
       }
 
       if (state.resultStatus == ResultStatus.loadedCached) {
-        stateItems
-            .abstractBlocListRemoveLastItems(state.result.numberOfCachedItems);
+        stateItems.abstractBlocListRemoveLastItems(
+          state.result.numberOfCachedItems,
+        );
         state.result.numberOfCachedItems = 0;
       }
 
@@ -202,12 +204,12 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
   ResultStatus? _getStatusFromResult(Result result) => result.isError
       ? ResultStatus.error
       : result.hasData
-          ? result is CacheResult
-              ? ResultStatus.loadedCached
-              : ResultStatus.loaded
-          : state.resultStatus == ResultStatus.loading
-              ? ResultStatus.loaded
-              : null;
+      ? result is CacheResult
+            ? ResultStatus.loadedCached
+            : ResultStatus.loaded
+      : state.resultStatus == ResultStatus.loading
+      ? ResultStatus.loaded
+      : null;
 
   /// Emit a new state, ensuring the cubit isn't closed.
   void updateState(S state) {

@@ -27,10 +27,7 @@ abstract class AbstractItemState<TItem> implements CopyWith {
   /// Constructor for creating an instance of [AbstractItemState].
   ///
   /// Requires [resultStatus] and optionally an [item].
-  AbstractItemState({
-    required this.resultStatus,
-    this.item,
-  });
+  AbstractItemState({required this.resultStatus, this.item});
 
   /// Method that must be implemented by subclasses to support copying of the state.
   @override

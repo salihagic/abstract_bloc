@@ -24,8 +24,10 @@ class AbstractItemNoDataContainer extends StatelessWidget {
             CrossAxisAlignment.center, // Center-aligns children horizontally
         children: [
           // Message indicating no data is available
-          Text(abstractConfiguration?.translations.thereIsNoData ??
-              'There is no data'),
+          Text(
+            abstractConfiguration?.translations.thereIsNoData ??
+                'There is no data',
+          ),
 
           // Space between the message and the reload button
           SizedBox(height: 15),

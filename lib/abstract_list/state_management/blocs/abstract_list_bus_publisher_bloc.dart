@@ -16,7 +16,6 @@ abstract class AbstractListBusPublisherBloc<S extends AbstractListState>
   }
 
   @override
-
   /// Override the close method to cancel the state stream subscription when the bloc is closed.
   Future<void> close() async {
     // Cancel the subscription to avoid memory leaks

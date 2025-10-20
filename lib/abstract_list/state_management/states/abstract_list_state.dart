@@ -31,10 +31,7 @@ abstract class AbstractListState<TListItem> implements CopyWith {
   ///
   /// [resultStatus] - The current loading status of the result.
   /// [result] - The result object containing the list of items.
-  AbstractListState({
-    required this.resultStatus,
-    required this.result,
-  });
+  AbstractListState({required this.resultStatus, required this.result});
 
   /// A method that creates a copy of the current state with possibly modified properties.
   @override
@@ -77,8 +74,10 @@ abstract class AbstractListFilterableState<TSearchModel, TListItem>
 /// [TSearchModel] - The type of the search model used to filter items (must extend [BasePagination]).
 /// [TListItem] - The type of items contained in the list.
 abstract class AbstractListFilterablePaginatedState<
-    TSearchModel extends BasePagination,
-    TListItem> extends AbstractListFilterableState<TSearchModel, TListItem> {
+  TSearchModel extends BasePagination,
+  TListItem
+>
+    extends AbstractListFilterableState<TSearchModel, TListItem> {
   /// Constructor to initialize [AbstractListFilterablePaginatedState].
   ///
   /// [resultStatus] - The current loading status of the result.

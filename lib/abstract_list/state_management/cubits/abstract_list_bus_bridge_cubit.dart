@@ -8,9 +8,9 @@ abstract class AbstractListBusBridgeCubit<S extends AbstractListState>
     extends AbstractListCubit<S> {
   // Stream subscriptions for managing event bus interactions
   StreamSubscription?
-      _stateStreamSubscription; // Publishes state changes to event bus
+  _stateStreamSubscription; // Publishes state changes to event bus
   StreamSubscription?
-      _eventBusStreamSubscription; // Listens for events from the event bus
+  _eventBusStreamSubscription; // Listens for events from the event bus
 
   /// Constructor that initializes the cubit and sets up subscriptions.
   AbstractListBusBridgeCubit(super.initialState) {
@@ -24,7 +24,6 @@ abstract class AbstractListBusBridgeCubit<S extends AbstractListState>
   void observe(Object event);
 
   @override
-
   /// Override the close method to cancel both subscriptions when the cubit is closed.
   Future<void> close() async {
     // Cancel the state stream subscription to prevent memory leaks

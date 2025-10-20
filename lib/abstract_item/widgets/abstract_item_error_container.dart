@@ -24,9 +24,10 @@ class AbstractItemErrorContainer extends StatelessWidget {
         mainAxisSize: MainAxisSize.min, // Takes minimum space vertically
         children: [
           // Error message text
-          Text(abstractConfiguration
-                  ?.translations.anErrorOccuredPleaseTryAgain ??
-              'An error occurred, please try again'),
+          Text(
+            abstractConfiguration?.translations.anErrorOccuredPleaseTryAgain ??
+                'An error occurred, please try again',
+          ),
 
           // Space between error message and reload button
           SizedBox(height: 15),

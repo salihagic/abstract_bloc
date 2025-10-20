@@ -19,17 +19,15 @@ abstract class AbstractFormBaseState implements CopyWith {
 
   /// Returns `true` if the form submission encountered an error.
   bool get isSubmittingError => [
-        FormResultStatus.error,
-        FormResultStatus.submittingError,
-        FormResultStatus.submittingLocalError,
-        FormResultStatus.validationError,
-      ].contains(formResultStatus);
+    FormResultStatus.error,
+    FormResultStatus.submittingError,
+    FormResultStatus.submittingLocalError,
+    FormResultStatus.validationError,
+  ].contains(formResultStatus);
 
   /// Creates an [AbstractFormBaseState].
   /// - [formResultStatus]: The current status of the form.
-  AbstractFormBaseState({
-    required this.formResultStatus,
-  });
+  AbstractFormBaseState({required this.formResultStatus});
 
   @override
   dynamic copyWith();

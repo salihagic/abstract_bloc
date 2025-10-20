@@ -16,7 +16,6 @@ abstract class AbstractListBusPublisherCubit<S extends AbstractListState>
   }
 
   @override
-
   /// Override the close method to cancel the state stream subscription when the cubit is closed.
   Future<void> close() async {
     // Cancel the state stream subscription to prevent memory leaks

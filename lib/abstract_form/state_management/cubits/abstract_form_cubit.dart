@@ -31,8 +31,9 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
     updateStatus(FormResultStatus.initializing);
 
     // Initialize the model with provided data or an empty state
-    final result =
-        model != null ? await initModel(model) : await initModelEmpty();
+    final result = model != null
+        ? await initModel(model)
+        : await initModelEmpty();
 
     if (result.isError) {
       updateStatus(FormResultStatus.error);
@@ -130,7 +131,8 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
       return;
     }
 
-    final model = pModel ??
+    final model =
+        pModel ??
         (state is AbstractFormBasicState
             ? (state as AbstractFormBasicState).model
             : null);
@@ -150,8 +152,9 @@ abstract class AbstractFormCubit<S extends AbstractFormBaseState>
       }
       updateState(state.copyWith());
 
-      final result =
-          model != null ? await onSubmit(model) : await onSubmitEmpty();
+      final result = model != null
+          ? await onSubmit(model)
+          : await onSubmitEmpty();
 
       if (result.isSuccess) {
         await onSubmitSuccess(result);

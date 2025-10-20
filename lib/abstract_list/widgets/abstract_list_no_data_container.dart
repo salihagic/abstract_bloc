@@ -16,10 +16,7 @@ class AbstractListNoDataContainer extends StatelessWidget {
   ///
   /// [key] - An optional widget key.
   /// [onInit] - An optional callback invoked when the reload button is pressed.
-  const AbstractListNoDataContainer({
-    super.key,
-    this.onInit,
-  });
+  const AbstractListNoDataContainer({super.key, this.onInit});
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +30,10 @@ class AbstractListNoDataContainer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Display a message to indicate that there's no data.
-          Text(abstractConfiguration?.translations.thereIsNoData ??
-              'There is no data'),
+          Text(
+            abstractConfiguration?.translations.thereIsNoData ??
+                'There is no data',
+          ),
           SizedBox(height: 15), // Add space between the message and button.
           // Button to reload the data.
           TextButton(
@@ -44,7 +43,8 @@ class AbstractListNoDataContainer extends StatelessWidget {
               abstractConfiguration?.translations.reload ??
                   'Reload', // Button text with fallback.
               style: TextStyle(
-                  color: Colors.black), // Custom text style for the button.
+                color: Colors.black,
+              ), // Custom text style for the button.
             ),
           ),
           SizedBox(height: 15), // Add space after the button.

@@ -70,10 +70,13 @@ class InfoDialog extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
-            child: child ??
+            child:
+                child ??
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 30,
+                    horizontal: 20,
+                  ),
                   child: Text(
                     message ?? '',
                     softWrap: true,
@@ -88,7 +91,9 @@ class InfoDialog extends StatelessWidget {
 
   /// Builds the action buttons (cancel and apply) at the bottom of the dialog.
   Widget _buildActionButtons(
-      BuildContext context, AbstractConfiguration? configuration) {
+    BuildContext context,
+    AbstractConfiguration? configuration,
+  ) {
     return Row(
       children: [
         if (showCancelButton) _buildCancelButton(context, configuration),
@@ -99,7 +104,9 @@ class InfoDialog extends StatelessWidget {
 
   /// Builds the cancel button.
   Widget _buildCancelButton(
-      BuildContext context, AbstractConfiguration? configuration) {
+    BuildContext context,
+    AbstractConfiguration? configuration,
+  ) {
     return Expanded(
       child: InkWell(
         onTap: () {
@@ -122,7 +129,9 @@ class InfoDialog extends StatelessWidget {
 
   /// Builds the apply button.
   Widget _buildApplyButton(
-      BuildContext context, AbstractConfiguration? configuration) {
+    BuildContext context,
+    AbstractConfiguration? configuration,
+  ) {
     return Expanded(
       child: InkWell(
         onTap: () async {
@@ -137,9 +146,7 @@ class InfoDialog extends StatelessWidget {
         ),
         child: Container(
           decoration: BoxDecoration(
-            border: Border(
-              left: BorderSide(color: actionLineColor),
-            ),
+            border: Border(left: BorderSide(color: actionLineColor)),
           ),
           child: _buildButtonText(
             text: onApplyText ?? configuration?.translations.okay ?? 'Okay',

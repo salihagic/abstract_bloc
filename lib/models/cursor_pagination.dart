@@ -24,10 +24,11 @@ class CursorPagination implements BasePagination {
 
   static CursorPaginationConfiguration configuration =
       CursorPaginationConfiguration(
-    toJson: (cursorPagination) => {
-      if (cursorPagination.cursor.isNotEmpty) 'cursor': cursorPagination.cursor,
-    },
-  );
+        toJson: (cursorPagination) => {
+          if (cursorPagination.cursor.isNotEmpty)
+            'cursor': cursorPagination.cursor,
+        },
+      );
 
   @override
   void decrement() {
@@ -49,7 +50,5 @@ class CursorPagination implements BasePagination {
 class CursorPaginationConfiguration {
   final Map<String, dynamic> Function(CursorPagination pagination) toJson;
 
-  const CursorPaginationConfiguration({
-    required this.toJson,
-  });
+  const CursorPaginationConfiguration({required this.toJson});
 }

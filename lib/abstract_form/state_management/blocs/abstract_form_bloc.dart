@@ -14,24 +14,23 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
     }
 
     // Event handler for form initialization, updates, and submission.
-    on(
-      (AbstractFormEvent event, Emitter<S> emit) async {
-        if (event is AbstractFormInitEvent) {
-          await init(event, emit);
-        } else if (event is AbstractFormUpdateEvent) {
-          await update(event, emit);
-        } else if (event is AbstractFormSubmitEvent) {
-          await submit(event, emit);
-        }
-      },
-    );
+    on((AbstractFormEvent event, Emitter<S> emit) async {
+      if (event is AbstractFormInitEvent) {
+        await init(event, emit);
+      } else if (event is AbstractFormUpdateEvent) {
+        await update(event, emit);
+      } else if (event is AbstractFormSubmitEvent) {
+        await submit(event, emit);
+      }
+    });
   }
 
   /// Method to initialize the form model, typically fetching data from an API.
   /// Can be overridden in subclasses to provide custom initialization logic.
   Future<Result> initModel(
-          AbstractFormInitEvent event, Emitter<S> emit) async =>
-      Result.success();
+    AbstractFormInitEvent event,
+    Emitter<S> emit,
+  ) async => Result.success();
 
   /// Handles the form initialization logic.
   /// - Disables auto-validation initially.
@@ -90,7 +89,10 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
 
   /// Handles submission failure due to connection issues.
   Future<void> onConnectionSubmitError(
-      Result result, Emitter<S> emit, dynamic model) async {
+    Result result,
+    Emitter<S> emit,
+    dynamic model,
+  ) async {
     updateStatus(emit, FormResultStatus.submittingError);
     await Future.delayed(const Duration(milliseconds: 100));
     updateStatus(emit, FormResultStatus.initialized);
@@ -98,7 +100,9 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
 
   /// Handles submission failure when no connection and no local save is possible.
   Future<void> onConnectionSubmitEmptyError(
-      Result result, Emitter<S> emit) async {
+    Result result,
+    Emitter<S> emit,
+  ) async {
     updateStatus(emit, FormResultStatus.submittingError);
     await Future.delayed(const Duration(milliseconds: 100));
     updateStatus(emit, FormResultStatus.initialized);
@@ -135,7 +139,8 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
     }
 
     // Get the model from the event or state
-    final model = event.model ??
+    final model =
+        event.model ??
         (state is AbstractFormBasicState
             ? (state as AbstractFormBasicState).model
             : null);
@@ -157,8 +162,9 @@ abstract class AbstractFormBloc<S extends AbstractFormBaseState>
       }
       updateState(state.copyWith(), emit);
 
-      final result =
-          model != null ? await onSubmit(model) : await onSubmitEmpty();
+      final result = model != null
+          ? await onSubmit(model)
+          : await onSubmitEmpty();
 
       if (result.isSuccess) {
         await onSubmitSuccess(result, emit);

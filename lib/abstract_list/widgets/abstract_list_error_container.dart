@@ -16,10 +16,7 @@ class AbstractLisErrorContainer extends StatelessWidget {
   ///
   /// [key] - An optional key for the widget.
   /// [onInit] - An optional function called when the user clicks the reload button.
-  const AbstractLisErrorContainer({
-    super.key,
-    this.onInit,
-  });
+  const AbstractLisErrorContainer({super.key, this.onInit});
 
   @override
   Widget build(BuildContext context) {

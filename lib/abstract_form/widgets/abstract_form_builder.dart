@@ -7,8 +7,11 @@ import 'package:flutter/material.dart';
 /// A widget for building forms with state management and event handling.
 /// This widget integrates with [AbstractFormBaseState] and provides
 /// callbacks for initialization, submission, success, and error handling.
-class AbstractFormBuilder<B extends StateStreamableSource<S>,
-    S extends AbstractFormBaseState> extends StatelessWidget {
+class AbstractFormBuilder<
+  B extends StateStreamableSource<S>,
+  S extends AbstractFormBaseState
+>
+    extends StatelessWidget {
   /// Callback triggered when the form is initialized.
   /// This can be used to perform custom initialization logic.
   final void Function(BuildContext context)? onInit;
@@ -28,7 +31,7 @@ class AbstractFormBuilder<B extends StateStreamableSource<S>,
   /// Builder for displaying an error state.
   /// Provides a callback to retry initialization.
   final Widget Function(BuildContext context, void Function() onInit, S state)?
-      errorBuilder;
+  errorBuilder;
 
   /// Builder for displaying a loading state.
   final Widget Function(BuildContext context, S state)? loaderBuilder;
@@ -53,8 +56,12 @@ class AbstractFormBuilder<B extends StateStreamableSource<S>,
   /// Extended builder that provides access to the form state, bloc/cubit instance,
   /// and a submit callback for custom form rendering.
   final Widget Function(
-          BuildContext context, S state, B bloc, void Function() submit)?
-      extendedBuilder;
+    BuildContext context,
+    S state,
+    B bloc,
+    void Function() submit,
+  )?
+  extendedBuilder;
 
   /// Builder for rendering the form based on the current state.
   final Widget Function(BuildContext context, S state)? builder;
@@ -158,11 +165,11 @@ class AbstractFormBuilder<B extends StateStreamableSource<S>,
 
   /// Initializes the form by triggering the `onInit` callback or the appropriate bloc/cubit event.
   void _onInit(BuildContext context) => _execute(
-        context,
-        onInit,
-        (instance) => instance.add(AbstractFormInitEvent()),
-        (instance) => instance.init(),
-      );
+    context,
+    onInit,
+    (instance) => instance.add(AbstractFormInitEvent()),
+    (instance) => instance.init(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -222,8 +229,7 @@ class AbstractFormBuilder<B extends StateStreamableSource<S>,
 
           if (_isError(context, state)) {
             return errorBuilder?.call(context, () => _onInit(context), state) ??
-                AbstractConfiguration.of(context)
-                    ?.abstractFormErrorBuilder
+                AbstractConfiguration.of(context)?.abstractFormErrorBuilder
                     ?.call(context, () => _onInit(context)) ??
                 AbstractFormErrorContainer(onInit: () => _onInit(context));
           }
@@ -240,34 +246,22 @@ class AbstractFormBuilder<B extends StateStreamableSource<S>,
                   (instance) => instance.submit(),
                 ),
               ) ??
-              builder?.call(
-                context,
-                state,
-              ) ??
+              builder?.call(context, state) ??
               Container();
         },
       ),
     );
 
     if (providerValue != null) {
-      return BlocProvider.value(
-        value: providerValue!,
-        child: mainChild,
-      );
+      return BlocProvider.value(value: providerValue!, child: mainChild);
     }
 
     if (provider != null) {
-      return BlocProvider<B>(
-        create: provider!,
-        child: mainChild,
-      );
+      return BlocProvider<B>(create: provider!, child: mainChild);
     }
 
     if (providers.abstractBlocListIsNotNullOrEmpty) {
-      return MultiBlocProvider(
-        providers: providers!,
-        child: mainChild,
-      );
+      return MultiBlocProvider(providers: providers!, child: mainChild);
     }
 
     return mainChild;

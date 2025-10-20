@@ -3,20 +3,23 @@ import 'package:abstract_bloc/abstract_bloc.dart';
 abstract class AbstractItemBloc<S extends AbstractItemState>
     extends Bloc<AbstractItemEvent, S> {
   AbstractItemBloc(super.initialState) {
-    on(
-      (AbstractItemEvent event, Emitter<S> emit) async {
-        if (event is AbstractItemLoadEvent) {
-          await load(event, emit);
-        }
-      },
-    );
+    on((AbstractItemEvent event, Emitter<S> emit) async {
+      if (event is AbstractItemLoadEvent) {
+        await load(event, emit);
+      }
+    });
   }
 
   Future<void> onBeforeLoad(
-      AbstractItemLoadEvent event, Emitter<S> emit) async {}
+    AbstractItemLoadEvent event,
+    Emitter<S> emit,
+  ) async {}
 
   Future<void> onAfterLoad(
-      AbstractItemLoadEvent event, Emitter<S> emit, S previousState) async {}
+    AbstractItemLoadEvent event,
+    Emitter<S> emit,
+    S previousState,
+  ) async {}
 
   Stream<Result> resolveStreamData() async* {
     throw UnimplementedError();
@@ -38,7 +41,8 @@ abstract class AbstractItemBloc<S extends AbstractItemState>
     final previousState = state.copyWith();
 
     if (state is AbstractItemFilterableState) {
-      (state as AbstractItemFilterableState).searchModel = event.searchModel ??
+      (state as AbstractItemFilterableState).searchModel =
+          event.searchModel ??
           (state as AbstractItemFilterableState).searchModel;
     }
 
@@ -62,8 +66,8 @@ abstract class AbstractItemBloc<S extends AbstractItemState>
   ResultStatus? _getStatusFromResult(Result result) => result.isError
       ? ResultStatus.error
       : result.hasData && result is CacheResult
-          ? ResultStatus.loadedCached
-          : ResultStatus.loaded;
+      ? ResultStatus.loadedCached
+      : ResultStatus.loaded;
 
   void updateState(S state, Emitter<S> emit) {
     if (!isClosed) {

@@ -4,8 +4,11 @@ import 'package:provider/single_child_widget.dart';
 import 'package:flutter/material.dart';
 
 /// A generic widget for displaying different states of an item using BLoC or Cubit pattern.
-class AbstractItemBuilder<B extends StateStreamableSource<S>,
-    S extends AbstractItemState> extends StatelessWidget {
+class AbstractItemBuilder<
+  B extends StateStreamableSource<S>,
+  S extends AbstractItemState
+>
+    extends StatelessWidget {
   // Optional initialization callback
   final void Function(BuildContext context)? onInit;
 
@@ -17,11 +20,11 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
 
   // Builder for displaying error states
   final Widget Function(BuildContext context, void Function() onInit, S state)?
-      errorBuilder;
+  errorBuilder;
 
   // Builder for displaying no data states
   final Widget Function(BuildContext context, void Function() onInit, S state)?
-      noDataBuilder;
+  noDataBuilder;
 
   // Builder for the loading state
   final Widget Function(BuildContext context, S state)? loaderBuilder;
@@ -88,7 +91,6 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
   // Checks if the current state is in loading, either from the network or cached
   bool _isLoading(BuildContext context, S state) =>
       isLoading?.call(context, state) ??
-
       // Defaults to checking the state result status
       (state.resultStatus == ResultStatus.loading ||
           state.resultStatus == ResultStatus.loadedCached);
@@ -124,8 +126,9 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
     if (onInit != null) {
       onInit?.call(context); // Calls the provided onInit callback
     } else {
-      final instance =
-          _blocOrCubitInstance(context); // Gets the BLoC or Cubit instance
+      final instance = _blocOrCubitInstance(
+        context,
+      ); // Gets the BLoC or Cubit instance
 
       // Dispatches loading event if it's an AbstractItemBloc
       if (instance is AbstractItemBloc) {
@@ -141,8 +144,9 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
 
   @override
   Widget build(BuildContext context) {
-    final abstractConfiguration =
-        AbstractConfiguration.of(context); // Gets configuration
+    final abstractConfiguration = AbstractConfiguration.of(
+      context,
+    ); // Gets configuration
 
     final mainChild = AbstractStatefulBuilder(
       // Initializes the state of the child on first load
@@ -155,7 +159,9 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
       builder: (context) => BlocConsumer<B, S>(
         listener: (context, state) {
           listener?.call(
-              context, state); // Invokes the listener for state changes
+            context,
+            state,
+          ); // Invokes the listener for state changes
 
           // Handles different loading states and their respective callbacks
           if (state.resultStatus == ResultStatus.loaded) {
@@ -180,16 +186,20 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
           if (_isEmpty(context, state)) {
             if (_isError(context, state)) {
               return errorBuilder?.call(
-                      context, () => _onInit(context), state) ??
-                  AbstractConfiguration.of(context)
-                      ?.abstractItemErrorBuilder
+                    context,
+                    () => _onInit(context),
+                    state,
+                  ) ??
+                  AbstractConfiguration.of(context)?.abstractItemErrorBuilder
                       ?.call(context, () => _onInit(context)) ??
                   AbstractItemErrorContainer(onInit: () => _onInit(context));
             } else {
               return noDataBuilder?.call(
-                      context, () => _onInit(context), state) ??
-                  AbstractConfiguration.of(context)
-                      ?.abstractItemNoDataBuilder
+                    context,
+                    () => _onInit(context),
+                    state,
+                  ) ??
+                  AbstractConfiguration.of(context)?.abstractItemNoDataBuilder
                       ?.call(context, () => _onInit(context)) ??
                   AbstractItemNoDataContainer(onInit: () => _onInit(context));
             }
@@ -206,8 +216,10 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
                   top: 0,
                   right: 0,
                   child: LoadInfoIcon(
-                    isLoading:
-                        _isLoading(context, state), // Passes loading state
+                    isLoading: _isLoading(
+                      context,
+                      state,
+                    ), // Passes loading state
                     isCached: _isCached(context, state), // Passes cached state
                     onReload: (_) =>
                         _onInit(context), // Reloads data on request
@@ -221,24 +233,15 @@ class AbstractItemBuilder<B extends StateStreamableSource<S>,
 
     // Provides the BLoC/Cubit as needed to the widget tree
     if (providerValue != null) {
-      return BlocProvider.value(
-        value: providerValue!,
-        child: mainChild,
-      );
+      return BlocProvider.value(value: providerValue!, child: mainChild);
     }
 
     if (provider != null) {
-      return BlocProvider<B>(
-        create: provider!,
-        child: mainChild,
-      );
+      return BlocProvider<B>(create: provider!, child: mainChild);
     }
 
     if (providers != null && providers!.isNotEmpty) {
-      return MultiBlocProvider(
-        providers: providers!,
-        child: mainChild,
-      );
+      return MultiBlocProvider(providers: providers!, child: mainChild);
     }
 
     return mainChild; // Returns the main child if no providers are set

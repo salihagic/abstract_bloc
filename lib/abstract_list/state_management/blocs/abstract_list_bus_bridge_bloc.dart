@@ -25,7 +25,6 @@ abstract class AbstractListBusBridgeBloc<S extends AbstractListState>
   void observe(Object event);
 
   @override
-
   /// Override the close method to cancel the event bus subscriptions when the bloc is closed.
   Future<void> close() async {
     // Cancel state stream subscription if it exists

@@ -11,10 +11,7 @@ class AbstractFormNoDataContainer extends StatelessWidget {
 
   /// Creates an [AbstractFormNoDataContainer].
   /// - [onInit]: Callback for the retry action.
-  const AbstractFormNoDataContainer({
-    super.key,
-    this.onInit,
-  });
+  const AbstractFormNoDataContainer({super.key, this.onInit});
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +23,10 @@ class AbstractFormNoDataContainer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Display a "no data" message
-          Text(abstractConfiguration?.translations.thereIsNoData ??
-              'There is no data'),
+          Text(
+            abstractConfiguration?.translations.thereIsNoData ??
+                'There is no data',
+          ),
           SizedBox(height: 15),
 
           // Retry button to trigger the `onInit` callback

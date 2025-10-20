@@ -71,20 +71,23 @@ class GridResult<TListItem> {
   /// Factory constructor that creates an instance of [GridResult] from a Map.
   ///
   /// Takes an optional [itemParser] function for custom mapping of items.
-  factory GridResult.fromMap(Map<dynamic, dynamic> map,
-      [TListItem Function(Map<String, dynamic> data)? itemParser]) {
+  factory GridResult.fromMap(
+    Map<dynamic, dynamic> map, [
+    TListItem Function(Map<String, dynamic> data)? itemParser,
+  ]) {
     final List<TListItem> items =
         (map[GridResultJsonConfiguration.itemsJsonKey] as List<dynamic>?)
-                ?.map<TListItem>((x) => itemParser?.call(x) ?? x as TListItem)
-                .toList() ??
-            [];
+            ?.map<TListItem>((x) => itemParser?.call(x) ?? x as TListItem)
+            .toList() ??
+        [];
     final int pageSize = map[GridResultJsonConfiguration.pageSizeJsonKey] ?? 0;
     final String nextCursor =
         map[GridResultJsonConfiguration.nextCursorJsonKey] ?? '';
 
     return GridResult<TListItem>(
       items: items,
-      hasMoreItems: map[GridResultJsonConfiguration.hasMoreItemsJsonKey] ??
+      hasMoreItems:
+          map[GridResultJsonConfiguration.hasMoreItemsJsonKey] ??
           (nextCursor.isNotEmpty || items.abstractBlocListCount == pageSize),
       currentPage: map[GridResultJsonConfiguration.currentPageJsonKey] ?? 0,
       startPage: map[GridResultJsonConfiguration.startPageJsonKey] ?? 0,
@@ -100,7 +103,8 @@ class GridResult<TListItem> {
       firstRowOnPage:
           map[GridResultJsonConfiguration.firstRowOnPageJsonKey] ?? 0,
       lastRowOnPage: map[GridResultJsonConfiguration.lastRowOnPageJsonKey] ?? 0,
-      hasItems: map[GridResultJsonConfiguration.hasItemsJsonKey] ??
+      hasItems:
+          map[GridResultJsonConfiguration.hasItemsJsonKey] ??
           items.abstractBlocListIsNotNullOrEmpty,
       nextCursor: map[GridResultJsonConfiguration.nextCursorJsonKey],
       previousCursor: map[GridResultJsonConfiguration.previousCursorJsonKey],
@@ -165,19 +169,22 @@ class GridResultJsonConfiguration {
         rowCountJsonKey ?? GridResultJsonConfiguration.rowCountJsonKey;
     GridResultJsonConfiguration.hasPreviousPageJsonKey =
         hasPreviousPageJsonKey ??
-            GridResultJsonConfiguration.hasPreviousPageJsonKey;
+        GridResultJsonConfiguration.hasPreviousPageJsonKey;
     GridResultJsonConfiguration.hasNextPageJsonKey =
         hasNextPageJsonKey ?? GridResultJsonConfiguration.hasNextPageJsonKey;
     GridResultJsonConfiguration.hasMultiplePagesJsonKey =
         hasMultiplePagesJsonKey ??
-            GridResultJsonConfiguration.hasMultiplePagesJsonKey;
-    GridResultJsonConfiguration.firstRowOnPageJsonKey = firstRowOnPageJsonKey ??
+        GridResultJsonConfiguration.hasMultiplePagesJsonKey;
+    GridResultJsonConfiguration.firstRowOnPageJsonKey =
+        firstRowOnPageJsonKey ??
         GridResultJsonConfiguration.firstRowOnPageJsonKey;
-    GridResultJsonConfiguration.lastRowOnPageJsonKey = lastRowOnPageJsonKey ??
+    GridResultJsonConfiguration.lastRowOnPageJsonKey =
+        lastRowOnPageJsonKey ??
         GridResultJsonConfiguration.lastRowOnPageJsonKey;
     GridResultJsonConfiguration.hasItemsJsonKey =
         hasItemsJsonKey ?? GridResultJsonConfiguration.hasItemsJsonKey;
-    GridResultJsonConfiguration.additionalDataJsonKey = additionalDataJsonKey ??
+    GridResultJsonConfiguration.additionalDataJsonKey =
+        additionalDataJsonKey ??
         GridResultJsonConfiguration.additionalDataJsonKey;
   }
 }

@@ -5,9 +5,9 @@ class Pagination implements BasePagination {
   late int skip; // The number of items to skip for pagination
   late int take; // The number of items to take (retrieve) per page
   late int
-      offset; // An offset used in special cases to offset number of first records if they were added locally through another channel other than standard fetch from API
+  offset; // An offset used in special cases to offset number of first records if they were added locally through another channel other than standard fetch from API
   late String
-      cursor; // A cursor for pagination, used in some APIs to fetch the next set of results
+  cursor; // A cursor for pagination, used in some APIs to fetch the next set of results
 
   /// Calculate the current page based on skip and take values.
   int get page => (skip ~/ take) + configuration.initialPage;
@@ -17,10 +17,7 @@ class Pagination implements BasePagination {
   late int _initialTake;
 
   /// Constructor for creating a Pagination object.
-  Pagination({
-    int? skip,
-    int? take,
-  }) {
+  Pagination({int? skip, int? take}) {
     _initialSkip = skip ?? 0;
     _initialTake = take ?? configuration.pageSize;
     cursor = '';
