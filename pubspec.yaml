@@ -1,6 +1,6 @@
 name: abstract_bloc
 description: Abstraction for fetching local or remote data via flutter_bloc
-version: 2.0.3
+version: 2.0.4
 repository: https://github.com/salihagic/abstract_bloc
 
 environment:
@@ -11,7 +11,7 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^9.1.1
   flutter_bloc_event_bus: ^0.0.6
-  rest_api_client: ^2.3.17
+  rest_api_client: ^2.3.18
   pull_to_refresh: ^2.0.0
   provider: ^6.1.5+1
 

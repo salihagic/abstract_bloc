@@ -396,10 +396,10 @@ packages:
     dependency: "direct main"
     description:
       name: rest_api_client
-      sha256: c0c102d9e6e1c0f44864816fe5ccb595f2b9ed489270395845296203a38ed6f9
+      sha256: "27e1cff027b2984757697702ecda49ad108b54d1ea254b4741aa5f3129ddcaff"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.17"
+    version: "2.3.18"
   shared_preferences:
     dependency: transitive
     description:

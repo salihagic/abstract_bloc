@@ -7,7 +7,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.0.2"
+    version: "2.0.4"
   async:
     dependency: transitive
     description:
@@ -411,10 +411,10 @@ packages:
     dependency: transitive
     description:
       name: rest_api_client
-      sha256: "0d6ba756a63bcd05a50fe61bc11370881d723d5726cadfb2242ce84779b5210a"
+      sha256: "27e1cff027b2984757697702ecda49ad108b54d1ea254b4741aa5f3129ddcaff"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.16"
+    version: "2.3.18"
   shared_preferences:
     dependency: transitive
     description:
@@ -496,10 +496,10 @@ packages:
     dependency: transitive
     description:
       name: storage_repository
-      sha256: fbef360dfef1b412bc7743821846666745592ef204ba06798b6608e49bb501d2
+      sha256: "5ec0eb6d111d82fe80caac873b04eb0bfe7c493cdbff527f85da4c6283d91429"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.1"
   stream_channel:
     dependency: transitive
     description:
