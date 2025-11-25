@@ -35,13 +35,68 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
   /// Hook to manage tasks after more data is loaded.
   Future<void> onAfterLoadMore(Result result) async {}
 
+  /// Saves a snapshot of current search model to temporary search model so it can be reverted if needed
+  /// Make sure that your search model implements CopyWith if it's a complex model (class)
+  Future<void> snapshot() async {
+    if (state is AbstractListFilterableState) {
+      if ((state as AbstractListFilterableState).searchModel is CopyWith) {
+        (state as AbstractListFilterableState).tempSearchModel =
+            ((state as AbstractListFilterableState).searchModel as CopyWith)
+                .copyWith();
+      } else {
+        (state as AbstractListFilterableState).tempSearchModel =
+            (state as AbstractListFilterableState).searchModel;
+      }
+
+      emit(state.copyWith());
+    }
+  }
+
+  /// Updates search model, it can be reverted to previous state by calling revert
+  Future<void> update<TSearchModel>(TSearchModel searchModel) async {
+    if (state is AbstractListFilterableState) {
+      (state as AbstractListFilterableState).searchModel = searchModel;
+      emit(state.copyWith());
+    }
+  }
+
+  /// Reverts to previous state of search model (if there is tempSearchModel, if previously used snapshot and load occured)
+  Future<void> revert() async {
+    if (state is AbstractListFilterableState &&
+        (state as AbstractListFilterableState).tempSearchModel != null) {
+      (state as AbstractListFilterableState).searchModel =
+          (state as AbstractListFilterableState).tempSearchModel;
+      // (state as AbstractListFilterableState).tempSearchModel = null;
+      emit(state.copyWith());
+    }
+  }
+
+  /// Resets all filters, both: search model and temporary search model
+  Future<void> reset() async {
+    if (state is AbstractListFilterableState) {
+      (state as AbstractListFilterableState).tempSearchModel =
+          (_initialState as AbstractListFilterableState).searchModel;
+      (state as AbstractListFilterableState).searchModel =
+          (_initialState as AbstractListFilterableState).searchModel;
+      await load();
+    }
+  }
+
+  Future<void> _applySnapshot() async {
+    if (state is AbstractListFilterableState &&
+        (state as AbstractListFilterableState).tempSearchModel != null) {
+      (state as AbstractListFilterableState).tempSearchModel =
+          (state as AbstractListFilterableState).searchModel;
+    }
+  }
+
   /// Method to load data potentially with a search model.
   Future<void> load<TSearchModel>([TSearchModel? searchModel]) async {
+    await _applySnapshot();
+
     // Update the search model in the state if it is of type AbstractListFilterableState.
-    if (state is AbstractListFilterableState) {
-      (state as AbstractListFilterableState).searchModel =
-          searchModel ??
-          (_initialState as AbstractListFilterableState).searchModel;
+    if (state is AbstractListFilterableState && searchModel != null) {
+      (state as AbstractListFilterableState).searchModel = searchModel;
     }
 
     if (state is AbstractListFilterablePaginatedState) {
@@ -69,6 +124,8 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
 
   /// Refresh the current data and reset the state.
   Future<void> refresh() async {
+    await revert();
+
     if (state is AbstractListFilterablePaginatedState) {
       (state as AbstractListFilterablePaginatedState).searchModel.reset();
     }
@@ -90,6 +147,8 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
 
   /// Load more data for paginated lists.
   Future<void> loadMore() async {
+    await revert();
+
     if (state is AbstractListFilterablePaginatedState) {
       (state as AbstractListFilterablePaginatedState).searchModel.increment();
 

@@ -50,6 +50,9 @@ abstract class AbstractListFilterableState<TSearchModel, TListItem>
   /// The search model used to filter items in the list.
   TSearchModel searchModel;
 
+  /// The search model used to temporarily save filters (before requesting load). Usually used on UI when there are many filters and a "Filter" or "Submit" button
+  TSearchModel? tempSearchModel;
+
   /// Constructor to initialize [AbstractListFilterableState].
   ///
   /// [resultStatus] - The current loading status of the result.
@@ -58,6 +61,7 @@ abstract class AbstractListFilterableState<TSearchModel, TListItem>
   AbstractListFilterableState({
     required super.resultStatus,
     required this.searchModel,
+    this.tempSearchModel,
     required super.result,
   });
 
@@ -86,6 +90,7 @@ abstract class AbstractListFilterablePaginatedState<
   AbstractListFilterablePaginatedState({
     required super.resultStatus,
     required super.searchModel,
+    super.tempSearchModel,
     required super.result,
   });
 
