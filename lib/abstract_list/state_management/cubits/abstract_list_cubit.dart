@@ -239,15 +239,8 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
   }
 
   void _resetPaginationIfNeeded() {
-    debugPrint('BEFORE CHECKING FILTERABLE PAGINATED STATE');
     if (state is AbstractListFilterablePaginatedState) {
-      debugPrint(
-        'AFTER CHECKING FILTERABLE PAGINATED STATE: ${(state as AbstractListFilterablePaginatedState).searchModel.toJson()}',
-      );
       (state as AbstractListFilterablePaginatedState).searchModel.reset();
-      debugPrint(
-        'AFTER CHECKING FILTERABLE PAGINATED STATE: ${(state as AbstractListFilterablePaginatedState).searchModel.toJson()}',
-      );
     }
   }
 
