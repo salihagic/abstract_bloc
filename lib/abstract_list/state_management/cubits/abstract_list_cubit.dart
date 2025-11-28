@@ -1,7 +1,6 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/extensions/_all.dart';
 import 'package:abstract_bloc/models/cursor_pagination.dart';
-import 'package:flutter/widgets.dart';
 
 /// An abstract class representing a cubit for managing a list state in a generic manner.
 abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
@@ -46,6 +45,7 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
   Future<void> update<TSearchModel>(TSearchModel searchModel) async {
     if (state is AbstractListFilterableState) {
       (state as AbstractListFilterableState).searchModel = searchModel;
+      (state as AbstractListFilterableState).isDirty = true;
       emit(state.copyWith());
     }
   }
@@ -53,11 +53,24 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
   /// Reverts to previous state of search model (if there is tempSearchModel, if previously used snapshot and load occured)
   Future<void> revert() async {
     _deepCopyToSearchModel(true);
+    if (state is AbstractListFilterableState) {
+      (state as AbstractListFilterableState).isDirty = false;
+    }
   }
 
   /// Resets all filters, both: search model and temporary search model
   Future<void> reset() async {
     _deepCopyToInitialSearchModel(true);
+    if (state is AbstractListFilterableState) {
+      (state as AbstractListFilterableState).isDirty = false;
+    }
+  }
+
+  Future<void> _applySnapshot() async {
+    _deepCopyToTempSearchModel(true);
+    if (state is AbstractListFilterableState) {
+      (state as AbstractListFilterableState).isDirty = false;
+    }
   }
 
   /// Method to load data potentially with a search model.
@@ -251,21 +264,25 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
     }
   }
 
-  Future<void> _applySnapshot() async {
-    _deepCopyToTempSearchModel(true);
-  }
-
   void _deepCopyToSearchModel(bool rebuild) {
     if (state is AbstractListFilterableState &&
         (state as AbstractListFilterableState).tempSearchModel != null) {
-      if ((state as AbstractListFilterableState).tempSearchModel is CopyWith) {
-        (state as AbstractListFilterableState).searchModel =
-            ((state as AbstractListFilterableState).tempSearchModel as CopyWith)
-                .copyWith();
+      final tempSearchModel =
+          (state as AbstractListFilterableState).tempSearchModel;
+
+      // Save current pagination values
+      final (skip, take, cursor) = _getPaginationValuesFromSearchModel();
+
+      // Restore temp search model
+      if (tempSearchModel is CopyWith) {
+        (state as AbstractListFilterableState).searchModel = tempSearchModel
+            .copyWith();
       } else {
-        (state as AbstractListFilterableState).searchModel =
-            (state as AbstractListFilterableState).tempSearchModel;
+        (state as AbstractListFilterableState).searchModel = tempSearchModel;
       }
+
+      // Restore pagination values
+      _setPaginationValuesToSearchModel(skip, take, cursor);
     }
 
     if (rebuild) {
@@ -276,13 +293,13 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
   void _deepCopyToTempSearchModel(bool rebuild) {
     if (state is AbstractListFilterableState &&
         (state as AbstractListFilterableState).searchModel != null) {
-      if ((state as AbstractListFilterableState).searchModel is CopyWith) {
-        (state as AbstractListFilterableState).tempSearchModel =
-            ((state as AbstractListFilterableState).searchModel as CopyWith)
-                .copyWith();
+      final searchModel = (state as AbstractListFilterableState).searchModel;
+
+      if (searchModel is CopyWith) {
+        (state as AbstractListFilterableState).tempSearchModel = searchModel
+            .copyWith();
       } else {
-        (state as AbstractListFilterableState).tempSearchModel =
-            (state as AbstractListFilterableState).searchModel;
+        (state as AbstractListFilterableState).tempSearchModel = searchModel;
       }
     }
 
@@ -301,6 +318,49 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
 
     if (reload) {
       await load();
+    }
+  }
+
+  (int, int, String) _getPaginationValuesFromSearchModel() {
+    if (state is AbstractListFilterablePaginatedState) {
+      if ((state as AbstractListFilterablePaginatedState).searchModel
+          is Pagination) {
+        final pagination =
+            (state as AbstractListFilterablePaginatedState).searchModel
+                as Pagination;
+
+        return (pagination.skip, pagination.take, '');
+      } else if ((state as AbstractListFilterablePaginatedState).searchModel
+          is CursorPagination) {
+        final cursorPagination =
+            (state as AbstractListFilterablePaginatedState).searchModel
+                as CursorPagination;
+
+        return (0, 0, cursorPagination.cursor);
+      }
+    }
+
+    return (0, 0, '');
+  }
+
+  void _setPaginationValuesToSearchModel(int skip, int take, String cursor) {
+    if (state is AbstractListFilterablePaginatedState) {
+      if ((state as AbstractListFilterablePaginatedState).searchModel
+          is Pagination) {
+        final pagination =
+            (state as AbstractListFilterablePaginatedState).searchModel
+                as Pagination;
+
+        pagination.skip = skip;
+        pagination.take = take;
+      } else if ((state as AbstractListFilterablePaginatedState).searchModel
+          is CursorPagination) {
+        final cursorPagination =
+            (state as AbstractListFilterablePaginatedState).searchModel
+                as CursorPagination;
+
+        cursorPagination.cursor = cursor;
+      }
     }
   }
 }

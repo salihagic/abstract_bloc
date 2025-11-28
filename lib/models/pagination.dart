@@ -16,8 +16,9 @@ class Pagination implements BasePagination {
   /// Constructor for creating a Pagination object.
   Pagination({int? skip, int? take}) {
     _initialTake = take ?? configuration.pageSize;
+    this.skip = skip ?? 0;
+    this.take = _initialTake;
     offset = 0;
-    reset(); // Initialize skip and take to the configured values
   }
 
   /// Resets the pagination values to their initial state.

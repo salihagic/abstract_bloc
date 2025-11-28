@@ -53,6 +53,9 @@ abstract class AbstractListFilterableState<TSearchModel, TListItem>
   /// The search model used to temporarily save filters (before requesting load). Usually used on UI when there are many filters and a "Filter" or "Submit" button
   TSearchModel? tempSearchModel;
 
+  /// Indicates whether the current search model has unsaved changes.
+  bool? isDirty;
+
   /// Constructor to initialize [AbstractListFilterableState].
   ///
   /// [resultStatus] - The current loading status of the result.
@@ -60,9 +63,10 @@ abstract class AbstractListFilterableState<TSearchModel, TListItem>
   /// [result] - The result object containing the list of items.
   AbstractListFilterableState({
     required super.resultStatus,
+    required super.result,
     required this.searchModel,
     this.tempSearchModel,
-    required super.result,
+    this.isDirty,
   });
 
   /// A method that creates a copy of the current state with possibly modified properties.
@@ -89,9 +93,10 @@ abstract class AbstractListFilterablePaginatedState<
   /// [result] - The result object containing the list of items.
   AbstractListFilterablePaginatedState({
     required super.resultStatus,
+    required super.result,
     required super.searchModel,
     super.tempSearchModel,
-    required super.result,
+    super.isDirty,
   });
 
   /// A method that creates a copy of the current state with possibly modified properties.
