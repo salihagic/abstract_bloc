@@ -1,3 +1,7 @@
+## 2.0.8
+
+* Pagination reset() fix
+
 ## 2.0.7
 
 * Docs updated
