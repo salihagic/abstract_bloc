@@ -1,3 +1,7 @@
+## 2.0.6
+
+* Pagination reset() fix
+
 ## 2.0.5
 
 * Added support for temporary search model for abstract_list_cubit and abstract_item_cubit
