@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Updated dependencies and comments
+
 ## 2.0.9
 
 * load method searchModel parameter fix
