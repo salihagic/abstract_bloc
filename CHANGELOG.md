@@ -1,3 +1,7 @@
+## 2.0.9
+
+* load method searchModel parameter fix
+
 ## 2.0.8
 
 * Pagination reset() fix

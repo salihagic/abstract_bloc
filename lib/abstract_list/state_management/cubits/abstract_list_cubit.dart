@@ -231,9 +231,9 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
   /// ```
   Future<void> load<TSearchModel>([TSearchModel? searchModel]) async {
     await _applySnapshot();
-    _applySearchModelIfPossible();
+    _applySearchModelIfPossible(searchModel);
     _resetPaginationIfNeeded();
-    await onBeforeLoad();
+    await onBeforeLoad(searchModel);
     _updateStateWithStatus(ResultStatus.loading);
 
     try {
@@ -461,8 +461,12 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
 
   /// Applies the provided search model to the state if supported.
   void _applySearchModelIfPossible<TSearchModel>([TSearchModel? searchModel]) {
-    if (state is AbstractListFilterableState && searchModel != null) {
-      (state as AbstractListFilterableState).searchModel = searchModel;
+    // Update the search model in the state if it is of type AbstractListFilterableState.
+    if (state is AbstractListFilterableState) {
+      (state as AbstractListFilterableState).searchModel =
+          searchModel ??
+          (state as AbstractListFilterableState).searchModel ??
+          (_initialState as AbstractListFilterableState).searchModel;
     }
   }
 
