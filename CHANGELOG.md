@@ -1,3 +1,9 @@
+## 2.2.0
+
+* Removed pull_to_refresh dependency
+* Built-in flutter refresh indicator
+* Load more triggers when scrolls to the end of the list
+
 ## 2.1.0
 
 * Updated dependencies and comments

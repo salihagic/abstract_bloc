@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:abstract_bloc/abstract_bloc.dart';
-import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:example/repositories/users_repository.dart';
 import 'package:example/users/widgets/users_list.dart';
 import 'package:flutter/material.dart';
@@ -214,37 +213,7 @@ Future main() async {
                     'offset': pagination.offset,
                   },
             ),
-            child: RefreshConfiguration(
-              headerBuilder:
-                  () => const ClassicHeader(
-                    refreshingIcon: Loader.sm(),
-                    completeText: 'Successfully refreshed',
-                    refreshingText: 'Refreshing',
-                    releaseText: 'Release to refresh',
-                    idleText: 'Pull down to refresh',
-                  ),
-              footerBuilder:
-                  () => ClassicFooter(
-                    loadingIcon: const Loader.sm(),
-                    canLoadingText: 'Release to load more',
-                    loadingText: 'Loading',
-                    idleText: 'Pull to load more',
-                    idleIcon: Container(),
-                  ),
-              headerTriggerDistance: 80.0,
-              springDescription: const SpringDescription(
-                stiffness: 170,
-                damping: 16,
-                mass: 1.9,
-              ),
-              maxOverScrollExtent: 100,
-              maxUnderScrollExtent: 0,
-              enableScrollWhenRefreshCompleted: true,
-              enableLoadingWhenFailed: true,
-              hideFooterWhenNotFull: false,
-              enableBallisticLoad: true,
-              child: child!,
-            ),
+            child: child!,
           );
         },
         home: const HomePage(),

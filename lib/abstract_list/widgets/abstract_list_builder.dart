@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:abstract_bloc/abstract_bloc.dart';
@@ -19,8 +20,6 @@ class AbstractListBuilder<
   S extends AbstractListState
 >
     extends StatelessWidget {
-  final _refreshController = RefreshController();
-
   /// The direction of the scrollable list, either vertical or horizontal.
   final Axis scrollDirection;
 
@@ -151,7 +150,7 @@ class AbstractListBuilder<
   final List<SingleChildWidget>? providers;
 
   /// Main constructor for [AbstractListBuilder].
-  AbstractListBuilder({
+  const AbstractListBuilder({
     super.key,
     this.columns = 1,
     this.cacheExtent,
@@ -223,8 +222,6 @@ class AbstractListBuilder<
       state is AbstractListFilterablePaginatedState &&
       state.result.hasMoreItems;
 
-  bool _useSmartRefresher() => enableRefresh || enableLoadMore;
-
   bool _hasData(BuildContext context, S state) =>
       _itemCount(context, state) > 0;
 
@@ -247,7 +244,6 @@ class AbstractListBuilder<
       return context.read<B>();
     } catch (e) {
       debugPrint('There is no instance of bloc or cubit registered: $e');
-
       return null;
     }
   }
@@ -298,64 +294,119 @@ class AbstractListBuilder<
   Widget build(BuildContext context) {
     final abstractConfiguration = AbstractConfiguration.of(context);
 
-    final resultBuilder = AbstractStatefulBuilder(
+    final resultBuilder = _AbstractListBuilderContent<B, S>(
+      widget: this,
+      abstractConfiguration: abstractConfiguration,
+    );
+
+    // Determine how to provide the BLoC or Cubit to the widget tree
+    if (providerValue != null) {
+      return BlocProvider.value(value: providerValue!, child: resultBuilder);
+    }
+
+    if (provider != null) {
+      return BlocProvider<B>(create: provider!, child: resultBuilder);
+    }
+
+    if (providers.abstractBlocListIsNotNullOrEmpty) {
+      return MultiBlocProvider(providers: providers!, child: resultBuilder);
+    }
+
+    return resultBuilder;
+  }
+}
+
+/// Internal stateful widget to manage the refresh completer
+class _AbstractListBuilderContent<
+  B extends StateStreamableSource<S>,
+  S extends AbstractListState
+>
+    extends StatefulWidget {
+  final AbstractListBuilder<B, S> widget;
+  final AbstractConfiguration? abstractConfiguration;
+
+  const _AbstractListBuilderContent({
+    required this.widget,
+    required this.abstractConfiguration,
+  });
+
+  @override
+  State<_AbstractListBuilderContent<B, S>> createState() =>
+      _AbstractListBuilderContentState<B, S>();
+}
+
+class _AbstractListBuilderContentState<
+  B extends StateStreamableSource<S>,
+  S extends AbstractListState
+>
+    extends State<_AbstractListBuilderContent<B, S>> {
+  Completer<void>? _refreshCompleter;
+
+  AbstractListBuilder<B, S> get _widget => widget.widget;
+
+  Future<void> _handleRefresh(BuildContext context) async {
+    _refreshCompleter = Completer<void>();
+    _widget._onRefresh(context);
+    await _refreshCompleter!.future;
+  }
+
+  void _completeRefresh() {
+    if (_refreshCompleter != null && !_refreshCompleter!.isCompleted) {
+      _refreshCompleter!.complete();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AbstractStatefulBuilder(
       initState: (context) {
-        if (!skipInitialOnInit) {
-          _onInit(context);
-        }
-      },
-      dispose: () {
-        try {
-          _refreshController.dispose();
-        } catch (e) {
-          debugPrint(
-            'There is an error while trying to dispose of _refreshController: $e',
-          );
+        if (!_widget.skipInitialOnInit) {
+          _widget._onInit(context);
         }
       },
       builder: (context) {
         return BlocConsumer<B, S>(
           listener: (context, state) {
-            if (!_showBigLoader(context, state)) {
-              _refreshController.complete();
+            if (!_widget._showBigLoader(context, state)) {
+              _completeRefresh();
             }
 
-            listener?.call(context, state);
+            _widget.listener?.call(context, state);
 
             if (state.resultStatus == ResultStatus.loaded) {
-              onLoaded?.call(context, state);
+              _widget.onLoaded?.call(context, state);
             }
 
             if (state.resultStatus == ResultStatus.loadedCached) {
-              onLoadedCached?.call(context, state);
+              _widget.onLoadedCached?.call(context, state);
             }
 
             if (state.resultStatus == ResultStatus.error) {
-              onError?.call(context, state);
+              _widget.onError?.call(context, state);
             }
           },
           builder: (context, state) {
             final calculatedHeader =
-                header ?? headerBuilder?.call(context, state);
+                _widget.header ?? _widget.headerBuilder?.call(context, state);
             final calculatedFooter =
-                footer ?? footerBuilder?.call(context, state);
+                _widget.footer ?? _widget.footerBuilder?.call(context, state);
 
             final child = () {
               // Function to build a ListView with optional header and footer
               buildMaybeWithHeaderAndFooter(Widget child) {
                 return ListView(
-                  cacheExtent: cacheExtent,
-                  physics: physics,
-                  reverse: reverse,
-                  controller: controller,
-                  padding: padding ?? EdgeInsets.zero,
+                  cacheExtent: _widget.cacheExtent,
+                  physics: _widget.physics,
+                  reverse: _widget.reverse,
+                  controller: _widget.controller,
+                  padding: _widget.padding ?? EdgeInsets.zero,
                   children: [
-                    if (headerScrollBehaviour ==
+                    if (_widget.headerScrollBehaviour ==
                             AbstractScrollBehaviour.scrollable &&
                         calculatedHeader != null)
                       calculatedHeader,
                     child,
-                    if (footerScrollBehaviour ==
+                    if (_widget.footerScrollBehaviour ==
                             AbstractScrollBehaviour.scrollable &&
                         calculatedFooter != null)
                       calculatedFooter,
@@ -364,16 +415,21 @@ class AbstractListBuilder<
               }
 
               // Check if a custom builder is provided
-              if (builder != null) {
-                return buildMaybeWithHeaderAndFooter(builder!(context, state));
+              if (_widget.builder != null) {
+                return buildMaybeWithHeaderAndFooter(
+                  _widget.builder!(context, state),
+                );
               }
 
-              final calculatedShowBigLoader = _showBigLoader(context, state);
-              final calculatedShowEmptyContainer = _showEmptyContainer(
+              final calculatedShowBigLoader = _widget._showBigLoader(
                 context,
                 state,
               );
-              final calculatedShowErrorContainer = _showErrorContainer(
+              final calculatedShowEmptyContainer = _widget._showEmptyContainer(
+                context,
+                state,
+              );
+              final calculatedShowErrorContainer = _widget._showErrorContainer(
                 context,
                 state,
               );
@@ -385,52 +441,54 @@ class AbstractListBuilder<
               Widget transitionItemBuilder(BuildContext context) {
                 // Check if we need to show a big loader
                 if (calculatedShowBigLoader) {
-                  return loaderBuilder?.call(context, state) ??
-                      abstractConfiguration?.loaderBuilder?.call(context) ??
+                  return _widget.loaderBuilder?.call(context, state) ??
+                      widget.abstractConfiguration?.loaderBuilder?.call(
+                        context,
+                      ) ??
                       const Loader();
                 }
 
                 // Check if we need to show an empty state
                 if (calculatedShowEmptyContainer) {
-                  return noDataBuilder?.call(
+                  return _widget.noDataBuilder?.call(
                         context,
-                        () => _onInit(context),
+                        () => _widget._onInit(context),
                         state,
                       ) ??
-                      abstractConfiguration?.abstractListNoDataBuilder?.call(
-                        context,
-                        () => _onInit(context),
-                      ) ??
+                      widget.abstractConfiguration?.abstractListNoDataBuilder
+                          ?.call(context, () => _widget._onInit(context)) ??
                       AbstractListNoDataContainer(
-                        onInit: () => _onInit(context),
+                        onInit: () => _widget._onInit(context),
                       );
                 }
 
                 // Check if we need to show an error state
                 if (calculatedShowErrorContainer) {
-                  return errorBuilder?.call(
+                  return _widget.errorBuilder?.call(
                         context,
-                        () => _onInit(context),
+                        () => _widget._onInit(context),
                         state,
                       ) ??
-                      abstractConfiguration?.abstractListErrorBuilder?.call(
-                        context,
-                        () => _onInit(context),
-                      ) ??
-                      AbstractLisErrorContainer(onInit: () => _onInit(context));
+                      widget.abstractConfiguration?.abstractListErrorBuilder
+                          ?.call(context, () => _widget._onInit(context)) ??
+                      AbstractLisErrorContainer(
+                        onInit: () => _widget._onInit(context),
+                      );
                 }
 
                 return const SizedBox();
               }
 
               final shouldBuildHeader =
-                  headerScrollBehaviour == AbstractScrollBehaviour.scrollable &&
+                  _widget.headerScrollBehaviour ==
+                      AbstractScrollBehaviour.scrollable &&
                   calculatedHeader != null;
               final shouldBuildFooter =
-                  footerScrollBehaviour == AbstractScrollBehaviour.scrollable &&
+                  _widget.footerScrollBehaviour ==
+                      AbstractScrollBehaviour.scrollable &&
                   calculatedFooter != null;
 
-              final resolvedItemCount = _itemCount(context, state);
+              final resolvedItemCount = _widget._itemCount(context, state);
               final calculatedItemCount =
                   (shouldBuildTransitionItem ? 1 : resolvedItemCount) +
                   (shouldBuildHeader ? 1 : 0) +
@@ -438,7 +496,8 @@ class AbstractListBuilder<
               final calculatedIndexOffset = shouldBuildHeader ? 1 : 0;
 
               if (shouldBuildTransitionItem &&
-                  (headerScrollBehaviour == AbstractScrollBehaviour.fixed ||
+                  (_widget.headerScrollBehaviour ==
+                          AbstractScrollBehaviour.fixed ||
                       !shouldBuildHeader)) {
                 return transitionItemBuilder(context);
               }
@@ -456,7 +515,7 @@ class AbstractListBuilder<
                   return transitionItemBuilder(context);
                 }
 
-                return itemBuilder?.call(
+                return _widget.itemBuilder?.call(
                   context,
                   state,
                   index - calculatedIndexOffset,
@@ -479,20 +538,20 @@ class AbstractListBuilder<
                   return const SizedBox();
                 }
 
-                return separatorBuilder?.call(context, state, index) ??
+                return _widget.separatorBuilder?.call(context, state, index) ??
                     const SizedBox();
               }
 
               // Determine the appropriate list view or grid view based on the columns property
-              if (columns <= 1) {
+              if (_widget.columns <= 1) {
                 return ListView.separated(
-                  cacheExtent: cacheExtent,
-                  padding: padding ?? EdgeInsets.zero,
+                  cacheExtent: _widget.cacheExtent,
+                  padding: _widget.padding ?? EdgeInsets.zero,
                   shrinkWrap: true,
-                  reverse: reverse,
-                  scrollDirection: scrollDirection,
-                  physics: physics,
-                  controller: controller,
+                  reverse: _widget.reverse,
+                  scrollDirection: _widget.scrollDirection,
+                  physics: _widget.physics,
+                  controller: _widget.controller,
                   itemCount: calculatedItemCount,
                   itemBuilder: calculatedItemBuilder,
                   separatorBuilder: calculatedSeparatorBuilder,
@@ -500,63 +559,84 @@ class AbstractListBuilder<
               }
 
               return GridView.builder(
-                cacheExtent: cacheExtent,
-                padding: padding ?? EdgeInsets.zero,
+                cacheExtent: _widget.cacheExtent,
+                padding: _widget.padding ?? EdgeInsets.zero,
                 shrinkWrap: true,
-                reverse: reverse,
-                scrollDirection: scrollDirection,
-                physics: physics,
-                controller: controller,
+                reverse: _widget.reverse,
+                scrollDirection: _widget.scrollDirection,
+                physics: _widget.physics,
+                controller: _widget.controller,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: shouldBuildTransitionItem ? 1 : columns,
-                  mainAxisSpacing: mainAxisSpacing,
-                  crossAxisSpacing: crossAxisSpacing,
+                  crossAxisCount: shouldBuildTransitionItem
+                      ? 1
+                      : _widget.columns,
+                  mainAxisSpacing: _widget.mainAxisSpacing,
+                  crossAxisSpacing: _widget.crossAxisSpacing,
                   childAspectRatio: shouldBuildTransitionItem
                       ? 0.5
-                      : childAspectRatio,
-                  mainAxisExtent: mainAxisExtent,
+                      : _widget.childAspectRatio,
+                  mainAxisExtent: _widget.mainAxisExtent,
                 ),
                 itemCount: calculatedItemCount,
                 itemBuilder: calculatedItemBuilder,
               );
             }();
 
-            // Stack to include the SmartRefresher if enabled
+            // Build the scrollable content with refresh and load more support
             final content = Stack(
               children: [
                 () {
-                  if (_useSmartRefresher()) {
-                    return ScrollConfiguration(
-                      behavior: ScrollConfiguration.of(
-                        context,
-                      ).copyWith(dragDevices: PointerDeviceKind.values.toSet()),
-                      child: SmartRefresher(
-                        cacheExtent: cacheExtent,
-                        scrollDirection: scrollDirection,
-                        controller: _refreshController,
-                        reverse: reverse,
-                        enablePullDown: _enableRefresh(context, state),
-                        enablePullUp: _enableLoadMore(context, state),
-                        onRefresh: () => _onRefresh(context),
-                        onLoading: () => _onLoadMore(context),
-                        child: child,
-                      ),
+                  final canLoadMore = _widget._enableLoadMore(context, state);
+                  final canRefresh = _widget._enableRefresh(context, state);
+
+                  // Wrap with scroll configuration to support all pointer devices
+                  Widget scrollableChild = ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(
+                      context,
+                    ).copyWith(dragDevices: PointerDeviceKind.values.toSet()),
+                    child: child,
+                  );
+
+                  // Add scroll-based load more detection
+                  if (canLoadMore) {
+                    scrollableChild = NotificationListener<ScrollNotification>(
+                      onNotification: (notification) {
+                        if (notification is ScrollUpdateNotification) {
+                          final metrics = notification.metrics;
+                          // Trigger load more when user scrolls within 200 pixels of the bottom
+                          if (metrics.pixels >= metrics.maxScrollExtent - 200) {
+                            if (!_widget._isLoadingAny(context, state)) {
+                              _widget._onLoadMore(context);
+                            }
+                          }
+                        }
+                        return false;
+                      },
+                      child: scrollableChild,
                     );
                   }
 
-                  return child; // Return plain child if no SmartRefresher is used
+                  // Add pull-to-refresh using Flutter's RefreshIndicator
+                  if (canRefresh) {
+                    scrollableChild = RefreshIndicator(
+                      onRefresh: () => _handleRefresh(context),
+                      child: scrollableChild,
+                    );
+                  }
+
+                  return scrollableChild;
                 }(),
-                if (showCachedDataWarningIcon)
+                if (_widget.showCachedDataWarningIcon)
                   Positioned(
                     top: 0,
                     right: 0,
                     child: LoadInfoIcon(
                       isLoading:
-                          !_showBigLoader(context, state) &&
-                          _isLoading(context, state) &&
-                          _hasData(context, state),
-                      isCached: _isCached(context, state),
-                      onReload: (_) => _onInit(context),
+                          !_widget._showBigLoader(context, state) &&
+                          _widget._isLoading(context, state) &&
+                          _widget._hasData(context, state),
+                      isCached: _widget._isCached(context, state),
+                      onReload: (_) => _widget._onInit(context),
                     ),
                   ),
               ],
@@ -564,15 +644,17 @@ class AbstractListBuilder<
 
             // Wrap the final content with headers and footers based on configuration
             final result = SizedBox(
-              height: heightBuilder?.call(context, state),
+              height: _widget.heightBuilder?.call(context, state),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (headerScrollBehaviour == AbstractScrollBehaviour.fixed &&
+                  if (_widget.headerScrollBehaviour ==
+                          AbstractScrollBehaviour.fixed &&
                       calculatedHeader != null)
                     calculatedHeader,
                   Expanded(child: content),
-                  if (footerScrollBehaviour == AbstractScrollBehaviour.fixed &&
+                  if (_widget.footerScrollBehaviour ==
+                          AbstractScrollBehaviour.fixed &&
                       calculatedFooter != null)
                     calculatedFooter,
                 ],
@@ -580,25 +662,11 @@ class AbstractListBuilder<
             );
 
             // Return additional customization if provided
-            return additionalBuilder?.call(context, state, result) ?? result;
+            return _widget.additionalBuilder?.call(context, state, result) ??
+                result;
           },
         );
       },
     );
-
-    // Determine how to provide the BLoC or Cubit to the widget tree
-    if (providerValue != null) {
-      return BlocProvider.value(value: providerValue!, child: resultBuilder);
-    }
-
-    if (provider != null) {
-      return BlocProvider<B>(create: provider!, child: resultBuilder);
-    }
-
-    if (providers.abstractBlocListIsNotNullOrEmpty) {
-      return MultiBlocProvider(providers: providers!, child: resultBuilder);
-    }
-
-    return resultBuilder; // No providers used, return main child directly
   }
 }

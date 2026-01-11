@@ -7,7 +7,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.0.8"
+    version: "2.2.0"
   async:
     dependency: transitive
     description:
@@ -391,22 +391,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.5+1"
-  pull_to_refresh:
-    dependency: transitive
-    description:
-      name: pull_to_refresh
-      sha256: bbadd5a931837b57739cf08736bea63167e284e71fb23b218c8c9a6e042aad12
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   rest_api_client:
     dependency: transitive
     description:
       name: rest_api_client
-      sha256: "27e1cff027b2984757697702ecda49ad108b54d1ea254b4741aa5f3129ddcaff"
+      sha256: b957640d3685a661c580b93f83e291b1440980350fc899dd22a4170de9cbfe9f
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.18"
+    version: "2.4.0"
   shared_preferences:
     dependency: transitive
     description:
@@ -573,5 +565,5 @@ packages:
     source: hosted
     version: "1.1.0"
 sdks:
-  dart: ">=3.9.0 <4.0.0"
+  dart: ">=3.10.4 <4.0.0"
   flutter: ">=3.35.0"
