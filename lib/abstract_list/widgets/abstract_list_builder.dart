@@ -367,21 +367,21 @@ class _AbstractListBuilderContentState<
       builder: (context) {
         return BlocConsumer<B, S>(
           listener: (context, state) {
-            if (!_widget._showBigLoader(context, state)) {
+            if (state.resultStatus != .loading) {
               _completeRefresh();
             }
 
             _widget.listener?.call(context, state);
 
-            if (state.resultStatus == ResultStatus.loaded) {
+            if (state.resultStatus == .loaded) {
               _widget.onLoaded?.call(context, state);
             }
 
-            if (state.resultStatus == ResultStatus.loadedCached) {
+            if (state.resultStatus == .loadedCached) {
               _widget.onLoadedCached?.call(context, state);
             }
 
-            if (state.resultStatus == ResultStatus.error) {
+            if (state.resultStatus == .error) {
               _widget.onError?.call(context, state);
             }
           },
@@ -480,12 +480,10 @@ class _AbstractListBuilderContentState<
               }
 
               final shouldBuildHeader =
-                  _widget.headerScrollBehaviour ==
-                      AbstractScrollBehaviour.scrollable &&
+                  _widget.headerScrollBehaviour == .scrollable &&
                   calculatedHeader != null;
               final shouldBuildFooter =
-                  _widget.footerScrollBehaviour ==
-                      AbstractScrollBehaviour.scrollable &&
+                  _widget.footerScrollBehaviour == .scrollable &&
                   calculatedFooter != null;
 
               final resolvedItemCount = _widget._itemCount(context, state);
@@ -496,8 +494,7 @@ class _AbstractListBuilderContentState<
               final calculatedIndexOffset = shouldBuildHeader ? 1 : 0;
 
               if (shouldBuildTransitionItem &&
-                  (_widget.headerScrollBehaviour ==
-                          AbstractScrollBehaviour.fixed ||
+                  (_widget.headerScrollBehaviour == .fixed ||
                       !shouldBuildHeader)) {
                 return transitionItemBuilder(context);
               }
@@ -648,13 +645,11 @@ class _AbstractListBuilderContentState<
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (_widget.headerScrollBehaviour ==
-                          AbstractScrollBehaviour.fixed &&
+                  if (_widget.headerScrollBehaviour == .fixed &&
                       calculatedHeader != null)
                     calculatedHeader,
                   Expanded(child: content),
-                  if (_widget.footerScrollBehaviour ==
-                          AbstractScrollBehaviour.fixed &&
+                  if (_widget.footerScrollBehaviour == .fixed &&
                       calculatedFooter != null)
                     calculatedFooter,
                 ],

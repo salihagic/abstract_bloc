@@ -1,3 +1,7 @@
+## 2.2.1
+
+* Fixed refresh indicator
+
 ## 2.2.0
 
 * Removed pull_to_refresh dependency
