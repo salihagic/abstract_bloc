@@ -1,3 +1,7 @@
+## 2.2.3
+
+* Docs updated
+
 ## 2.2.2
 
 * Docs updated
