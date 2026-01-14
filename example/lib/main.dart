@@ -5,30 +5,43 @@ import 'package:example/repositories/users_repository.dart';
 import 'package:example/users/widgets/users_list.dart';
 import 'package:flutter/material.dart';
 
+/// Example application demonstrating the abstract_bloc package.
+///
+/// This example shows:
+/// - Setting up RestApiClient with caching enabled
+/// - Configuring AbstractConfiguration for global UI customization
+/// - Using AbstractListBuilder for paginated lists with pull-to-refresh
+/// - Using AbstractItemBuilder for detail pages with cache-first loading
+///
+/// Key features demonstrated:
+/// - Automatic loading, error, and empty state handling
+/// - Cache-first data strategy (shows cached data while loading fresh data)
+/// - Custom UI builders for all states
+/// - Pagination configuration
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await RestApiClient.initFlutter();
 
+  // Initialize the REST API client with caching enabled.
+  // The cache allows showing previously loaded data when offline.
   final restApiClient = RestApiClientImpl(
     options: RestApiClientOptions(
       baseUrl: 'https://gorest.co.in/public/v2/',
-      cacheEnabled: true,
+      cacheEnabled: true, // Enable caching for offline support
     ),
     interceptors: [
+      // Optional: Add logging interceptor for debugging
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          log('Logging before request');
-
+          log('Request: ${options.method} ${options.path}');
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          log('Logging on response');
-
+          log('Response: ${response.statusCode}');
           return handler.next(response);
         },
         onError: (DioException e, handler) {
-          log('Logging on error');
-
+          log('Error: ${e.message}');
           return handler.next(e);
         },
       ),
@@ -38,6 +51,7 @@ Future main() async {
   restApiClient.setContentType(Headers.jsonContentType);
 
   runApp(
+    // Provide repositories to the widget tree
     MultiRepositoryProvider(
       providers: [
         RepositoryProvider<RestApiClient>(create: (_) => restApiClient),
@@ -47,172 +61,181 @@ Future main() async {
       ],
       child: MaterialApp(
         title: 'Abstract Bloc Example',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+        ),
         builder: (context, child) {
-          //We can configure error and no-data container globally
-          //so we don't have to specify it every time or have to
-          //use the default one
+          // Configure abstract_bloc globally using AbstractConfiguration.
+          // This allows you to customize the default widgets for loading,
+          // error, empty states, and cached data indicators across your app.
           return AbstractConfiguration(
-            loaderBuilder:
-                (context) => const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+            // Main loading indicator used when data is being fetched
+            loaderBuilder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ),
+
+            // Small loading indicator shown when cached data is displayed
+            // and fresh data is being fetched in the background
+            cachedDataLoaderBuilder: (context) => ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: Container(
+                color: Colors.white.withValues(alpha: 0.8),
+                padding: const EdgeInsets.all(14.0),
+                child: const SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            ),
+
+            // Icon shown when displaying cached data - tap to see more info
+            cachedDataWarningIconBuilder: (context, onTap) => InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(50),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: Container(
+                  color: Colors.white.withValues(alpha: 0.8),
+                  padding: const EdgeInsets.all(8.0),
+                  child: const Icon(
+                    Icons.cloud_off,
+                    color: Colors.orange,
+                    size: 20,
                   ),
                 ),
-            cachedDataLoaderBuilder:
-                (context) => ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: Container(
-                    color: Colors.white.withValues(alpha: 0.5),
-                    padding: const EdgeInsets.all(14.0),
-                    child: const SizedBox(
-                      height: 12,
-                      width: 12,
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-                      ),
-                    ),
+              ),
+            ),
+
+            // Dialog shown when user taps the cached data warning icon
+            cachedDataWarningDialogBuilder: (context, onReload) => InfoDialog(
+              showCancelButton: true,
+              onApplyText: 'Reload',
+              onCancel: () => Navigator.of(context).pop(),
+              onApply: () {
+                onReload?.call(context);
+                Navigator.of(context).pop();
+              },
+              child: const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.cloud_off, size: 48, color: Colors.orange),
+                  SizedBox(height: 16),
+                  Text(
+                    'Showing Cached Data',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
-                ),
-            cachedDataWarningIconBuilder:
-                (context, onTap) => InkWell(
-                  onTap: onTap,
-                  borderRadius: BorderRadius.circular(50),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: Container(
-                      color: Colors.white.withValues(alpha: 0.5),
-                      padding: const EdgeInsets.all(8.0),
-                      child: const Icon(
-                        Icons.info_outline,
-                        color: Color(0xFFC42A03),
-                      ),
-                    ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Unable to connect to the server. Displaying previously saved data.',
+                    textAlign: TextAlign.center,
                   ),
-                ),
-            cachedDataWarningDialogBuilder:
-                (context, onReload) => InfoDialog(
-                  showCancelButton: true,
-                  onApplyText: 'Reload',
-                  onCancel: () {
-                    Navigator.of(context).pop();
-                  },
-                  onApply: () {
-                    onReload?.call(context);
-                    Navigator.of(context).pop();
-                  },
-                  child: const Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Showing cached data',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(height: 15),
-                      Text(
-                        'There was an error, please try again',
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                ],
+              ),
+            ),
+
+            // Error widget for AbstractItemBuilder (single item pages)
+            abstractItemErrorBuilder: (context, onRetry) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Something went wrong',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   ),
-                ),
-            //This is the default implementation, you can provide your own or just ignore this parameter
-            abstractItemErrorBuilder:
-                (context, onInit) => Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('An error occured, please try again'),
-                      const SizedBox(height: 15),
-                      TextButton(
-                        //This is used to re-fetch the data in case
-                        //an error happens
-                        onPressed: () => onInit.call(),
-                        child: const Text(
-                          'Reload',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                    ],
+                  const SizedBox(height: 8),
+                  const Text('Please try again'),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: onRetry,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
                   ),
-                ),
-            //This is the default implementation, you can provide your own or just ignore this parameter
-            abstractItemNoDataBuilder:
-                (context, onInit) => Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Text('There is no data'),
-                      const SizedBox(height: 15),
-                      TextButton(
-                        onPressed: () => onInit.call(),
-                        child: const Text(
-                          'Reload',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                    ],
+                ],
+              ),
+            ),
+
+            // Empty state widget for AbstractItemBuilder
+            abstractItemNoDataBuilder: (context, onRetry) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.inbox, size: 64, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'No Data Found',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   ),
-                ),
-            //This is the default implementation, you can provide your own or just ignore this parameter
-            abstractListErrorBuilder:
-                (context, onInit) => Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('An error occured, please try again'),
-                      const SizedBox(height: 15),
-                      TextButton(
-                        //This is used to re-fetch the data in case
-                        //an error happens
-                        onPressed: () => onInit.call(),
-                        child: const Text(
-                          'Reload',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                    ],
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: onRetry,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Refresh'),
                   ),
-                ),
-            //This is the default implementation, you can provide your own or just ignore this parameter
-            abstractListNoDataBuilder:
-                (context, onInit) => Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Text('There is no data'),
-                      const SizedBox(height: 15),
-                      TextButton(
-                        onPressed: () => onInit.call(),
-                        child: const Text(
-                          'Reload',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                    ],
+                ],
+              ),
+            ),
+
+            // Error widget for AbstractListBuilder (list pages)
+            abstractListErrorBuilder: (context, onRetry) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Failed to load data',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  const Text('Check your connection and try again'),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: onRetry,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+
+            // Empty state widget for AbstractListBuilder
+            abstractListNoDataBuilder: (context, onRetry) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.inbox, size: 64, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'No Users Found',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text('Pull down to refresh'),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: onRetry,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Refresh'),
+                  ),
+                ],
+              ),
+            ),
+
+            // Configure pagination to match the gorest.co.in API format
             paginationConfiguration: PaginationConfiguration(
               initialPage: 1,
               pageSize: 10,
-              toJson:
-                  (pagination) => {
-                    'page': pagination.page,
-                    'pageSize': pagination.take,
-                    'offset': pagination.offset,
-                  },
+              toJson: (pagination) => {
+                'page': pagination.page,
+                'per_page': pagination.take,
+              },
             ),
+
             child: child!,
           );
         },
@@ -228,7 +251,10 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Abstract Bloc Example')),
+      appBar: AppBar(
+        title: const Text('Users'),
+        centerTitle: true,
+      ),
       body: const UsersList(),
     );
   }

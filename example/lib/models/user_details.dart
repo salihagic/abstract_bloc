@@ -1,3 +1,7 @@
+/// Model representing complete user details.
+///
+/// Used by [UserDetailsBloc] for the detail page.
+/// Contains all user information returned by the API.
 class UserDetails {
   final int id;
   final String name;
@@ -21,5 +25,15 @@ class UserDetails {
       gender: map['gender'] as String,
       status: map['status'] as String,
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'gender': gender,
+      'status': status,
+    };
   }
 }
