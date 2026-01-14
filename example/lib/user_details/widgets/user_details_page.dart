@@ -23,22 +23,19 @@ class UserDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('User Details'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('User Details'), centerTitle: true),
       body: AbstractItemBuilder<UserDetailsBloc, UserDetailsState>(
         // Built-in provider - creates the BLoC automatically
-        provider: (context) => UserDetailsBloc(
-          usersRepository: context.read<IUsersRepository>(),
-        ),
+        provider:
+            (context) => UserDetailsBloc(
+              usersRepository: context.read<IUsersRepository>(),
+            ),
 
         // Load the user details when the widget is first built
-        onInit: (context) => context.read<UserDetailsBloc>().add(
-          UserDetailsLoadEvent(
-            searchModel: UserDetailsSearchModel(id: id),
-          ),
-        ),
+        onInit:
+            (context) => context.read<UserDetailsBloc>().add(
+              UserDetailsLoadEvent(searchModel: UserDetailsSearchModel(id: id)),
+            ),
 
         // Build the UI when data is loaded
         builder: (context, state) {
@@ -54,7 +51,8 @@ class UserDetailsPage extends StatelessWidget {
                 // User avatar
                 CircleAvatar(
                   radius: 48,
-                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  backgroundColor:
+                      Theme.of(context).colorScheme.primaryContainer,
                   child: Text(
                     user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
                     style: TextStyle(
@@ -82,9 +80,10 @@ class UserDetailsPage extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: user.status == 'active'
-                        ? Colors.green.shade100
-                        : Colors.grey.shade200,
+                    color:
+                        user.status == 'active'
+                            ? Colors.green.shade100
+                            : Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
@@ -92,9 +91,10 @@ class UserDetailsPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: user.status == 'active'
-                          ? Colors.green.shade800
-                          : Colors.grey.shade700,
+                      color:
+                          user.status == 'active'
+                              ? Colors.green.shade800
+                              : Colors.grey.shade700,
                     ),
                   ),
                 ),
@@ -110,9 +110,10 @@ class UserDetailsPage extends StatelessWidget {
                 _DetailCard(
                   icon: Icons.person_outline,
                   label: 'Gender',
-                  value: user.gender.isNotEmpty
-                      ? '${user.gender[0].toUpperCase()}${user.gender.substring(1)}'
-                      : '-',
+                  value:
+                      user.gender.isNotEmpty
+                          ? '${user.gender[0].toUpperCase()}${user.gender.substring(1)}'
+                          : '-',
                 ),
                 const SizedBox(height: 12),
                 _DetailCard(
@@ -150,15 +151,14 @@ class _DetailCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
-      color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      color: Theme.of(
+        context,
+      ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            Icon(icon, color: Theme.of(context).colorScheme.primary),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -171,10 +171,7 @@ class _DetailCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    value,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
+                  Text(value, style: Theme.of(context).textTheme.bodyLarge),
                 ],
               ),
             ),

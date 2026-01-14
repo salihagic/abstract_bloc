@@ -25,15 +25,17 @@ class UsersList extends StatelessWidget {
   Widget build(BuildContext context) {
     return AbstractListBuilder<UsersBloc, UsersState>(
       // Built-in provider - creates the BLoC automatically
-      provider: (context) =>
-          UsersBloc(usersRepository: context.read<IUsersRepository>()),
+      provider:
+          (context) =>
+              UsersBloc(usersRepository: context.read<IUsersRepository>()),
 
       // Called when the widget is first built to trigger initial load
       onInit: (context) => context.read<UsersBloc>().add(UsersLoadEvent()),
 
       // Build each item in the list
-      itemBuilder: (context, usersState, index) =>
-          UserCard(user: usersState.items[index]),
+      itemBuilder:
+          (context, usersState, index) =>
+              UserCard(user: usersState.items[index]),
 
       // Number of columns (1 = ListView, 2+ = GridView)
       columns: 1,

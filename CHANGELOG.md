@@ -1,3 +1,7 @@
+## 2.2.2
+
+* Docs updated
+
 ## 2.2.1
 
 * Fixed refresh indicator

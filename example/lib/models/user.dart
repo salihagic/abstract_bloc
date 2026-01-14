@@ -9,16 +9,10 @@ class User {
   User({required this.id, required this.name});
 
   factory User.fromMap(Map<dynamic, dynamic> map) {
-    return User(
-      id: map['id'] as int,
-      name: map['name'] as String,
-    );
+    return User(id: map['id'] as int, name: map['name'] as String);
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 }

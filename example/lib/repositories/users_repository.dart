@@ -46,11 +46,12 @@ class UsersRepository implements IUsersRepository {
     return restApiClient.getStreamed(
       '/users',
       queryParameters: model.toJson(),
-      onSuccess: (data) => GridResult(
-        items: data.map<User>((map) => User.fromMap(map)).toList(),
-        // Note: In a real app, you'd parse hasMoreItems from API response
-        // hasMoreItems: data.length >= model.take,
-      ),
+      onSuccess:
+          (data) => GridResult(
+            items: data.map<User>((map) => User.fromMap(map)).toList(),
+            // Note: In a real app, you'd parse hasMoreItems from API response
+            // hasMoreItems: data.length >= model.take,
+          ),
     );
   }
 
