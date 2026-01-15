@@ -1,3 +1,7 @@
+## 2.2.4
+
+* Pull-to-refresh fix
+
 ## 2.2.3
 
 * Docs updated

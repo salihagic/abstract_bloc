@@ -493,12 +493,6 @@ class _AbstractListBuilderContentState<
                   (shouldBuildFooter ? 1 : 0);
               final calculatedIndexOffset = shouldBuildHeader ? 1 : 0;
 
-              if (shouldBuildTransitionItem &&
-                  (_widget.headerScrollBehaviour == .fixed ||
-                      !shouldBuildHeader)) {
-                return transitionItemBuilder(context);
-              }
-
               Widget? calculatedItemBuilder(BuildContext context, int index) {
                 if (shouldBuildHeader && index == 0) {
                   return calculatedHeader;
@@ -541,13 +535,67 @@ class _AbstractListBuilderContentState<
 
               // Determine the appropriate list view or grid view based on the columns property
               if (_widget.columns <= 1) {
+                // Use LayoutBuilder with SingleChildScrollView for transition items (empty/error/loading states)
+                // This ensures the content is centered vertically within available space
+                if (shouldBuildTransitionItem) {
+                  final resolvedPadding =
+                      _widget.padding?.resolve(TextDirection.ltr) ??
+                      EdgeInsets.zero;
+
+                  return LayoutBuilder(
+                    builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        physics:
+                            _widget.physics ??
+                            const AlwaysScrollableScrollPhysics(),
+                        controller: _widget.controller,
+                        reverse: _widget.reverse,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: constraints.maxHeight,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (shouldBuildHeader)
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: resolvedPadding.left,
+                                    right: resolvedPadding.right,
+                                    top: resolvedPadding.top,
+                                  ),
+                                  child: calculatedHeader,
+                                ),
+                              transitionItemBuilder(context),
+                              if (shouldBuildFooter)
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: resolvedPadding.left,
+                                    right: resolvedPadding.right,
+                                    bottom: resolvedPadding.bottom,
+                                  ),
+                                  child: calculatedFooter,
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+
+                // Use AlwaysScrollableScrollPhysics when refresh is enabled to allow pull-to-refresh even with few items
+                final scrollPhysics = _widget.enableRefresh
+                    ? const AlwaysScrollableScrollPhysics()
+                    : _widget.physics;
+
                 return ListView.separated(
                   cacheExtent: _widget.cacheExtent,
                   padding: _widget.padding ?? EdgeInsets.zero,
                   shrinkWrap: true,
                   reverse: _widget.reverse,
                   scrollDirection: _widget.scrollDirection,
-                  physics: _widget.physics,
+                  physics: scrollPhysics,
                   controller: _widget.controller,
                   itemCount: calculatedItemCount,
                   itemBuilder: calculatedItemBuilder,
@@ -555,13 +603,18 @@ class _AbstractListBuilderContentState<
                 );
               }
 
+              // Use AlwaysScrollableScrollPhysics when refresh is enabled to allow pull-to-refresh even with few items
+              final scrollPhysics = _widget.enableRefresh
+                  ? const AlwaysScrollableScrollPhysics()
+                  : _widget.physics;
+
               return GridView.builder(
                 cacheExtent: _widget.cacheExtent,
                 padding: _widget.padding ?? EdgeInsets.zero,
                 shrinkWrap: true,
                 reverse: _widget.reverse,
                 scrollDirection: _widget.scrollDirection,
-                physics: _widget.physics,
+                physics: scrollPhysics,
                 controller: _widget.controller,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: shouldBuildTransitionItem
