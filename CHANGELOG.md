@@ -1,3 +1,7 @@
+## 2.2.5
+
+* Pull-to-refresh fix when there is no data
+
 ## 2.2.4
 
 * Pull-to-refresh fix

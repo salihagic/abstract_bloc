@@ -542,45 +542,49 @@ class _AbstractListBuilderContentState<
                       _widget.padding?.resolve(TextDirection.ltr) ??
                       EdgeInsets.zero;
 
-                  return LayoutBuilder(
-                    builder: (context, constraints) {
-                      return SingleChildScrollView(
-                        physics:
-                            _widget.physics ??
-                            const AlwaysScrollableScrollPhysics(),
-                        controller: _widget.controller,
-                        reverse: _widget.reverse,
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minHeight: constraints.maxHeight,
+                  return Column(
+                    children: [
+                      if (shouldBuildHeader)
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: resolvedPadding.left,
+                            right: resolvedPadding.right,
+                            top: resolvedPadding.top,
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (shouldBuildHeader)
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    left: resolvedPadding.left,
-                                    right: resolvedPadding.right,
-                                    top: resolvedPadding.top,
-                                  ),
-                                  child: calculatedHeader,
-                                ),
-                              transitionItemBuilder(context),
-                              if (shouldBuildFooter)
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    left: resolvedPadding.left,
-                                    right: resolvedPadding.right,
-                                    bottom: resolvedPadding.bottom,
-                                  ),
-                                  child: calculatedFooter,
-                                ),
-                            ],
-                          ),
+                          child: calculatedHeader,
                         ),
-                      );
-                    },
+
+                      Expanded(
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            return SingleChildScrollView(
+                              physics:
+                                  _widget.physics ??
+                                  const AlwaysScrollableScrollPhysics(),
+                              controller: _widget.controller,
+                              reverse: _widget.reverse,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minHeight: constraints.maxHeight,
+                                ),
+                                child: Center(
+                                  child: transitionItemBuilder(context),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      if (shouldBuildFooter)
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: resolvedPadding.left,
+                            right: resolvedPadding.right,
+                            bottom: resolvedPadding.bottom,
+                          ),
+                          child: calculatedFooter,
+                        ),
+                    ],
                   );
                 }
 
