@@ -1,3 +1,7 @@
+## 2.2.6
+
+* Added transitionItemExpanded flag to AbstractListBuilder
+
 ## 2.2.5
 
 * Pull-to-refresh fix when there is no data

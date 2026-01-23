@@ -35,6 +35,9 @@ class AbstractListBuilder<
   /// Indicates if load more functionality is enabled.
   final bool enableLoadMore;
 
+  /// Indicates if the transition item (between header and footer) should be wrapped in Expanded and SingleChildScrollView
+  final bool transitionItemExpanded;
+
   /// Whether to show a warning icon when displaying cached data.
   final bool showCachedDataWarningIcon;
 
@@ -164,6 +167,7 @@ class AbstractListBuilder<
     this.controller,
     this.enableRefresh = true,
     this.enableLoadMore = true,
+    this.transitionItemExpanded = true,
     this.showCachedDataWarningIcon = true,
     this.reverse = false,
     this.errorBuilder,
@@ -554,27 +558,30 @@ class _AbstractListBuilderContentState<
                           child: calculatedHeader,
                         ),
 
-                      Expanded(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            return SingleChildScrollView(
-                              physics:
-                                  _widget.physics ??
-                                  const AlwaysScrollableScrollPhysics(),
-                              controller: _widget.controller,
-                              reverse: _widget.reverse,
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  minHeight: constraints.maxHeight,
+                      if (widget.widget.transitionItemExpanded)
+                        Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              return SingleChildScrollView(
+                                physics:
+                                    _widget.physics ??
+                                    const AlwaysScrollableScrollPhysics(),
+                                controller: _widget.controller,
+                                reverse: _widget.reverse,
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    minHeight: constraints.maxHeight,
+                                  ),
+                                  child: Center(
+                                    child: transitionItemBuilder(context),
+                                  ),
                                 ),
-                                child: Center(
-                                  child: transitionItemBuilder(context),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                              );
+                            },
+                          ),
+                        )
+                      else
+                        transitionItemBuilder(context),
                       if (shouldBuildFooter)
                         Padding(
                           padding: EdgeInsets.only(
