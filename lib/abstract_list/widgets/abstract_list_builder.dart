@@ -603,7 +603,7 @@ class _AbstractListBuilderContentState<
                 return ListView.separated(
                   cacheExtent: _widget.cacheExtent,
                   padding: _widget.padding ?? EdgeInsets.zero,
-                  shrinkWrap: true,
+                  shrinkWrap: false,
                   reverse: _widget.reverse,
                   scrollDirection: _widget.scrollDirection,
                   physics: scrollPhysics,
@@ -622,7 +622,7 @@ class _AbstractListBuilderContentState<
               return GridView.builder(
                 cacheExtent: _widget.cacheExtent,
                 padding: _widget.padding ?? EdgeInsets.zero,
-                shrinkWrap: true,
+                shrinkWrap: false,
                 reverse: _widget.reverse,
                 scrollDirection: _widget.scrollDirection,
                 physics: scrollPhysics,

@@ -1,3 +1,7 @@
+## 2.2.7
+
+* shrinkwrap false
+
 ## 2.2.6
 
 * Added transitionItemExpanded flag to AbstractListBuilder
