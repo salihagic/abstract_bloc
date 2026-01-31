@@ -1,3 +1,7 @@
+## 2.2.8
+
+* loadMore completer
+
 ## 2.2.7
 
 * shrinkwrap false

@@ -345,6 +345,7 @@ class _AbstractListBuilderContentState<
 >
     extends State<_AbstractListBuilderContent<B, S>> {
   Completer<void>? _refreshCompleter;
+  Completer<void>? _loadMoreCompleter;
 
   AbstractListBuilder<B, S> get _widget => widget.widget;
 
@@ -357,6 +358,12 @@ class _AbstractListBuilderContentState<
   void _completeRefresh() {
     if (_refreshCompleter != null && !_refreshCompleter!.isCompleted) {
       _refreshCompleter!.complete();
+    }
+  }
+
+  void _completeLoadMore() {
+    if (_loadMoreCompleter != null && !_loadMoreCompleter!.isCompleted) {
+      _loadMoreCompleter!.complete();
     }
   }
 
@@ -373,6 +380,7 @@ class _AbstractListBuilderContentState<
           listener: (context, state) {
             if (state.resultStatus != .loading) {
               _completeRefresh();
+              _completeLoadMore();
             }
 
             _widget.listener?.call(context, state);
@@ -666,7 +674,10 @@ class _AbstractListBuilderContentState<
                           final metrics = notification.metrics;
                           // Trigger load more when user scrolls within 200 pixels of the bottom
                           if (metrics.pixels >= metrics.maxScrollExtent - 200) {
-                            if (!_widget._isLoadingAny(context, state)) {
+                            if (!_widget._isLoadingAny(context, state) &&
+                                (_loadMoreCompleter == null ||
+                                    _loadMoreCompleter!.isCompleted)) {
+                              _loadMoreCompleter = Completer<void>();
                               _widget._onLoadMore(context);
                             }
                           }
