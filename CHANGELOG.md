@@ -1,3 +1,7 @@
+## 2.2.8
+
+* Updated dependencies
+
 ## 2.2.7
 
 * shrinkwrap false

@@ -61,10 +61,10 @@ packages:
     dependency: transitive
     description:
       name: dio
-      sha256: d90ee57923d1828ac14e492ca49440f65477f4bb1263575900be731a3dac66a9
+      sha256: b9d46faecab38fc8cc286f80bc4d61a3bb5d4ac49e51ed877b4d6706efe57b25
       url: "https://pub.dev"
     source: hosted
-    version: "5.9.0"
+    version: "5.9.1"
   dio_web_adapter:
     dependency: transitive
     description:
@@ -380,10 +380,10 @@ packages:
     dependency: "direct main"
     description:
       name: rest_api_client
-      sha256: "1ff6ab64ade042d4f9e6c48672c9a3dac7101f06a2898422a0d1a91d589db480"
+      sha256: bb20bbb86a7421e5afd270a2493d4fcc8c535a079735a20cac4a849d48abb594
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.1"
+    version: "2.4.2"
   shared_preferences:
     dependency: transitive
     description:
