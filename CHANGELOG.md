@@ -1,6 +1,14 @@
-## 2.2.8
+## 2.2.10
 
 * Updated dependencies
+
+## 2.2.9
+
+* Horizontal list expanded transition item
+
+## 2.2.8
+
+* loadMore completer
 
 ## 2.2.7
 

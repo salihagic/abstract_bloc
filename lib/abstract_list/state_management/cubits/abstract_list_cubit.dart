@@ -181,8 +181,8 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
   /// Pagination values are preserved during reversion.
   ///
   /// This is typically used when a user cancels a filter dialog.
-  Future<void> revert() async {
-    _deepCopyToSearchModel(true);
+  Future<void> revert([bool rebuild = true]) async {
+    _deepCopyToSearchModel(rebuild);
     if (state is AbstractListFilterableState) {
       (state as AbstractListFilterableState).isDirty = false;
     }
@@ -288,7 +288,7 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
   ///
   /// The [hasMoreItems] property on the result indicates if more pages exist.
   Future<void> loadMore() async {
-    await revert();
+    await revert(false);
 
     if (state is AbstractListFilterablePaginatedState) {
       (state as AbstractListFilterablePaginatedState).searchModel.increment();
