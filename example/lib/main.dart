@@ -20,7 +20,6 @@ import 'package:flutter/material.dart';
 /// - Pagination configuration
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await RestApiClient.initFlutter();
 
   // Initialize the REST API client with caching enabled.
   // The cache allows showing previously loaded data when offline.
