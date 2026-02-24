@@ -43,6 +43,9 @@ class AbstractListBuilder<
 
   final bool reverse;
 
+  /// Whether to apply responsive content width constraints from AbstractConfiguration.
+  final bool responsive;
+
   /// Number of columns for grid layouts.
   final int columns;
 
@@ -170,6 +173,7 @@ class AbstractListBuilder<
     this.transitionItemExpanded = true,
     this.showCachedDataWarningIcon = true,
     this.reverse = false,
+    this.responsive = true,
     this.errorBuilder,
     this.noDataBuilder,
     this.loaderBuilder,
@@ -403,6 +407,21 @@ class _AbstractListBuilderContentState<
             final calculatedFooter =
                 _widget.footer ?? _widget.footerBuilder?.call(context, state);
 
+            final responsiveMaxWidth =
+                _widget.responsive && _widget.columns <= 1
+                ? widget.abstractConfiguration?.responsiveContentMaxWidth
+                : null;
+
+            Widget wrapResponsive(Widget child) {
+              if (responsiveMaxWidth == null) return child;
+              return Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: responsiveMaxWidth),
+                  child: SizedBox(width: double.infinity, child: child),
+                ),
+              );
+            }
+
             final child = () {
               // Function to build a ListView with optional header and footer
               buildMaybeWithHeaderAndFooter(Widget child) {
@@ -416,12 +435,12 @@ class _AbstractListBuilderContentState<
                     if (_widget.headerScrollBehaviour ==
                             AbstractScrollBehaviour.scrollable &&
                         calculatedHeader != null)
-                      calculatedHeader,
+                      wrapResponsive(calculatedHeader),
                     child,
                     if (_widget.footerScrollBehaviour ==
                             AbstractScrollBehaviour.scrollable &&
                         calculatedFooter != null)
-                      calculatedFooter,
+                      wrapResponsive(calculatedFooter),
                   ],
                 );
               }
@@ -507,22 +526,23 @@ class _AbstractListBuilderContentState<
 
               Widget? calculatedItemBuilder(BuildContext context, int index) {
                 if (shouldBuildHeader && index == 0) {
-                  return calculatedHeader;
+                  return wrapResponsive(calculatedHeader);
                 }
 
                 if (shouldBuildFooter && index == (calculatedItemCount - 1)) {
-                  return calculatedFooter;
+                  return wrapResponsive(calculatedFooter);
                 }
 
                 if (shouldBuildTransitionItem) {
                   return transitionItemBuilder(context);
                 }
 
-                return _widget.itemBuilder?.call(
+                final item = _widget.itemBuilder?.call(
                   context,
                   state,
                   index - calculatedIndexOffset,
                 );
+                return item != null ? wrapResponsive(item) : null;
               }
 
               Widget calculatedSeparatorBuilder(
@@ -541,8 +561,10 @@ class _AbstractListBuilderContentState<
                   return const SizedBox();
                 }
 
-                return _widget.separatorBuilder?.call(context, state, index) ??
-                    const SizedBox();
+                return wrapResponsive(
+                  _widget.separatorBuilder?.call(context, state, index) ??
+                      const SizedBox(),
+                );
               }
 
               // Use LayoutBuilder with SingleChildScrollView for transition items (empty/error/loading states)
@@ -713,11 +735,11 @@ class _AbstractListBuilderContentState<
                 children: [
                   if (_widget.headerScrollBehaviour == .fixed &&
                       calculatedHeader != null)
-                    calculatedHeader,
+                    wrapResponsive(calculatedHeader),
                   Expanded(child: content),
                   if (_widget.footerScrollBehaviour == .fixed &&
                       calculatedFooter != null)
-                    calculatedFooter,
+                    wrapResponsive(calculatedFooter),
                 ],
               ),
             );

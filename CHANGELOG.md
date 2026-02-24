@@ -1,3 +1,7 @@
+## 3.0.1
+
+* responsiveContentMaxWidth
+
 ## 2.2.10
 
 * Updated dependencies

@@ -41,6 +41,10 @@ class AbstractConfiguration extends InheritedWidget {
   final Widget Function(BuildContext context, void Function() onInit)?
   abstractListNoDataBuilder;
 
+  // Maximum content width for responsive list items. When set, list items
+  // will be constrained to this width and centered on wider screens.
+  final double? responsiveContentMaxWidth;
+
   // Stores translation configurations for the abstract widgets
   final AbstractTranslations translations;
 
@@ -57,6 +61,7 @@ class AbstractConfiguration extends InheritedWidget {
     this.abstractItemNoDataBuilder, // Custom item "no data" widget builder
     this.abstractListErrorBuilder, // Custom list error widget builder
     this.abstractListNoDataBuilder, // Custom list "no data" widget builder
+    this.responsiveContentMaxWidth,
     this.translations =
         const AbstractTranslations(), // Default translations if none provided
     PaginationConfiguration?
