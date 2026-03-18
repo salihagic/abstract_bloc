@@ -1,3 +1,9 @@
+## 3.0.3
+
+* Fix: Scroll position reset on pagination load more
+
+Fixed a bug where loading an additional page caused the list to jump back to scroll position 0. The root cause was that NotificationListener was conditionally added/removed from the widget tree based on the dynamic canLoadMore value. When the last page was loaded and hasMoreItems became false, the widget tree structure changed depth, causing Flutter to remount the ListView from scratch. The fix keeps NotificationListener permanently in the tree (conditioned on the static enableLoadMore flag) and moves the canLoadMore check inside the scroll notification callback.
+
 ## 3.0.2
 
 * Updated dependencies

@@ -679,11 +679,16 @@ class _AbstractListBuilderContentState<
                     child: child,
                   );
 
-                  // Add scroll-based load more detection
-                  if (canLoadMore) {
+                  // Always wrap with NotificationListener when load more is enabled
+                  // (use static _widget.enableLoadMore, not dynamic canLoadMore)
+                  // to keep the widget tree structure stable and preserve scroll position.
+                  // Changing canLoadMore conditionally would cause ListView to be remounted,
+                  // resetting scroll position to 0.
+                  if (_widget.enableLoadMore) {
                     scrollableChild = NotificationListener<ScrollNotification>(
                       onNotification: (notification) {
-                        if (notification is ScrollUpdateNotification) {
+                        if (canLoadMore &&
+                            notification is ScrollUpdateNotification) {
                           final metrics = notification.metrics;
                           // Trigger load more when user scrolls within 200 pixels of the bottom
                           if (metrics.pixels >= metrics.maxScrollExtent - 200) {
