@@ -118,6 +118,14 @@ class AbstractListBuilder<
   /// Builder function for loading state.
   final Widget Function(BuildContext context, S state)? loaderBuilder;
 
+  /// Optional configuration for the pull-to-refresh indicator. Overrides the
+  /// global [AbstractConfiguration.refreshConfiguration] for this list. When
+  /// non-null, the default Material [RefreshIndicator] is replaced by
+  /// [AbstractRefreshIndicator] configured with these values. When both this
+  /// and the global config value are null, the default [RefreshIndicator] is
+  /// used.
+  final RefreshConfiguration? refreshConfiguration;
+
   /// Callback for initial execution logic.
   final void Function(BuildContext context)? onInit;
 
@@ -177,6 +185,7 @@ class AbstractListBuilder<
     this.errorBuilder,
     this.noDataBuilder,
     this.loaderBuilder,
+    this.refreshConfiguration,
     this.header,
     this.headerBuilder,
     this.headerScrollBehaviour = AbstractScrollBehaviour.scrollable,
@@ -706,12 +715,25 @@ class _AbstractListBuilderContentState<
                     );
                   }
 
-                  // Add pull-to-refresh using Flutter's RefreshIndicator
+                  // Add pull-to-refresh. When a RefreshConfiguration is
+                  // supplied (per instance or via AbstractConfiguration), use
+                  // AbstractRefreshIndicator; otherwise fall back to Flutter's
+                  // Material RefreshIndicator.
                   if (canRefresh) {
-                    scrollableChild = RefreshIndicator(
-                      onRefresh: () => _handleRefresh(context),
-                      child: scrollableChild,
-                    );
+                    final refreshConfiguration =
+                        _widget.refreshConfiguration ??
+                        widget.abstractConfiguration?.refreshConfiguration;
+
+                    scrollableChild = refreshConfiguration != null
+                        ? AbstractRefreshIndicator(
+                            onRefresh: () => _handleRefresh(context),
+                            icon: refreshConfiguration.icon,
+                            child: scrollableChild,
+                          )
+                        : RefreshIndicator(
+                            onRefresh: () => _handleRefresh(context),
+                            child: scrollableChild,
+                          );
                   }
 
                   return scrollableChild;

@@ -41,6 +41,13 @@ class AbstractConfiguration extends InheritedWidget {
   final Widget Function(BuildContext context, void Function() onInit)?
   abstractListNoDataBuilder;
 
+  // Optional configuration for the pull-to-refresh indicator. When provided,
+  // the default Material RefreshIndicator is replaced by AbstractRefreshIndicator
+  // configured with these values. When null, the default Material
+  // RefreshIndicator is used (current behavior). Future override points (color,
+  // trigger distance, durations, etc.) should be added to RefreshConfiguration.
+  final RefreshConfiguration? refreshConfiguration;
+
   // Maximum content width for responsive list items. When set, list items
   // will be constrained to this width and centered on wider screens.
   final double? responsiveContentMaxWidth;
@@ -61,6 +68,7 @@ class AbstractConfiguration extends InheritedWidget {
     this.abstractItemNoDataBuilder, // Custom item "no data" widget builder
     this.abstractListErrorBuilder, // Custom list error widget builder
     this.abstractListNoDataBuilder, // Custom list "no data" widget builder
+    this.refreshConfiguration, // Custom pull-to-refresh configuration
     this.responsiveContentMaxWidth,
     this.translations =
         const AbstractTranslations(), // Default translations if none provided

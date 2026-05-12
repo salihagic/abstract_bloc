@@ -1,3 +1,9 @@
+## 3.1.0
+
+* Feature: Custom pull-to-refresh indicator for `AbstractListBuilder`
+
+Added an optional `refreshConfiguration` (`RefreshConfiguration`) on both `AbstractConfiguration` (global default) and `AbstractListBuilder` (per-instance override). When provided, the default Material `RefreshIndicator` is replaced by the new `AbstractRefreshIndicator`, which displays the configured `icon` — rotating it as the user pulls and spinning it while the refresh callback runs. `RefreshConfiguration` is the extension point for future refresh-indicator overrides (color, trigger distance, durations, etc.); when null, behavior is unchanged.
+
 ## 3.0.3
 
 * Fix: Scroll position reset on pagination load more

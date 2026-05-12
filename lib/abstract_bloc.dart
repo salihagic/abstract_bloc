@@ -2,6 +2,7 @@ export 'abstract/_all.dart';
 export 'abstract_form/_all.dart';
 export 'abstract_item/_all.dart';
 export 'abstract_list/_all.dart';
+export 'widgets/abstract_refresh_indicator.dart';
 export 'widgets/info_dialog.dart';
 export 'configuration/_all.dart';
 export 'enumerations/_all.dart';
