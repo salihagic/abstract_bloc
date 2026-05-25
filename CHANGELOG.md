@@ -1,3 +1,7 @@
+## 3.1.1
+
+* Updated dependencies
+
 ## 3.1.0
 
 * Feature: Custom pull-to-refresh indicator for `AbstractListBuilder`
