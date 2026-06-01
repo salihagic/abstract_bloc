@@ -43,6 +43,18 @@ class Pagination implements BasePagination {
     }
   }
 
+  /// Jumps directly to the given [page] (interpreted using
+  /// [configuration.initialPage] as the index base).
+  ///
+  /// If [configuration.initialPage] is `0`, page `0` is the first page.
+  /// If it is `1`, page `1` is the first page. Values below the initial page
+  /// are clamped to it so [skip] never goes negative.
+  @override
+  void goToPage(int page) {
+    final targetIndex = page - configuration.initialPage;
+    skip = targetIndex < 0 ? 0 : targetIndex * take;
+  }
+
   @override
   void update(GridResult gridResult) {}
 

@@ -81,6 +81,8 @@ abstract class AbstractListBloc<S extends AbstractListState>
         await refresh(event, emit);
       } else if (event is AbstractListLoadMoreEvent) {
         await loadMore(event, emit);
+      } else if (event is AbstractListGoToPageEvent) {
+        await goToPage(event, emit);
       }
     });
   }
@@ -287,6 +289,37 @@ abstract class AbstractListBloc<S extends AbstractListState>
       await for (final result in resolveStreamData()) {
         updateState(await convertResultToStateAfterRefresh(result), emit);
         await onAfterRefresh(event, emit, result);
+      }
+    }
+  }
+
+  /// Handles the [AbstractListGoToPageEvent] to jump to a specific page,
+  /// replacing the current items rather than appending. Use this for numeric
+  /// page pagination (e.g. a desktop table footer).
+  ///
+  /// Only works if the state extends [AbstractListFilterablePaginatedState].
+  /// Cursor-based search models will silently ignore the page index.
+  Future<void> goToPage(
+    AbstractListGoToPageEvent event,
+    Emitter<S> emit,
+  ) async {
+    if (state is AbstractListFilterablePaginatedState) {
+      (state as AbstractListFilterablePaginatedState).searchModel.goToPage(
+        event.page,
+      );
+
+      state.resultStatus = ResultStatus.loading;
+      updateState(state.copyWith() as S, emit);
+
+      try {
+        updateState(
+          await convertResultToStateAfterLoad(await resolveData()),
+          emit,
+        );
+      } catch (e) {
+        await for (final result in resolveStreamData()) {
+          updateState(await convertResultToStateAfterLoad(result), emit);
+        }
       }
     }
   }

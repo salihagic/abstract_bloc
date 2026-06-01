@@ -40,6 +40,12 @@ class CursorPagination implements BasePagination {
     cursor = nextCursor;
   }
 
+  /// Cursor-based pagination cannot random-access arbitrary pages.
+  /// Implementations that need numeric paging should use [Pagination] instead.
+  /// This is a no-op so the [BasePagination] contract is satisfied.
+  @override
+  void goToPage(int page) {}
+
   @override
   void update(GridResult gridResult) {
     previousCursor = gridResult.previousCursor ?? '';
