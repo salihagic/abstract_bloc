@@ -1,3 +1,7 @@
+## 3.2.0
+
+* Table view for abstract list
+
 ## 3.1.1
 
 * Updated dependencies

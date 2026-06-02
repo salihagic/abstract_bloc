@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter --version)",
+      "Bash(flutter doctor *)",
+      "Bash(findstr /C:\"Flutter version\" /C:\"Framework\" /C:\"Engine\")",
+      "Bash(where flutter *)",
+      "Read(//c/dev/flutter/packages/flutter/lib/src/widgets/**)",
+      "Read(//c/dev/flutter/packages/flutter/lib/src/**)",
+      "Read(//c/dev/flutter/packages/flutter/lib/**)",
+      "Bash(flutter analyze *)"
+    ]
+  }
+}

@@ -5,6 +5,7 @@ import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/extensions/_all.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/single_child_widget.dart';
 
 /// Enum to define the behavior of scrollable headers or footers.
@@ -435,7 +436,9 @@ class _AbstractListBuilderContentState<
               // Function to build a ListView with optional header and footer
               buildMaybeWithHeaderAndFooter(Widget child) {
                 return ListView(
-                  cacheExtent: _widget.cacheExtent,
+                  scrollCacheExtent: _widget.cacheExtent == null
+                      ? null
+                      : ScrollCacheExtent.pixels(_widget.cacheExtent!),
                   physics: _widget.physics,
                   reverse: _widget.reverse,
                   controller: _widget.controller,
@@ -640,7 +643,9 @@ class _AbstractListBuilderContentState<
               // Determine the appropriate list view or grid view based on the columns property
               if (_widget.columns <= 1) {
                 return ListView.separated(
-                  cacheExtent: _widget.cacheExtent,
+                  scrollCacheExtent: _widget.cacheExtent == null
+                      ? null
+                      : ScrollCacheExtent.pixels(_widget.cacheExtent!),
                   padding: _widget.padding ?? EdgeInsets.zero,
                   shrinkWrap: false,
                   reverse: _widget.reverse,
@@ -654,7 +659,9 @@ class _AbstractListBuilderContentState<
               }
 
               return GridView.builder(
-                cacheExtent: _widget.cacheExtent,
+                scrollCacheExtent: _widget.cacheExtent == null
+                    ? null
+                    : ScrollCacheExtent.pixels(_widget.cacheExtent!),
                 padding: _widget.padding ?? EdgeInsets.zero,
                 shrinkWrap: false,
                 reverse: _widget.reverse,
