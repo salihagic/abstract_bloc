@@ -51,3 +51,23 @@ class AbstractListRefreshEvent extends AbstractListEvent {}
 /// AbstractListLoadMoreEvent();
 /// ```
 class AbstractListLoadMoreEvent extends AbstractListEvent {}
+
+/// An event that signifies a request to jump directly to a specific page
+/// of a paginated list (replacing the currently displayed items rather than
+/// appending).
+///
+/// Use this for numeric page pagination — e.g. a desktop table with
+/// `[< Prev] [1] [2] [3] [Next >]` controls.
+///
+/// [page] is interpreted using the active `PaginationConfiguration.initialPage`
+/// as the index base (typically `0` for `PageNumber`-style backends).
+///
+/// Example usage:
+/// ```dart
+/// bloc.add(AbstractListGoToPageEvent(2)); // jump to the third page (0-indexed)
+/// ```
+class AbstractListGoToPageEvent extends AbstractListEvent {
+  final int page;
+
+  AbstractListGoToPageEvent(this.page);
+}

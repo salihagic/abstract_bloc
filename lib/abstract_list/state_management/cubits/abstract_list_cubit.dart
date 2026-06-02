@@ -276,6 +276,48 @@ abstract class AbstractListCubit<S extends AbstractListState> extends Cubit<S> {
     }
   }
 
+  /// Jumps to a specific [page] and reloads the data (replacing the current
+  /// items rather than appending). Use this for numeric page pagination —
+  /// e.g. a desktop table with `[< Prev] [1] [2] [3] [Next >]` controls.
+  ///
+  /// Unlike [loadMore], this method:
+  /// - Does not append items; it replaces the current page
+  /// - Does not increment pagination; it sets the page directly
+  /// - Honors the snapshotted search model (uncommitted filter changes are
+  ///   reverted, matching the behavior of [refresh])
+  ///
+  /// Only works if the state extends [AbstractListFilterablePaginatedState].
+  /// Cursor-based search models will silently ignore [page] (see
+  /// [CursorPagination.goToPage]).
+  ///
+  /// [page] is interpreted using the active
+  /// [PaginationConfiguration.initialPage] (typically 0-indexed when
+  /// configured for `PageNumber`-style backends).
+  Future<void> goToPage(int page) async {
+    await revert(false);
+
+    if (state is AbstractListFilterablePaginatedState) {
+      (state as AbstractListFilterablePaginatedState).searchModel.goToPage(
+        page,
+      );
+
+      await onBeforeLoad();
+      _updateStateWithStatus(ResultStatus.loading);
+
+      try {
+        final result = await resolveData();
+
+        updateState(await convertResultToStateAfterLoad(result));
+        await onAfterLoad(result);
+      } catch (e) {
+        await for (final result in resolveStreamData()) {
+          updateState(await convertResultToStateAfterLoad(result));
+          await onAfterLoad(result);
+        }
+      }
+    }
+  }
+
   /// Loads the next page of data for paginated lists.
   ///
   /// This method:

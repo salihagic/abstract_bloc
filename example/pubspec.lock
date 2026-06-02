@@ -7,7 +7,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "3.1.1"
+    version: "3.2.0"
   async:
     dependency: transitive
     description:
@@ -120,9 +120,10 @@ packages:
   flutter_bloc_event_bus:
     dependency: transitive
     description:
-      path: "C:/dev/Projects/Github/flutter_bloc_event_bus"
-      relative: false
-    source: path
+      name: flutter_bloc_event_bus
+      sha256: "6ed5a14d5d6098b147afd570d0b13e318e0e7c92fb1fd580fb9f24a885a6ec39"
+      url: "https://pub.dev"
+    source: hosted
     version: "1.0.1"
   flutter_lints:
     dependency: "direct dev"
@@ -258,10 +259,10 @@ packages:
     dependency: transitive
     description:
       name: meta
-      sha256: "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394"
+      sha256: "1741988757a65eb6b36abe716829688cf01910bbf91c34354ff7ec1c3de2b349"
       url: "https://pub.dev"
     source: hosted
-    version: "1.17.0"
+    version: "1.18.0"
   mime:
     dependency: transitive
     description:
@@ -369,9 +370,10 @@ packages:
   rest_api_client:
     dependency: transitive
     description:
-      path: "C:/dev/Projects/Github/rest_api_client"
-      relative: false
-    source: path
+      name: rest_api_client
+      sha256: "4b573a642734a98732f7dc38e0cd77d773a51c2a8c928bf0bd6448fd45880d36"
+      url: "https://pub.dev"
+    source: hosted
     version: "3.0.2"
   shared_preferences:
     dependency: transitive
@@ -453,9 +455,10 @@ packages:
   storage_repository:
     dependency: transitive
     description:
-      path: "C:/dev/Projects/Github/storage_repository"
-      relative: false
-    source: path
+      name: storage_repository
+      sha256: f5e269ed991fde4123fe45af9ea9a90e6e0681ac88022fca72fa0365b0f45eed
+      url: "https://pub.dev"
+    source: hosted
     version: "3.0.1"
   stream_channel:
     dependency: transitive
@@ -485,10 +488,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: "8161c84903fd860b26bfdefb7963b3f0b68fee7adea0f59ef805ecca346f0c7a"
+      sha256: "949a932224383300f01be9221c39180316445ecb8e7547f70a41a35bf421fb9e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.10"
+    version: "0.7.11"
   typed_data:
     dependency: transitive
     description:
