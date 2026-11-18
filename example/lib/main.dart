@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:example/repositories/users_repository.dart';
 import 'package:example/users/widgets/users_list.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Example application demonstrating the abstract_bloc package.
 ///

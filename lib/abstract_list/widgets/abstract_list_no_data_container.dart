@@ -1,5 +1,5 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A widget that displays a message indicating that no data is available.
 ///

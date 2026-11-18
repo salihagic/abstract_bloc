@@ -2,7 +2,7 @@ import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/extensions/_all.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:provider/single_child_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A widget for building forms with state management and event handling.
 /// This widget integrates with [AbstractFormBaseState] and provides

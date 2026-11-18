@@ -4,8 +4,7 @@ import 'dart:ui';
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/extensions/_all.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/single_child_widget.dart';
 
 /// Enum to define the behavior of scrollable headers or footers.

@@ -1,6 +1,6 @@
 import 'package:example/models/user.dart';
 import 'package:example/user_details/widgets/user_details_page.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A card widget displaying a single user.
 ///

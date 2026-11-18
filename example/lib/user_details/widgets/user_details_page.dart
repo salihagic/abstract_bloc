@@ -4,7 +4,7 @@ import 'package:example/repositories/users_repository.dart';
 import 'package:example/user_details/bloc/user_details_bloc.dart';
 import 'package:example/user_details/bloc/user_details_event.dart';
 import 'package:example/user_details/bloc/user_details_state.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Page displaying detailed user information.
 ///

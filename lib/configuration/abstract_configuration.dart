@@ -1,6 +1,6 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/models/cursor_pagination.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 // Defines an inherited widget that provides configuration options for abstract widgets
 class AbstractConfiguration extends InheritedWidget {

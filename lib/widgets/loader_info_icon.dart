@@ -1,6 +1,6 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A widget that displays an icon indicating whether loading is occurring
 /// or if cached data is available.

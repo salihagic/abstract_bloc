@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A lightweight pull-to-refresh indicator that displays a caller-provided
 /// [icon] instead of the Material progress arc used by [RefreshIndicator].

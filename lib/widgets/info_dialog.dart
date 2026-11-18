@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:abstract_bloc/abstract_bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A customizable information dialog widget.
 class InfoDialog extends StatelessWidget {

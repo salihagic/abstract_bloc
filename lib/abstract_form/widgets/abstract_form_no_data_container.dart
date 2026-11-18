@@ -1,5 +1,5 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A widget for displaying a "no data" message and a retry button in a form.
 /// This widget is typically used when a form has no data to display and provides
