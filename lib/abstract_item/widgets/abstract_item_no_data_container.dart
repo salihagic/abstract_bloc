@@ -1,5 +1,5 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A widget to display a message indicating no data is available, with an option to reload.
 class AbstractItemNoDataContainer extends StatelessWidget {

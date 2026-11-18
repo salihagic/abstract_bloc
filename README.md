@@ -26,7 +26,8 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  abstract_bloc: ^2.2.1
+  abstract_bloc: ^4.0.0
+  material_ui: ^1.11.1
 ```
 
 Then run:
@@ -34,6 +35,8 @@ Then run:
 ```bash
 flutter pub get
 ```
+
+Since 4.0.0 the widgets are built on [`material_ui`](https://pub.dev/packages/material_ui), the standalone Material library that replaces `package:flutter/material.dart`. Your app should use `material_ui`'s `MaterialApp`, theme and `GlobalMaterialLocalizations.delegate`. An app that still imports `package:flutter/material.dart` should stay on `abstract_bloc: ^3.2.0`.
 
 ## Quick Start
 

@@ -11,6 +11,11 @@ analyzer:
   errors:
     depend_on_referenced_packages: ignore
     unused_local_variable: ignore
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
 
 linter:
   # The lint rules applied to this project can be customized in the

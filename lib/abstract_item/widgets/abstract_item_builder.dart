@@ -1,7 +1,7 @@
 import 'package:abstract_bloc/abstract_bloc.dart';
 import 'package:abstract_bloc/widgets/_all.dart';
 import 'package:provider/single_child_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A generic widget for displaying different states of an item using BLoC or Cubit pattern.
 class AbstractItemBuilder<

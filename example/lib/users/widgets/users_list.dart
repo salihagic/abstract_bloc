@@ -4,7 +4,7 @@ import 'package:example/users/bloc/users_bloc.dart';
 import 'package:example/users/bloc/users_event.dart';
 import 'package:example/users/bloc/users_state.dart';
 import 'package:example/users/widgets/user_card.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Widget displaying a paginated list of users.
 ///

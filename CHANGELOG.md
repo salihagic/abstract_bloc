@@ -1,3 +1,13 @@
+## 4.0.0
+
+* **Breaking:** migrated from `package:flutter/material.dart` to the standalone `package:material_ui` (Flutter 3.47+ deprecates the built-in Material library in its favour).
+
+Every widget in the package (`Loader`, `InfoDialog`, `LoadInfoIcon`, the error and no-data containers, `AbstractRefreshIndicator`, and the `RefreshIndicator` fallback in `AbstractListBuilder`) now resolves `Theme`, `MaterialLocalizations` and `showDialog` from `material_ui`. Apps built on `material_ui`'s `MaterialApp` get the app theme and localizations again. Before this release they got Flutter's default theme, and `showDialog`/`RefreshIndicator` failed because they looked up the legacy `MaterialLocalizations`.
+
+Migration: move the app to `material_ui` (`import 'package:material_ui/material_ui.dart'` and `material_ui`'s `GlobalMaterialLocalizations.delegate`). An app that still uses `package:flutter/material.dart` should stay on 3.x.
+
+Requires Dart 3.13 and Flutter 3.47 or newer.
+
 ## 3.2.0
 
 * Table view for abstract list

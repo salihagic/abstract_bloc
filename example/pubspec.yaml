@@ -4,13 +4,14 @@ version: 1.0.0+1
 publish_to: none
 
 environment:
-  sdk: ^3.7.0
+  sdk: ^3.13.0
 
 dependencies:
   flutter:
     sdk: flutter
   abstract_bloc:
     path: ../
+  material_ui: ^1.11.1
 
 dev_dependencies:
   flutter_test:
